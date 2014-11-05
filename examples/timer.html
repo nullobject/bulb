@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Timer Example</title>
+    <script src="https://cdn.rawgit.com/nullobject/fkit/v0.15.0/dist/fkit.js"></script>
+    <script src="../dist/bulb.js"></script>
+  </head>
+  <body>
+    <script>
+      function timer(next) {
+        setInterval(F.compose(next, Math.random), 100);
+      }
+
+      var sum = F.fold(F.add, 0),
+          s   = new bulb.Signal(timer).map(F.mul( 1)),
+          t   = new bulb.Signal(timer).map(F.mul(-1)),
+          u   = s.zip(t).map(sum);
+
+      u.subscribe(console.log.bind(console));
+    </script>
+  </body>
+</html>
