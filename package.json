@@ -1,0 +1,41 @@
+{
+  "name": "bulb",
+  "version": "0.1.0",
+  "description": "A functional reactive programming library for JavaScript.",
+  "homepage": "https://github.com/nullobject/bulb",
+  "author": "Josh Bassett <josh.bassett@gmail.com> (http://joshbassett.info)",
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/nullobject/bulb/blob/master/LICENSE.md"
+  },
+  "keywords": [
+    "functional",
+    "reactive",
+    "programming",
+    "library"
+  ],
+  "main": "src/bulb.js",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nullobject/bulb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nullobject/bulb/issues"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "jsdoc": "^3.3.0-alpha10",
+    "jsdoc-react": "^0.3.0",
+    "jshint": "^2.5.5",
+    "mocha": "^2.0.1",
+    "sinon": "^1.11.0",
+    "sinon-chai": "^2.5.0",
+    "webpack": "^1.4.3"
+  }
+}
