@@ -8,10 +8,9 @@
   </head>
   <body>
     <script>
-      var sum = F.fold(F.add, 0),
-          s   = bulb.clock.interval(500).map(Math.random),
-          t   = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random)),
-          u   = s.zip(t).map(sum);
+      var s = bulb.clock.interval(500).map(Math.random),
+          t = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random)),
+          u = s.zip(t).map(F.sum);
 
       u.subscribe(console.log.bind(console));
     </script>
