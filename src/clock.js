@@ -18,7 +18,8 @@ module.exports = {
    * @returns A new signal.
    */
   interval: function(n) {
-    return new Signal(timer);
-    function timer(next) { setInterval(next, n); }
+    return new Signal(function(next) {
+      setInterval(function(e) { next(n); }, n);
+    });
   },
 };

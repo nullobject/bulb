@@ -23,6 +23,7 @@ describe('clock', function() {
       this.clock.tick(1000);
 
       expect(spy.calledThrice).to.be.true;
+      expect(spy.calledWithExactly(1000)).to.be.true;
     });
   });
 });
