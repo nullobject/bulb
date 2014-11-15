@@ -3,13 +3,13 @@
 var F = require('fkit');
 
 /**
- * Creates a new signal with the `subscribe` function.
+ * Returns a new signal with the `subscribe` function.
  *
- * The `subscribe` function is called by an observer who wishes to subscribe
- * to the signal values.
+ * The `subscribe` function is called by an observer who wishes to subscribe to
+ * the signal values.
  *
  * @class
- * @summary The Signal Class
+ * @summary The Signal class represents a value which changes over time.
  * @param subscribe A subscribe function.
  * @author Josh Bassett
  */
@@ -27,7 +27,20 @@ function Signal(subscribe) {
 Signal.prototype.constructor = Signal;
 
 /**
- * Creates a new signal from the array `as`.
+ * Returns a new signal that contains a single value `a`.
+ *
+ * @param a A value.
+ * @returns A new signal.
+ */
+Signal.of = function(a) {
+  return new Signal(function(next, done) {
+    if (a) { next(a); }
+    done();
+  });
+};
+
+/**
+ * Returns a new signal that emits values from the array of `as`.
  *
  * @param as An array of values.
  * @returns A new signal.
@@ -40,7 +53,7 @@ Signal.fromArray = function(as) {
 };
 
 /**
- * Creates a new signal from the callback function `f`.
+ * Returns a new signal from the callback function `f`.
  *
  * @param f A callback function.
  * @returns A new signal.
@@ -52,7 +65,8 @@ Signal.fromCallback = function(f) {
 };
 
 /**
- * Creates a new signal by listening for events of `type` on the `target` object.
+ * Returns a new signal by listening for events of `type` on the `target`
+ * object.
  *
  * @param target A DOM element.
  * @param type A string representing the event type to listen for.
@@ -69,7 +83,7 @@ Signal.fromEvent = function(target, type) {
 };
 
 /**
- * Creates a new signal from the promise `p`.
+ * Returns a new signal from the promise `p`.
  *
  * @param p A Promises/A+ conformant promise.
  * @returns A new signal.
@@ -81,23 +95,53 @@ Signal.fromPromise = function(p) {
 };
 
 /**
- * Creates a new signal that contains a single value `a`.
+ * Returns a new signal that emits a value from the array of `as` every `n`
+ * milliseconds.
  *
- * @param a A value.
+ * @param n The number of milliseconds between each clock tick.
+ * @param as A list.
  * @returns A new signal.
  */
-Signal.of = function(a) {
+Signal.sequentially = function(n, as) {
+  var handle;
+
   return new Signal(function(next, done) {
-    if (a) { next(a); }
-    done();
+    handle = setInterval(function() {
+      next(F.head(as));
+
+      as = F.tail(as);
+
+      if (F.empty(as)) {
+        clearTimeout(handle);
+        done();
+      }
+    }, n);
   });
 };
 
 /**
- * Creates a new signal that applies the function `f` to the values in the
- * signal. The unary function `f` must return a {@link Signal}.
+ * Returns a new signal that delays the signal values by `n` milliseconds.
  *
- * @param f A unary function.
+ * @param n The number of milliseconds between each clock tick.
+ * @returns A new signal.
+ */
+Signal.prototype.delay = function(n) {
+  var env = this;
+
+  return F.copy(this, {
+    subscribe: function(next, done) {
+      env.subscribe(
+        function(a) { setTimeout(function() { next(a); }, n); },
+        function() { setTimeout(function() { done(); }, n); }
+      );
+    }
+  });
+};
+
+/**
+ * Returns a new signal that applies the function `f` to the signal values.
+ *
+ * @param f A unary function that returns a `Signal`.
  * @returns A new signal.
  */
 Signal.prototype.concatMap = function(f) {
@@ -113,10 +157,9 @@ Signal.prototype.concatMap = function(f) {
 };
 
 /**
- * Creates a new signal that applies the function `f` to the values in the
- * signal. The unary function `f` must return a signal value.
+ * Returns a new signal that applies the function `f` to the signal values.
  *
- * @param f A unary function.
+ * @param f A unary function that returns a signal value.
  * @returns A new signal.
  */
 Signal.prototype.map = function(f) {
@@ -130,9 +173,8 @@ Signal.prototype.map = function(f) {
 };
 
 /**
- * Creates a new signal that filters the values of the signal using the
- * predicate function `p`. The predicate function `p` must return a boolean
- * value.
+ * Returns a new signal that filters the signal values using the predicate
+ * function `p`.
  *
  * @param p A predicate function.
  * @returns A new signal.
@@ -150,9 +192,8 @@ Signal.prototype.filter = function(p) {
 };
 
 /**
- * Creates a new signal that reduces the signal with the starting value `a` and
- * binary function `f`. The new signal yields the result of all the
- * applications of `f`.
+ * Returns a new signal that reduces the signal values with the starting value
+ * `a` and binary function `f`.
  *
  * @param a A starting value.
  * @param f A binary function.
@@ -178,9 +219,8 @@ Signal.prototype.fold = function(a, f) {
 };
 
 /**
- * Creates a new signal that scans the signal with the starting value `a` and
- * binary function `f`. The new signal yields all the intermediate applications
- * of `f`.
+ * Returns a new signal that scans the signal values with the starting value
+ * `a` and binary function `f`.
  *
  * @param a A starting value.
  * @param f A binary function.
@@ -201,7 +241,7 @@ Signal.prototype.scan = function(a, f) {
 };
 
 /**
- * Creates a new signal that merges the signal with one or more signals.
+ * Returns a new signal that merges the signal with one or more signals.
  *
  * @function Signal#merge
  * @param ss A list of signals.
@@ -214,9 +254,7 @@ Signal.prototype.merge = F.variadic(function(ss) {
     subscribe: function(next, done) {
       var count = 0;
       var onDone = function() {
-        if (++count > ss.length) {
-          done();
-        }
+        if (++count > ss.length) { done(); }
       };
 
       [env].concat(ss).map(function(s) {
@@ -227,16 +265,16 @@ Signal.prototype.merge = F.variadic(function(ss) {
 });
 
 /**
- * Creates a new signal that splits the signal into one or more signals.
+ * Returns a new signal that splits the signal into one or more signals.
  *
  * @param n A number.
  * @returns An array of signals.
  */
 Signal.prototype.split = function(n) {
-  var env = this,
-      isSubscribed = false,
-      nexts = [],
-      dones = [];
+  var env          = this,
+      nexts        = [],
+      dones        = [],
+      isSubscribed = false;
 
   var signals = F
     .range(0, n)
@@ -255,12 +293,8 @@ Signal.prototype.split = function(n) {
   function onSubscribe() {
     if (!isSubscribed) {
       env.subscribe(
-        function(a) {
-          nexts.map(F.applyRight(a));
-        },
-        function() {
-          dones.map(F.applyRight());
-        }
+        function(a) { nexts.map(F.applyRight(a)); },
+        function() { dones.map(F.applyRight()); }
       );
     }
 
@@ -269,7 +303,7 @@ Signal.prototype.split = function(n) {
 };
 
 /**
- * Creates a new signal that zips the signal with one or more signals.
+ * Returns a new signal that zips the signal with one or more signals.
  *
  * @function Signal#zip
  * @param ss A list of signals.
@@ -280,23 +314,22 @@ Signal.prototype.zip = F.variadic(function(ss) {
 
   return F.copy(this, {
     subscribe: function(next, done) {
-      var isDone = false,
-          count = 0,
-          nexts = new Array(ss.length);
+      var as    = null,
+          count = 0;
 
       var onNext = function(a, index) {
-        nexts[index] = a;
-        if (++count > ss.length) {
-          next(nexts);
-          count = 0;
+        if (!as) { as = F.array(ss.length); }
+
+        as[index] = a;
+
+        if (as.length > ss.length) {
+          next(as);
+          as = null;
         }
       };
 
       var onDone = function() {
-        if (!isDone) {
-          done();
-        }
-        isDone = true;
+        if (++count > ss.length) { done(); }
       };
 
       [env].concat(ss).map(function(s, index) {
