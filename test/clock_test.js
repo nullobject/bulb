@@ -13,10 +13,10 @@ describe('clock', function() {
 
   describe('.interval', function() {
     it('should return a new clock signal', function() {
-      var spy    = sinon.spy(),
-          signal = clock.interval(1000);
+      var spy = sinon.spy(),
+          s   = clock.interval(1000);
 
-      signal.subscribe(spy);
+      s.subscribe(spy);
 
       this.clock.tick(1000);
       this.clock.tick(1000);

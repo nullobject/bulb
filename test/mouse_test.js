@@ -8,9 +8,9 @@ describe('mouse', function() {
     it('should return a new mouse position signal', function() {
       var spy     = sinon.spy(),
           emitter = event.emitter(),
-          signal  = mouse.position(emitter);
+          s       = mouse.position(emitter);
 
-      signal.subscribe(spy);
+      s.subscribe(spy);
 
       emitter.emit('mousemove', {clientX: 1, clientY: 2});
       expect(spy.calledWithExactly([1, 2])).to.be.true;
@@ -21,9 +21,9 @@ describe('mouse', function() {
     it('should return a new mouse button signal', function() {
       var spy     = sinon.spy(),
           emitter = event.emitter(),
-          signal  = mouse.button(emitter);
+          s       = mouse.button(emitter);
 
-      signal.subscribe(spy);
+      s.subscribe(spy);
 
       emitter.emit('mousedown');
       expect(spy.calledWithExactly(true)).to.be.true;
