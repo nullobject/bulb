@@ -1,0 +1,10 @@
+{
+  "name": "bulb",
+  "version": "0.1.0",
+  "dependencies": {
+    "fkit": {
+      "version": "0.15.0",
+      "from": "fkit@>=0.15.0 <0.16.0"
+    }
+  }
+}
