@@ -8,13 +8,9 @@
   </head>
   <body>
     <script>
-      function timer(next) {
-        setInterval(F.compose(next, Math.random), 100);
-      }
-
       var sum = F.fold(F.add, 0),
-          s   = new bulb.Signal(timer).map(F.mul( 1)),
-          t   = new bulb.Signal(timer).map(F.mul(-1)),
+          s   = bulb.clock.interval(500).map(Math.random),
+          t   = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random)),
           u   = s.zip(t).map(sum);
 
       u.subscribe(console.log.bind(console));
