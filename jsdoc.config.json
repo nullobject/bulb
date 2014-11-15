@@ -1,0 +1,14 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "title": "Bulb"
+  },
+  "opts": {
+    "destination": "doc",
+    "recurse": true,
+    "template": "jsdoc-react"
+  }
+}
