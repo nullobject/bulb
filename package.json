@@ -29,7 +29,7 @@
     "url": "https://github.com/nullobject/bulb/issues"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
+    "chai": "^1.10.0",
     "jsdoc": "^3.3.0-alpha10",
     "jsdoc-react": "^0.3.0",
     "jshint": "^2.5.5",
