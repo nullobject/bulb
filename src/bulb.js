@@ -8,5 +8,6 @@
  */
 module.exports = {
   clock:  require('./clock'),
+  mouse:  require('./mouse'),
   Signal: require('./signal')
 };

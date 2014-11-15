@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mouse Example</title>
+    <script src="https://cdn.rawgit.com/nullobject/fkit/v0.15.0/dist/fkit.js"></script>
+    <script src="../dist/bulb.js"></script>
+  </head>
+  <body>
+    <script>
+      var s = bulb.mouse.position(document),
+          t = bulb.mouse.button(document),
+          u = s.merge(t);
+      u.subscribe(console.log.bind(console));
+    </script>
+  </body>
+</html>
