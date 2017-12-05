@@ -112,7 +112,7 @@ Signal.sequentially = function(n, as) {
       as = F.tail(as);
 
       if (F.empty(as)) {
-        clearTimeout(handle);
+        clearInterval(handle);
         done();
       }
     }, n);
