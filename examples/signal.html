@@ -33,7 +33,7 @@
     </div>
 
     <script>
-      var URL = 'http://www.random.org/strings/?num=@&len=8&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new';
+      var URL = 'https://www.random.org/strings/?num=@&len=8&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new';
 
       function splitOnNewline(x) {
         return x.trim().split(/\n/);
@@ -52,20 +52,20 @@
         }
       }
 
-      function show(result) {
+      function showValue(value) {
         document
           .getElementById('results')
-          .appendChild(document.createTextNode(result.join(', ') + '\n'));
+          .appendChild(document.createTextNode(value.join(', ') + '\n'));
       }
 
-      var more = bulb.Signal.fromEvent(document.getElementById('more'), 'click').map(F.const( 1)),
+      var more = bulb.Signal.fromEvent(document.getElementById('more'), 'click').map(F.const(+1)),
           less = bulb.Signal.fromEvent(document.getElementById('less'), 'click').map(F.const(-1));
 
       more
         .merge(less)
         .scan(1, function(a, b) { return Math.max(1, a + b); })
         .concatMap(randomNumbers)
-        .subscribe(show);
+        .subscribe(showValue);
     </script>
   </body>
 </html>
