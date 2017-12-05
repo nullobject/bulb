@@ -5,7 +5,7 @@ module.exports = {
     bulb: './src/bulb.js'
   },
   output: {
-    path:          './dist',
+    path:          __dirname + '/dist',
     filename:      '[name].js',
     library:       'bulb',
     libraryTarget: 'var'
