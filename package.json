@@ -4,10 +4,7 @@
   "description": "A functional reactive programming library for JavaScript.",
   "homepage": "https://github.com/nullobject/bulb",
   "author": "Josh Bassett <josh.bassett@gmail.com> (http://joshbassett.info)",
-  "license": {
-    "type": "MIT",
-    "url": "https://github.com/nullobject/bulb/blob/master/LICENSE.md"
-  },
+  "license": "MIT",
   "keywords": [
     "functional",
     "reactive",
