@@ -2,21 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Signal Example</title>
+    <title>Random Example</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
     <style>
       body { padding: 10px 0; }
       .container { max-width: 730px; }
     </style>
-    <script src="https://cdn.rawgit.com/nullobject/fkit/v0.15.0/dist/fkit.js"></script>
+    <script src="https://cdn.rawgit.com/nullobject/fkit/v0.16.3/dist/fkit.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
     <script src="../dist/bulb.js"></script>
   </head>
   <body>
     <div class="container">
       <div class="jumbotron">
-        <h1>Signal Example</h1>
+        <h1>Random Example</h1>
         <p>This example makes use of the <code>Signal</code> class to handle
           user interaction and trigger AJAX requests.</p>
         <p>It uses the <a href="http://www.random.org">RANDOM.ORG</a> API to
@@ -33,45 +33,45 @@
     </div>
 
     <script>
-      var URL = 'https://www.random.org/strings/?num=@&len=8&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new';
+      var URL = 'https://www.random.org/strings/?num=@&len=8&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new'
 
       function splitOnNewline(x) {
-        return x.trim().split(/\n/);
+        return x.trim().split(/\n/)
       }
 
       function randomNumbers(count) {
         return bulb.Signal
           .fromCallback(request)
-          .map(F.compose(splitOnNewline, F.get('text')));
+          .map(F.compose(splitOnNewline, F.get('text')))
 
         function request(callback) {
           superagent
             .get(URL.replace('@', count))
             .set('X-Requested-With', null)
-            .end(callback);
+            .end(callback)
         }
       }
 
       function showValue(value) {
         document
           .getElementById('results')
-          .appendChild(document.createTextNode(value.join(', ') + '\n'));
+          .appendChild(document.createTextNode(value.join(', ') + '\n'))
       }
 
       function showError(message) {
         document
           .getElementById('results')
-          .appendChild(document.createTextNode(message + '\n'));
+          .appendChild(document.createTextNode(message + '\n'))
       }
 
-      var more = bulb.Signal.fromEvent(document.getElementById('more'), 'click').map(F.const(+1)),
-          less = bulb.Signal.fromEvent(document.getElementById('less'), 'click').map(F.const(-1));
+      var more = bulb.Signal.fromEvent(document.getElementById('more'), 'click').map(F.const(+1))
+      var less = bulb.Signal.fromEvent(document.getElementById('less'), 'click').map(F.const(-1))
 
       more
         .merge(less)
-        .scan(1, function(a, b) { return Math.max(1, a + b); })
+        .scan(1, function(a, b) { return Math.max(1, a + b) })
         .concatMap(randomNumbers)
-        .subscribe(showValue, showError);
+        .subscribe(showValue, showError)
     </script>
   </body>
 </html>

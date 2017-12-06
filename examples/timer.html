@@ -3,16 +3,16 @@
   <head>
     <meta charset="utf-8">
     <title>Timer Example</title>
-    <script src="https://cdn.rawgit.com/nullobject/fkit/v0.15.0/dist/fkit.js"></script>
+    <script src="https://cdn.rawgit.com/nullobject/fkit/v0.16.3/dist/fkit.js"></script>
     <script src="../dist/bulb.js"></script>
   </head>
   <body>
     <script>
-      var s = bulb.clock.interval(500).map(Math.random),
-          t = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random)),
-          u = s.zip(t).map(F.sum);
+      var s = bulb.clock.interval(500).map(Math.random)
+      var t = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random))
+      var u = s.zip(t).map(F.sum)
 
-      u.subscribe(console.log.bind(console));
+      u.subscribe(console.log.bind(console))
     </script>
   </body>
 </html>
