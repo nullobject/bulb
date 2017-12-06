@@ -15,9 +15,10 @@ var F = require('fkit')
  */
 function Signal (subscribe) {
   /**
-   * Subscribes to the signal with the callbacks `next` and `end`.
+   * Subscribes to the signal with the callbacks `next`, `error`, and `end`.
    *
    * @param next A callback function.
+   * @param error A callback function.
    * @param end A callback function.
    * @function Signal#subscribe
    */
@@ -33,7 +34,7 @@ Signal.prototype.constructor = Signal
  * @returns A new signal.
  */
 Signal.of = function (a) {
-  return new Signal(function (next, done) {
+  return new Signal(function (next, error, done) {
     if (a) { next(a) }
     done()
   })
@@ -46,7 +47,7 @@ Signal.of = function (a) {
  * @returns A new signal.
  */
 Signal.fromArray = function (as) {
-  return new Signal(function (next, done) {
+  return new Signal(function (next, error, done) {
     as.map(F.unary(next))
     done()
   })
@@ -59,8 +60,14 @@ Signal.fromArray = function (as) {
  * @returns A new signal.
  */
 Signal.fromCallback = function (f) {
-  return new Signal(function (next, done) {
-    f(next)
+  return new Signal(function (next, error, done) {
+    f(function (message, value) {
+      if (typeof message !== 'undefined' && message !== null) {
+        error(message)
+      } else {
+        next(value)
+      }
+    })
   })
 }
 
@@ -73,7 +80,7 @@ Signal.fromCallback = function (f) {
  * @returns A new signal.
  */
 Signal.fromEvent = function (target, type) {
-  return new Signal(function (next, done) {
+  return new Signal(function (next, error, done) {
     if (target.on) {
       target.on(type, next)
     } else if (target.addEventListener) {
@@ -89,8 +96,8 @@ Signal.fromEvent = function (target, type) {
  * @returns A new signal.
  */
 Signal.fromPromise = function (p) {
-  return new Signal(function (next, done) {
-    p.then(next)
+  return new Signal(function (next, error, done) {
+    p.then(next, error)
   })
 }
 
@@ -105,7 +112,7 @@ Signal.fromPromise = function (p) {
 Signal.sequentially = function (n, as) {
   var handle
 
-  return new Signal(function (next, done) {
+  return new Signal(function (next, error, done) {
     handle = setInterval(function () {
       next(F.head(as))
 
@@ -129,9 +136,10 @@ Signal.prototype.delay = function (n) {
   var env = this
 
   return F.copy(this, {
-    subscribe: function (next, done) {
+    subscribe: function (next, error, done) {
       env.subscribe(
         function (a) { setTimeout(function () { next(a) }, n) },
+        error,
         function () { setTimeout(function () { done() }, n) }
       )
     }
@@ -141,17 +149,17 @@ Signal.prototype.delay = function (n) {
 /**
  * Returns a new signal that applies the function `f` to the signal values.
  *
- * @param f A unary function that returns a `Signal`.
+ * @param f A unary function that returns a signal.
  * @returns A new signal.
  */
 Signal.prototype.concatMap = function (f) {
   var env = this
 
   return F.copy(this, {
-    subscribe: function (next, done) {
+    subscribe: function (next, error, done) {
       env.subscribe(function (a) {
-        f(a).subscribe(next, function () {})
-      }, done)
+        f(a).subscribe(next, error, function () {})
+      }, error, done)
     }
   })
 }
@@ -166,8 +174,8 @@ Signal.prototype.map = function (f) {
   var env = this
 
   return F.copy(this, {
-    subscribe: function (next, done) {
-      env.subscribe(F.compose(next, f), done)
+    subscribe: function (next, error, done) {
+      env.subscribe(F.compose(next, f), error, done)
     }
   })
 }
@@ -183,10 +191,10 @@ Signal.prototype.filter = function (p) {
   var env = this
 
   return F.copy(this, {
-    subscribe: function (next, done) {
+    subscribe: function (next, error, done) {
       env.subscribe(function (a) {
         if (p(a)) { next(a) }
-      }, done)
+      }, error, done)
     }
   })
 }
@@ -203,12 +211,13 @@ Signal.prototype.fold = function (a, f) {
   var env = this
 
   return F.copy(this, {
-    subscribe: function (next, done) {
+    subscribe: function (next, error, done) {
       env.subscribe(
         function (b) {
           a = f(a, b)
           return a
         },
+        error,
         function () {
           next(a)
           return done()
@@ -230,12 +239,12 @@ Signal.prototype.scan = function (a, f) {
   var env = this
 
   return F.copy(this, {
-    subscribe: function (next, done) {
+    subscribe: function (next, error, done) {
       next(a)
       env.subscribe(function (b) {
         a = f(a, b)
         return next(a)
-      }, done)
+      }, error, done)
     }
   })
 }
@@ -251,14 +260,14 @@ Signal.prototype.merge = F.variadic(function (ss) {
   var env = this
 
   return F.copy(this, {
-    subscribe: function (next, done) {
+    subscribe: function (next, error, done) {
       var count = 0
       var onDone = function () {
         if (++count > ss.length) { done() }
       };
 
       [env].concat(ss).map(function (s) {
-        s.subscribe(next, onDone)
+        s.subscribe(next, error, onDone)
       })
     }
   })
@@ -273,6 +282,7 @@ Signal.prototype.merge = F.variadic(function (ss) {
 Signal.prototype.split = function (n) {
   var env = this
   var nexts = []
+  var errors = []
   var dones = []
   var isSubscribed = false
 
@@ -280,8 +290,9 @@ Signal.prototype.split = function (n) {
     .range(0, n)
     .map(function (_) {
       return F.copy(env, {
-        subscribe: function (next, done) {
+        subscribe: function (next, error, done) {
           nexts.push(next)
+          errors.push(next)
           dones.push(done)
           onSubscribe()
         }
@@ -294,6 +305,7 @@ Signal.prototype.split = function (n) {
     if (!isSubscribed) {
       env.subscribe(
         function (a) { nexts.map(F.applyRight(a)) },
+        function () { errors.map(F.applyRight()) },
         function () { dones.map(F.applyRight()) }
       )
     }
@@ -313,7 +325,7 @@ Signal.prototype.zip = F.variadic(function (ss) {
   var env = this
 
   return F.copy(this, {
-    subscribe: function (next, done) {
+    subscribe: function (next, error, done) {
       var as = null
       var count = 0
 
@@ -333,7 +345,7 @@ Signal.prototype.zip = F.variadic(function (ss) {
       };
 
       [env].concat(ss).map(function (s, index) {
-        s.subscribe(function (a) { onNext(a, index) }, onDone)
+        s.subscribe(function (a) { onNext(a, index) }, error, onDone)
       })
     }
   })
