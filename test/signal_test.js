@@ -9,6 +9,7 @@ var sinon = require('sinon')
 describe('Signal', function () {
   beforeEach(function () {
     this.next = sinon.spy()
+    this.error = sinon.spy()
     this.done = sinon.spy()
     this.clock = sinon.useFakeTimers()
   })
@@ -21,7 +22,7 @@ describe('Signal', function () {
     it('should return a signal with a single value', function () {
       var s = Signal.of(1)
 
-      s.subscribe(this.next, this.done)
+      s.subscribe(this.next, this.error, this.done)
 
       assert.isTrue(this.next.calledWithExactly(1))
       assert.isTrue(this.done.calledAfter(this.next))
@@ -32,7 +33,7 @@ describe('Signal', function () {
     it('should return a signal of values from an array', function () {
       var s = Signal.fromArray(F.range(1, 3))
 
-      s.subscribe(this.next, this.done)
+      s.subscribe(this.next, this.error, this.done)
 
       F.range(1, 3).map(function (n, index) {
         var call = this.next.getCall(index)
@@ -47,10 +48,10 @@ describe('Signal', function () {
     it('should return a signal of values from the callback function', function () {
       var emit
       var s = Signal.fromCallback(function (callback) {
-        emit = callback
+        emit = function (a) { callback(null, a) }
       })
 
-      s.subscribe(this.next, this.done)
+      s.subscribe(this.next, this.error, this.done)
 
       F.range(1, 3).map(function (n, index) {
         emit(n)
@@ -67,7 +68,7 @@ describe('Signal', function () {
       var emitter = new events.EventEmitter()
       var s = Signal.fromEvent(emitter, 'lol')
 
-      s.subscribe(this.next, this.done)
+      s.subscribe(this.next, this.error, this.done)
 
       F.range(1, 3).map(function (n, index) {
         emitter.emit('lol', n)
@@ -86,7 +87,7 @@ describe('Signal', function () {
         then: function (callback) { emit = callback }
       })
 
-      s.subscribe(this.next, this.done)
+      s.subscribe(this.next, this.error, this.done)
 
       F.range(1, 3).map(function (n, index) {
         emit(n)
@@ -102,7 +103,7 @@ describe('Signal', function () {
     it('should delay the signal values', function () {
       var s = Signal.sequentially(1000, F.range(1, 3))
 
-      s.subscribe(this.next, this.done)
+      s.subscribe(this.next, this.error, this.done)
 
       this.clock.tick(1000)
       assert.isTrue(this.next.calledWithExactly(1))
@@ -123,10 +124,10 @@ describe('Signal', function () {
       var spy = sinon.spy()
       var s = new Signal(spy)
 
-      s.subscribe(this.next, this.done)
+      s.subscribe(this.next, this.error, this.done)
 
       assert.isTrue(spy.calledOnce)
-      assert.isTrue(spy.calledWithExactly(this.next, this.done))
+      assert.isTrue(spy.calledWithExactly(this.next, this.error, this.done))
     })
   })
 
@@ -134,7 +135,7 @@ describe('Signal', function () {
     it('should delay the signal values', function () {
       var s = Signal.fromArray(F.range(1, 3))
 
-      s.delay(1000).subscribe(this.next, this.done)
+      s.delay(1000).subscribe(this.next, this.error, this.done)
 
       this.clock.tick(1000)
 
@@ -148,11 +149,11 @@ describe('Signal', function () {
   })
 
   describe('#concatMap', function () {
-    it('should concat map a function over the signal values', function () {
+    it('should map a function over the signal values', function () {
       var s = Signal.fromArray(F.range(1, 3))
       var f = function (a) { return Signal.of(a) }
 
-      s.concatMap(f).subscribe(this.next, this.done)
+      s.concatMap(f).subscribe(this.next, this.error, this.done)
 
       F.range(1, 3).map(function (n, index) {
         var call = this.next.getCall(index)
@@ -164,12 +165,12 @@ describe('Signal', function () {
   })
 
   describe('#map', function () {
-    it('should map the a function over the signal values', function () {
+    it('should map a function over the signal values', function () {
       var s = Signal.fromArray(F.range(1, 3))
 
-      s.map(F.inc).subscribe(this.next, this.done);
+      s.map(F.inc).subscribe(this.next, this.error, this.done)
 
-      [2, 3, 4].map(function (n, index) {
+      F.range(2, 3).map(function (n, index) {
         var call = this.next.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
@@ -182,7 +183,7 @@ describe('Signal', function () {
     it('should filter the signal values with a predicate', function () {
       var s = Signal.fromArray(F.range(1, 3))
 
-      s.filter(F.eq(2)).subscribe(this.next, this.done)
+      s.filter(F.eq(2)).subscribe(this.next, this.error, this.done)
 
       assert.isFalse(this.next.calledWithExactly(1))
       assert.isTrue(this.next.calledWithExactly(2))
@@ -195,7 +196,7 @@ describe('Signal', function () {
     it('should fold a function over the signal values', function () {
       var s = Signal.fromArray(F.range(1, 3))
 
-      s.fold(0, F.add).subscribe(this.next, this.done)
+      s.fold(0, F.add).subscribe(this.next, this.error, this.done)
 
       assert.isTrue(this.next.calledWithExactly(6))
       assert.isTrue(this.done.calledAfter(this.next))
@@ -206,7 +207,7 @@ describe('Signal', function () {
     it('should scan a function over the signal values', function () {
       var s = Signal.fromArray(F.range(1, 3))
 
-      s.scan(0, F.add).subscribe(this.next, this.done);
+      s.scan(0, F.add).subscribe(this.next, this.error, this.done);
 
       [0, 1, 3, 6].map(function (n, index) {
         var call = this.next.getCall(index)
@@ -223,7 +224,7 @@ describe('Signal', function () {
       var t = Signal.sequentially(1000, F.range(4, 3))
       var u = Signal.sequentially(1000, F.range(7, 3))
 
-      s.merge(t, u).subscribe(this.next, this.done)
+      s.merge(t, u).subscribe(this.next, this.error, this.done)
 
       this.clock.tick(1000)
       this.clock.tick(1000)
@@ -250,9 +251,11 @@ describe('Signal', function () {
       var b = sinon.spy()
       var c = sinon.spy()
       var d = sinon.spy()
+      var e = sinon.spy()
+      var f = sinon.spy()
 
-      t.subscribe(a, b)
-      u.subscribe(c, d)
+      t.subscribe(a, b, c)
+      u.subscribe(d, e, f)
 
       this.clock.tick(1000)
       this.clock.tick(1000)
@@ -262,12 +265,12 @@ describe('Signal', function () {
         var call = a.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
 
-        call = c.getCall(index)
+        call = d.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
 
-      assert.isTrue(b.calledAfter(a))
-      assert.isTrue(d.calledAfter(c))
+      assert.isTrue(c.calledAfter(a))
+      assert.isTrue(f.calledAfter(d))
     })
   })
 
@@ -277,7 +280,7 @@ describe('Signal', function () {
       var t = Signal.sequentially(1000, F.range(4, 3))
       var u = Signal.sequentially(1000, F.range(7, 3))
 
-      s.zip(t, u).subscribe(this.next, this.done)
+      s.zip(t, u).subscribe(this.next, this.error, this.done)
 
       this.clock.tick(1000)
       this.clock.tick(1000)
