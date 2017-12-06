@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * This module provides the Bulb functional reactive programming libarary.
@@ -7,7 +7,7 @@
  * @summary The bulb FRP library.
  */
 module.exports = {
-  clock:  require('./clock'),
-  mouse:  require('./mouse'),
+  clock: require('./clock'),
+  mouse: require('./mouse'),
   Signal: require('./signal')
-};
+}

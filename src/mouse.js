@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-var Signal = require('./signal');
+var Signal = require('./signal')
 
 /**
  * This module defines mouse signals.
@@ -16,10 +16,10 @@ module.exports = {
    * @param target The event target that the signal listens on.
    * @returns A new signal.
    */
-  position: function(target) {
-    return new Signal(function(next) {
-      target.addEventListener('mousemove', function(e) { next([e.clientX, e.clientY]); });
-    });
+  position: function (target) {
+    return new Signal(function (next) {
+      target.addEventListener('mousemove', function (e) { next([e.clientX, e.clientY]) })
+    })
   },
 
   /**
@@ -30,10 +30,10 @@ module.exports = {
    * @param target The event target that the signal listens on.
    * @returns A new signal.
    */
-  button: function(target) {
-    return new Signal(function(next) {
-      target.addEventListener('mousedown', function(e) { next(true); });
-      target.addEventListener('mouseup', function(e) { next(false); });
-    });
-  },
-};
+  button: function (target) {
+    return new Signal(function (next) {
+      target.addEventListener('mousedown', function (e) { next(true) })
+      target.addEventListener('mouseup', function (e) { next(false) })
+    })
+  }
+}

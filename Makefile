@@ -9,7 +9,7 @@ regex   := "s/\([\"\']version[\"\'][[:space:]]*:[[:space:]]*\)\([\"\'].*[\"\']\)
 production: node_modules
 	./node_modules/.bin/webpack --colors --progress -p
 
-test: unit lint
+test: lint unit
 
 release: production test publish
 
@@ -29,7 +29,7 @@ unit:
 
 # Runs jslint.
 lint:
-	@node_modules/.bin/jshint src
+	@node_modules/.bin/standard src/*.js test/*.js
 
 # Generates the API documentation.
 doc:

@@ -25,14 +25,16 @@
   "bugs": {
     "url": "https://github.com/nullobject/bulb/issues"
   },
+  "standard": {
+    "env": "mocha"
+  },
   "devDependencies": {
     "chai": "^4.1.2",
     "jsdoc": "^3.3.0-alpha10",
     "jsdoc-react": "^0.3.2",
-    "jshint": "^2.5.5",
     "mocha": "^4.0.1",
     "sinon": "^4.1.2",
-    "sinon-chai": "^2.5.0",
+    "standard": "^10.0.3",
     "webpack": "^3.10.0"
   },
   "dependencies": {

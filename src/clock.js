@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-var Signal = require('./signal');
+var Signal = require('./signal')
 
 /**
  * This module defines clock signals.
@@ -17,9 +17,9 @@ module.exports = {
    * @param n The number of milliseconds between each clock tick.
    * @returns A new signal.
    */
-  interval: function(n) {
-    return new Signal(function(next) {
-      setInterval(function(e) { next(n); }, n);
-    });
-  },
-};
+  interval: function (n) {
+    return new Signal(function (next) {
+      setInterval(function (e) { next(n) }, n)
+    })
+  }
+}
