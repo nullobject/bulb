@@ -18,6 +18,18 @@ describe('Signal', function () {
     this.clock.restore()
   })
 
+  describe('.empty', function () {
+    it('should return a signal with no values', function () {
+      var s = Signal.empty()
+
+      s.subscribe(this.next, this.error, this.done)
+
+      assert.isFalse(this.next.called)
+      assert.isFalse(this.error.called)
+      assert.isTrue(this.done.called)
+    })
+  })
+
   describe('.of', function () {
     it('should return a signal with a single value', function () {
       var s = Signal.of(1)

@@ -28,6 +28,17 @@ function Signal (subscribe) {
 Signal.prototype.constructor = Signal
 
 /**
+ * Returns a new signal that contains no values.
+ *
+ * @returns A new signal.
+ */
+Signal.empty = function () {
+  return new Signal(function (next, error, done) {
+    if (done) { done() }
+  })
+}
+
+/**
  * Returns a new signal that contains a single value `a`.
  *
  * @param a A value.
