@@ -299,7 +299,7 @@ Signal.prototype.split = function (n) {
 
   var signals = F
     .range(0, n)
-    .map(function (_) {
+    .map(function () {
       return F.copy(env, {
         subscribe: function (next, error, done) {
           nexts.push(next)
