@@ -48,8 +48,8 @@ Signal.of = function (a) {
  */
 Signal.fromArray = function (as) {
   return new Signal(function (next, error, done) {
-    as.map(F.unary(next))
-    done()
+    as.map(F.apply(next))
+    if (done) { done() }
   })
 }
 
