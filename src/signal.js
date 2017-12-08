@@ -1,4 +1,4 @@
-var F = require('fkit')
+const F = require('fkit')
 
 /**
  * Returns a new signal with the `subscribe` function.
@@ -119,7 +119,7 @@ Signal.fromPromise = function (p) {
  * @returns A new signal.
  */
 Signal.sequentially = function (n, as) {
-  var handle
+  let handle
 
   return new Signal(function (next, error, done) {
     handle = setInterval(function () {
@@ -142,7 +142,7 @@ Signal.sequentially = function (n, as) {
  * @returns A new signal.
  */
 Signal.prototype.delay = function (n) {
-  var env = this
+  const env = this
 
   return F.copy(this, {
     subscribe: function (next, error, done) {
@@ -162,7 +162,7 @@ Signal.prototype.delay = function (n) {
  * @returns A new signal.
  */
 Signal.prototype.concatMap = function (f) {
-  var env = this
+  const env = this
 
   return F.copy(this, {
     subscribe: function (next, error, done) {
@@ -180,7 +180,7 @@ Signal.prototype.concatMap = function (f) {
  * @returns A new signal.
  */
 Signal.prototype.map = function (f) {
-  var env = this
+  const env = this
 
   return F.copy(this, {
     subscribe: function (next, error, done) {
@@ -197,7 +197,7 @@ Signal.prototype.map = function (f) {
  * @returns A new signal.
  */
 Signal.prototype.filter = function (p) {
-  var env = this
+  const env = this
 
   return F.copy(this, {
     subscribe: function (next, error, done) {
@@ -217,7 +217,7 @@ Signal.prototype.filter = function (p) {
  * @returns A new signal.
  */
 Signal.prototype.fold = function (a, f) {
-  var env = this
+  const env = this
 
   return F.copy(this, {
     subscribe: function (next, error, done) {
@@ -245,7 +245,7 @@ Signal.prototype.fold = function (a, f) {
  * @returns A new signal.
  */
 Signal.prototype.scan = function (a, f) {
-  var env = this
+  const env = this
 
   return F.copy(this, {
     subscribe: function (next, error, done) {
@@ -266,12 +266,12 @@ Signal.prototype.scan = function (a, f) {
  * @returns A new signal.
  */
 Signal.prototype.merge = F.variadic(function (ss) {
-  var env = this
+  const env = this
 
   return F.copy(this, {
     subscribe: function (next, error, done) {
-      var count = 0
-      var onDone = function () {
+      let count = 0
+      const onDone = function () {
         if (++count > ss.length) { done() }
       };
 
@@ -289,13 +289,13 @@ Signal.prototype.merge = F.variadic(function (ss) {
  * @returns An array of signals.
  */
 Signal.prototype.split = function (n) {
-  var env = this
-  var nexts = []
-  var errors = []
-  var dones = []
-  var isSubscribed = false
+  const env = this
+  const nexts = []
+  const errors = []
+  const dones = []
+  let isSubscribed = false
 
-  var signals = F
+  const signals = F
     .range(0, n)
     .map(function () {
       return F.copy(env, {
@@ -331,14 +331,14 @@ Signal.prototype.split = function (n) {
  * @returns A new signal.
  */
 Signal.prototype.zip = F.variadic(function (ss) {
-  var env = this
+  const env = this
 
   return F.copy(this, {
     subscribe: function (next, error, done) {
-      var as = null
-      var count = 0
+      let as = null
+      let count = 0
 
-      var onNext = function (a, index) {
+      const onNext = function (a, index) {
         if (!as) { as = F.array(ss.length) }
 
         as[index] = a
@@ -349,7 +349,7 @@ Signal.prototype.zip = F.variadic(function (ss) {
         }
       }
 
-      var onDone = function () {
+      const onDone = function () {
         if (++count > ss.length) { done() }
       };
 

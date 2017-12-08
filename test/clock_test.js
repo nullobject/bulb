@@ -1,6 +1,6 @@
-var assert = require('chai').assert
-var clock = require('../src/clock')
-var sinon = require('sinon')
+const assert = require('chai').assert
+const clock = require('../src/clock')
+const sinon = require('sinon')
 
 describe('clock', function () {
   beforeEach(function () {
@@ -13,8 +13,8 @@ describe('clock', function () {
 
   describe('.interval', function () {
     it('should return a new clock signal', function () {
-      var spy = sinon.spy()
-      var s = clock.interval(1000)
+      const spy = sinon.spy()
+      const s = clock.interval(1000)
 
       s.subscribe(spy)
 

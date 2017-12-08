@@ -1,4 +1,4 @@
-var Signal = require('./signal')
+const Signal = require('./signal')
 
 /**
  * This module defines mouse signals.
