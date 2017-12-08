@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * This module provides the Bulb functional reactive programming libarary.
  *

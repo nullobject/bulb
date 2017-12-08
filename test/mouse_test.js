@@ -1,5 +1,3 @@
-'use strict'
-
 var assert = require('chai').assert
 var event = require('./support/event')
 var mouse = require('../src/mouse')

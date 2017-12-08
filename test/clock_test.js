@@ -1,5 +1,3 @@
-'use strict'
-
 var assert = require('chai').assert
 var clock = require('../src/clock')
 var sinon = require('sinon')

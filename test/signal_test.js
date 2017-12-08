@@ -1,5 +1,3 @@
-'use strict'
-
 var F = require('fkit')
 var Signal = require('../src/signal')
 var assert = require('chai').assert
