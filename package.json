@@ -33,11 +33,15 @@
     "jsdoc": "^3.3.0-alpha10",
     "jsdoc-react": "^0.3.2",
     "mocha": "^4.0.1",
+    "rollup": "^0.52.1",
+    "rollup-plugin-buble": "^0.18.0",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1",
     "sinon": "^4.1.2",
-    "standard": "^10.0.3",
-    "webpack": "^3.10.0"
+    "standard": "^10.0.3"
   },
   "dependencies": {
-    "fkit": "^0.16.3"
+    "fkit": "^0.17.1"
   }
 }
