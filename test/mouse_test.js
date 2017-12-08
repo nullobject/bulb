@@ -1,14 +1,14 @@
-var assert = require('chai').assert
-var event = require('./support/event')
-var mouse = require('../src/mouse')
-var sinon = require('sinon')
+const assert = require('chai').assert
+const event = require('./support/event')
+const mouse = require('../src/mouse')
+const sinon = require('sinon')
 
 describe('mouse', function () {
   describe('.position', function () {
     it('should return a new mouse position signal', function () {
-      var spy = sinon.spy()
-      var emitter = event.emitter()
-      var s = mouse.position(emitter)
+      const spy = sinon.spy()
+      const emitter = event.emitter()
+      const s = mouse.position(emitter)
 
       s.subscribe(spy)
 
@@ -19,9 +19,9 @@ describe('mouse', function () {
 
   describe('.button', function () {
     it('should return a new mouse button signal', function () {
-      var spy = sinon.spy()
-      var emitter = event.emitter()
-      var s = mouse.button(emitter)
+      const spy = sinon.spy()
+      const emitter = event.emitter()
+      const s = mouse.button(emitter)
 
       s.subscribe(spy)
 
