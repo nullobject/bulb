@@ -13,11 +13,11 @@ const F = require('fkit')
  */
 function Signal (subscribe) {
   /**
-   * Subscribes to the signal with the callbacks `next`, `error`, and `end`.
+   * Subscribes to the signal with the callbacks `next`, `error`, and `complete`.
    *
    * @param next A callback function.
    * @param error A callback function.
-   * @param end A callback function.
+   * @param complete A callback function.
    * @function Signal#subscribe
    */
   this.subscribe = subscribe
@@ -31,8 +31,8 @@ Signal.prototype.constructor = Signal
  * @returns A new signal.
  */
 Signal.empty = function () {
-  return new Signal((next, error, done) => {
-    if (done) { done() }
+  return new Signal((next, error, complete) => {
+    if (complete) { complete() }
   })
 }
 
@@ -43,9 +43,9 @@ Signal.empty = function () {
  * @returns A new signal.
  */
 Signal.of = function (a) {
-  return new Signal((next, error, done) => {
+  return new Signal((next, error, complete) => {
     if (a) { next(a) }
-    done()
+    complete()
   })
 }
 
@@ -56,9 +56,9 @@ Signal.of = function (a) {
  * @returns A new signal.
  */
 Signal.fromArray = function (as) {
-  return new Signal((next, error, done) => {
+  return new Signal((next, error, complete) => {
     as.map(F.apply(next))
-    if (done) { done() }
+    if (complete) { complete() }
   })
 }
 
@@ -69,7 +69,7 @@ Signal.fromArray = function (as) {
  * @returns A new signal.
  */
 Signal.fromCallback = function (f) {
-  return new Signal((next, error, done) => {
+  return new Signal((next, error, complete) => {
     f((message, value) => {
       if (typeof message !== 'undefined' && message !== null) {
         error(message)
@@ -89,7 +89,7 @@ Signal.fromCallback = function (f) {
  * @returns A new signal.
  */
 Signal.fromEvent = function (target, type) {
-  return new Signal((next, error, done) => {
+  return new Signal((next, error, complete) => {
     if (target.on) {
       target.on(type, next)
     } else if (target.addEventListener) {
@@ -105,7 +105,7 @@ Signal.fromEvent = function (target, type) {
  * @returns A new signal.
  */
 Signal.fromPromise = function (p) {
-  return new Signal((next, error, done) => {
+  return new Signal((next, error, complete) => {
     p.then(next, error)
   })
 }
@@ -121,7 +121,7 @@ Signal.fromPromise = function (p) {
 Signal.sequentially = function (n, as) {
   let handle
 
-  return new Signal((next, error, done) => {
+  return new Signal((next, error, complete) => {
     handle = setInterval(() => {
       next(F.head(as))
 
@@ -129,7 +129,7 @@ Signal.sequentially = function (n, as) {
 
       if (F.empty(as)) {
         clearInterval(handle)
-        done()
+        complete()
       }
     }, n)
   })
@@ -145,11 +145,11 @@ Signal.prototype.delay = function (n) {
   const env = this
 
   return F.copy(this, {
-    subscribe: (next, error, done) => {
+    subscribe: (next, error, complete) => {
       env.subscribe(
         a => setTimeout(() => next(a), n),
         error,
-        () => setTimeout(() => done(), n)
+        () => setTimeout(() => complete(), n)
       )
     }
   })
@@ -165,10 +165,10 @@ Signal.prototype.concatMap = function (f) {
   const env = this
 
   return F.copy(this, {
-    subscribe: (next, error, done) => {
+    subscribe: (next, error, complete) => {
       env.subscribe(a => {
         f(a).subscribe(next, error, () => {})
-      }, error, done)
+      }, error, complete)
     }
   })
 }
@@ -183,8 +183,8 @@ Signal.prototype.map = function (f) {
   const env = this
 
   return F.copy(this, {
-    subscribe: (next, error, done) => {
-      env.subscribe(F.compose(next, f), error, done)
+    subscribe: (next, error, complete) => {
+      env.subscribe(F.compose(next, f), error, complete)
     }
   })
 }
@@ -200,10 +200,10 @@ Signal.prototype.filter = function (p) {
   const env = this
 
   return F.copy(this, {
-    subscribe: (next, error, done) => {
+    subscribe: (next, error, complete) => {
       env.subscribe(a => {
         if (p(a)) { next(a) }
-      }, error, done)
+      }, error, complete)
     }
   })
 }
@@ -220,7 +220,7 @@ Signal.prototype.fold = function (a, f) {
   const env = this
 
   return F.copy(this, {
-    subscribe: (next, error, done) => {
+    subscribe: (next, error, complete) => {
       env.subscribe(
         b => {
           a = f(a, b)
@@ -229,7 +229,7 @@ Signal.prototype.fold = function (a, f) {
         error,
         () => {
           next(a)
-          return done()
+          return complete()
         }
       )
     }
@@ -248,12 +248,12 @@ Signal.prototype.scan = function (a, f) {
   const env = this
 
   return F.copy(this, {
-    subscribe: (next, error, done) => {
+    subscribe: (next, error, complete) => {
       next(a)
       env.subscribe(b => {
         a = f(a, b)
         return next(a)
-      }, error, done)
+      }, error, complete)
     }
   })
 }
@@ -269,10 +269,10 @@ Signal.prototype.merge = F.variadic(function (ss) {
   const env = this
 
   return F.copy(this, {
-    subscribe: (next, error, done) => {
+    subscribe: (next, error, complete) => {
       let count = 0
       const onDone = () => {
-        if (++count > ss.length) { done() }
+        if (++count > ss.length) { complete() }
       };
 
       [env].concat(ss).map(s => s.subscribe(next, error, onDone))
@@ -296,10 +296,10 @@ Signal.prototype.split = function (n) {
   const signals = F
     .range(0, n)
     .map(() => F.copy(env, {
-      subscribe: (next, error, done) => {
+      subscribe: (next, error, complete) => {
         nexts.push(next)
         errors.push(next)
-        dones.push(done)
+        dones.push(complete)
         onSubscribe()
       }
     }))
@@ -330,7 +330,7 @@ Signal.prototype.zip = F.variadic(function (ss) {
   const env = this
 
   return F.copy(this, {
-    subscribe: (next, error, done) => {
+    subscribe: (next, error, complete) => {
       let as = null
       let count = 0
 
@@ -346,7 +346,7 @@ Signal.prototype.zip = F.variadic(function (ss) {
       }
 
       const onDone = () => {
-        if (++count > ss.length) { done() }
+        if (++count > ss.length) { complete() }
       };
 
       [env].concat(ss).map((s, index) => s.subscribe(a => onNext(a, index), error, onDone))
