@@ -273,7 +273,7 @@ Signal.prototype.merge = F.variadic(function (ss) {
       let count = 0
       const onDone = () => {
         if (++count > ss.length) { done() }
-      }
+      };
 
       [env].concat(ss).map(s => s.subscribe(next, error, onDone))
     }
@@ -347,7 +347,7 @@ Signal.prototype.zip = F.variadic(function (ss) {
 
       const onDone = () => {
         if (++count > ss.length) { done() }
-      }
+      };
 
       [env].concat(ss).map((s, index) => s.subscribe(a => onNext(a, index), error, onDone))
     }
