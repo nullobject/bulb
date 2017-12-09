@@ -17,7 +17,7 @@ describe('Signal', () => {
   })
 
   describe('.empty', () => {
-    it('should return a signal with no values', () => {
+    it('returns a signal with no values', () => {
       const s = Signal.empty()
 
       s.subscribe(this.next, this.error, this.done)
@@ -29,7 +29,7 @@ describe('Signal', () => {
   })
 
   describe('.of', () => {
-    it('should return a signal with a single value', () => {
+    it('returns a signal with a single value', () => {
       const s = Signal.of(1)
 
       s.subscribe(this.next, this.error, this.done)
@@ -40,7 +40,7 @@ describe('Signal', () => {
   })
 
   describe('.fromArray', () => {
-    it('should return a signal of values from an array', () => {
+    it('returns a signal of values from an array', () => {
       const s = Signal.fromArray(F.range(1, 3))
 
       s.subscribe(this.next, this.error, this.done)
@@ -55,7 +55,7 @@ describe('Signal', () => {
   })
 
   describe('.fromCallback', () => {
-    it('should return a signal of values from the callback function', () => {
+    it('returns a signal of values from the callback function', () => {
       let emit
       const s = Signal.fromCallback(callback => {
         emit = a => { callback(null, a) }
@@ -74,7 +74,7 @@ describe('Signal', () => {
   })
 
   describe('.fromEvent', () => {
-    it('should return a signal of values from an event', () => {
+    it('returns a signal of values from an event', () => {
       const emitter = new events.EventEmitter()
       const s = Signal.fromEvent(emitter, 'lol')
 
@@ -91,7 +91,7 @@ describe('Signal', () => {
   })
 
   describe('.fromPromise', () => {
-    it('should return a signal of values from the promise', () => {
+    it('returns a signal of values from the promise', () => {
       let emit
       const s = Signal.fromPromise({
         then: callback => { emit = callback }
@@ -110,7 +110,7 @@ describe('Signal', () => {
   })
 
   describe('.sequentially', () => {
-    it('should delay the signal values', () => {
+    it('delays the signal values', () => {
       const s = Signal.sequentially(1000, F.range(1, 3))
 
       s.subscribe(this.next, this.error, this.done)
@@ -130,7 +130,7 @@ describe('Signal', () => {
   })
 
   describe('#subscribe', () => {
-    it('should bind to the signal events with a callback', () => {
+    it('binds to the signal events with a callback', () => {
       const spy = sinon.spy()
       const s = new Signal(spy)
 
@@ -142,7 +142,7 @@ describe('Signal', () => {
   })
 
   describe('#delay', () => {
-    it('should delay the signal values', () => {
+    it('delays the signal values', () => {
       const s = Signal.fromArray(F.range(1, 3))
 
       s.delay(1000).subscribe(this.next, this.error, this.done)
@@ -159,7 +159,7 @@ describe('Signal', () => {
   })
 
   describe('#concatMap', () => {
-    it('should map a function over the signal values', () => {
+    it('maps a function over the signal values', () => {
       const s = Signal.fromArray(F.range(1, 3))
       const f = a => Signal.of(a)
 
@@ -175,7 +175,7 @@ describe('Signal', () => {
   })
 
   describe('#map', () => {
-    it('should map a function over the signal values', () => {
+    it('maps a function over the signal values', () => {
       const s = Signal.fromArray(F.range(1, 3))
 
       s.map(F.inc).subscribe(this.next, this.error, this.done)
@@ -190,7 +190,7 @@ describe('Signal', () => {
   })
 
   describe('#filter', () => {
-    it('should filter the signal values with a predicate', () => {
+    it('filters the signal values with a predicate', () => {
       const s = Signal.fromArray(F.range(1, 3))
 
       s.filter(F.eq(2)).subscribe(this.next, this.error, this.done)
@@ -203,7 +203,7 @@ describe('Signal', () => {
   })
 
   describe('#fold', () => {
-    it('should fold a function over the signal values', () => {
+    it('folds a function over the signal values', () => {
       const s = Signal.fromArray(F.range(1, 3))
 
       s.fold(0, F.add).subscribe(this.next, this.error, this.done)
@@ -214,7 +214,7 @@ describe('Signal', () => {
   })
 
   describe('#scan', () => {
-    it('should scan a function over the signal values', () => {
+    it('scans a function over the signal values', () => {
       const s = Signal.fromArray(F.range(1, 3))
 
       s.scan(0, F.add).subscribe(this.next, this.error, this.done);
@@ -229,7 +229,7 @@ describe('Signal', () => {
   })
 
   describe('#merge', () => {
-    it('should merge the signals', () => {
+    it('merges the signals', () => {
       const s = Signal.sequentially(1000, F.range(1, 3))
       const t = Signal.sequentially(1000, F.range(4, 3))
       const u = Signal.sequentially(1000, F.range(7, 3))
@@ -252,7 +252,7 @@ describe('Signal', () => {
   })
 
   describe('#split', () => {
-    it('should split the signal', () => {
+    it('splits the signal', () => {
       const ss = Signal.sequentially(1000, F.range(1, 3)).split(2)
       const t = ss[0]
       const u = ss[1]
@@ -285,7 +285,7 @@ describe('Signal', () => {
   })
 
   describe('#zip', () => {
-    it('should zip the signals', () => {
+    it('zips the signals', () => {
       const s = Signal.sequentially(1000, F.range(1, 3))
       const t = Signal.sequentially(1000, F.range(4, 3))
       const u = Signal.sequentially(1000, F.range(7, 3))

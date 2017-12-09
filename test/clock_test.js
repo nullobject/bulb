@@ -12,7 +12,7 @@ describe('clock', () => {
   })
 
   describe('.interval', () => {
-    it('should return a new clock signal', () => {
+    it('returns a new clock signal', () => {
       const spy = sinon.spy()
       const s = clock.interval(1000)
 
