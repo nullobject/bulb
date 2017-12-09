@@ -76,7 +76,7 @@ describe('Signal', () => {
   describe('.fromEvent', () => {
     it('returns a signal of values from an event', () => {
       const emitter = new events.EventEmitter()
-      const s = Signal.fromEvent(emitter, 'lol')
+      const s = Signal.fromEvent('lol', emitter)
 
       s.subscribe(this.next, this.error, this.complete)
 

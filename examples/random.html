@@ -63,8 +63,8 @@
           .appendChild(document.createTextNode(message + '\n'))
       }
 
-      const more = bulb.Signal.fromEvent(document.getElementById('more'), 'click').map(F.const(+1))
-      const less = bulb.Signal.fromEvent(document.getElementById('less'), 'click').map(F.const(-1))
+      const more = bulb.Signal.fromEvent('click', document.getElementById('more')).map(F.const(+1))
+      const less = bulb.Signal.fromEvent('click', document.getElementById('less')).map(F.const(-1))
 
       more
         .merge(less)

@@ -88,7 +88,7 @@ Signal.fromCallback = function (f) {
  * @param type A string representing the event type to listen for.
  * @returns A new signal.
  */
-Signal.fromEvent = function (target, type) {
+Signal.fromEvent = function (type, target) {
   return new Signal((next, error, complete) => {
     if (target.on) {
       target.on(type, next)
