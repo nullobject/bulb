@@ -84,11 +84,11 @@ Signal.fromCallback = function (f) {
  * Returns a new signal by listening for events of `type` on the `target`
  * object.
  *
- * @param target A DOM element.
  * @param type A string representing the event type to listen for.
+ * @param target A DOM element.
  * @returns A new signal.
  */
-Signal.fromEvent = function (type, target) {
+Signal.fromEvent = F.curry(function (type, target) {
   return new Signal((next, error, complete) => {
     if (target.on) {
       target.on(type, next)
@@ -96,7 +96,7 @@ Signal.fromEvent = function (type, target) {
       target.addEventListener(type, F.compose(next, F.get('detail')))
     }
   })
-}
+})
 
 /**
  * Returns a new signal from the promise `p`.
@@ -118,7 +118,7 @@ Signal.fromPromise = function (p) {
  * @param as A list.
  * @returns A new signal.
  */
-Signal.sequentially = function (n, as) {
+Signal.sequentially = F.curry(function (n, as) {
   let handle
 
   return new Signal((next, error, complete) => {
@@ -133,7 +133,7 @@ Signal.sequentially = function (n, as) {
       }
     }, n)
   })
-}
+})
 
 /**
  * Returns a new signal that delays the signal values by `n` milliseconds.
@@ -208,7 +208,7 @@ Signal.prototype.filter = function (p) {
  * @param a A starting value.
  * @returns A new signal.
  */
-Signal.prototype.fold = function (f, a) {
+Signal.prototype.fold = F.curry(function (f, a) {
   const env = this
 
   return new Signal((next, error, complete) => {
@@ -224,7 +224,7 @@ Signal.prototype.fold = function (f, a) {
       }
     )
   })
-}
+})
 
 /**
  * Returns a new signal that scans the signal values with the starting value
@@ -234,7 +234,7 @@ Signal.prototype.fold = function (f, a) {
  * @param a A starting value.
  * @returns A new signal.
  */
-Signal.prototype.scan = function (f, a) {
+Signal.prototype.scan = F.curry(function (f, a) {
   const env = this
 
   return new Signal((next, error, complete) => {
@@ -244,7 +244,7 @@ Signal.prototype.scan = function (f, a) {
       return next(a)
     }, error, complete)
   })
-}
+})
 
 /**
  * Returns a new signal that merges the signal with one or more signals.
