@@ -253,44 +253,6 @@ Signal.prototype.merge = F.variadic(function (ss) {
 })
 
 /**
- * Returns a new signal that splits the signal into one or more signals.
- *
- * @param n A number.
- * @returns An array of signals.
- */
-Signal.prototype.split = function (n) {
-  const env = this
-  const nexts = []
-  const errors = []
-  const dones = []
-  let isSubscribed = false
-
-  const signals = F
-    .range(0, n)
-    .map(() => new Signal((next, error, complete) => {
-        nexts.push(next)
-        errors.push(next)
-        dones.push(complete)
-        onSubscribe()
-      }
-    ))
-
-  return signals
-
-  function onSubscribe () {
-    if (!isSubscribed) {
-      env.subscribe(
-        a => nexts.map(F.applyRight(a)),
-        () => errors.map(F.applyRight()),
-        () => dones.map(F.applyRight())
-      )
-    }
-
-    isSubscribed = true
-  }
-}
-
-/**
  * Returns a new signal that zips the signal with one or more signals.
  *
  * @function Signal#zip

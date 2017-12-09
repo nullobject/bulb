@@ -251,39 +251,6 @@ describe('Signal', () => {
     })
   })
 
-  describe('#split', () => {
-    it('splits the signal', () => {
-      const ss = Signal.sequentially(1000, F.range(1, 3)).split(2)
-      const t = ss[0]
-      const u = ss[1]
-
-      const a = sinon.spy()
-      const b = sinon.spy()
-      const c = sinon.spy()
-      const d = sinon.spy()
-      const e = sinon.spy()
-      const f = sinon.spy()
-
-      t.subscribe(a, b, c)
-      u.subscribe(d, e, f)
-
-      this.clock.tick(1000)
-      this.clock.tick(1000)
-      this.clock.tick(1000)
-
-      F.range(1, 3).map((n, index) => {
-        let call = a.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
-
-        call = d.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
-      }, this)
-
-      assert.isTrue(c.calledAfter(a))
-      assert.isTrue(f.calledAfter(d))
-    })
-  })
-
   describe('#zip', () => {
     it('zips the signals', () => {
       const s = Signal.sequentially(1000, F.range(1, 3))
