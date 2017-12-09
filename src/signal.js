@@ -204,11 +204,11 @@ Signal.prototype.filter = function (p) {
  * Returns a new signal that reduces the signal values with the starting value
  * `a` and binary function `f`.
  *
- * @param a A starting value.
  * @param f A binary function.
+ * @param a A starting value.
  * @returns A new signal.
  */
-Signal.prototype.fold = function (a, f) {
+Signal.prototype.fold = function (f, a) {
   const env = this
 
   return new Signal((next, error, complete) => {

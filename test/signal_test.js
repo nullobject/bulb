@@ -206,7 +206,7 @@ describe('Signal', () => {
     it('folds a function over the signal values', () => {
       const s = Signal.fromArray(F.range(1, 3))
 
-      s.fold(0, F.add).subscribe(this.next, this.error, this.complete)
+      s.fold(F.add, 0).subscribe(this.next, this.error, this.complete)
 
       assert.isTrue(this.next.calledWithExactly(6))
       assert.isTrue(this.complete.calledAfter(this.next))
