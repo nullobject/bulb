@@ -217,7 +217,7 @@ describe('Signal', () => {
     it('scans a function over the signal values', () => {
       const s = Signal.fromArray(F.range(1, 3))
 
-      s.scan(0, F.add).subscribe(this.next, this.error, this.complete);
+      s.scan(F.add, 0).subscribe(this.next, this.error, this.complete);
 
       [0, 1, 3, 6].map((n, index) => {
         const call = this.next.getCall(index)

@@ -230,11 +230,11 @@ Signal.prototype.fold = function (a, f) {
  * Returns a new signal that scans the signal values with the starting value
  * `a` and binary function `f`.
  *
- * @param a A starting value.
  * @param f A binary function.
+ * @param a A starting value.
  * @returns A new signal.
  */
-Signal.prototype.scan = function (a, f) {
+Signal.prototype.scan = function (f, a) {
   const env = this
 
   return new Signal((next, error, complete) => {

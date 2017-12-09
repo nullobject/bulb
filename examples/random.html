@@ -32,7 +32,7 @@
     </div>
 
     <script>
-      var URL = 'https://www.random.org/strings/?num=@&len=8&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new'
+      const URL = 'https://www.random.org/strings/?num=@&len=8&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new'
 
       function splitOnNewline(x) {
         return x.trim().split(/\n/)
@@ -63,12 +63,12 @@
           .appendChild(document.createTextNode(message + '\n'))
       }
 
-      var more = bulb.Signal.fromEvent(document.getElementById('more'), 'click').map(F.const(+1))
-      var less = bulb.Signal.fromEvent(document.getElementById('less'), 'click').map(F.const(-1))
+      const more = bulb.Signal.fromEvent(document.getElementById('more'), 'click').map(F.const(+1))
+      const less = bulb.Signal.fromEvent(document.getElementById('less'), 'click').map(F.const(-1))
 
       more
         .merge(less)
-        .scan(1, function(a, b) { return Math.max(1, a + b) })
+        .scan(function(a, b) { return Math.max(1, a + b) }, 1)
         .concatMap(randomNumbers)
         .subscribe(showValue, showError)
     </script>
