@@ -7,12 +7,18 @@
     <script src="../dist/bulb.js"></script>
   </head>
   <body>
-    <script>
-      var s = bulb.clock.interval(500).map(Math.random)
-      var t = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random))
-      var u = s.zip(t).map(F.sum)
+    <pre><code id="results"></code></pre>
 
-      u.subscribe(console.log.bind(console))
+    <script>
+      const s = bulb.clock.interval(500).map(Math.random)
+      const t = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random))
+      const u = s.zip(t).map(F.sum)
+
+      function showValue(value) {
+        document.getElementById('results').textContent = value
+      }
+
+      u.subscribe(showValue)
     </script>
   </body>
 </html>
