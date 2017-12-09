@@ -3,11 +3,13 @@ status  := $(shell git status --porcelain)
 version := $(shell git describe --tags)
 regex   := "s/\([\"\']version[\"\'][[:space:]]*:[[:space:]]*\)\([\"\'].*[\"\']\)/\1\"$(version)\"/g"
 
-.PHONY: bump changelog clean doc lint publish publish-api publish-npm production release test unit
+.PHONY: bump changelog clean dev doc lint publish publish-api publish-npm production release test unit
 
-# Builds a production version of libarary.
+dev: node_modules
+	@node_modules/.bin/rollup -c --watch
+
 production: node_modules
-	./node_modules/.bin/rollup -c
+	./node_modules/.bin/rollup -c --environment BUILD:production
 
 test: lint unit
 
@@ -24,15 +26,15 @@ node_modules:
 	@npm install
 
 # Runs the unit tests.
-unit:
+unit: node_modules
 	@node_modules/.bin/mocha
 
 # Runs jslint.
-lint:
+lint: node_modules
 	@node_modules/.bin/standard "src/**/*.js" "test/**/*.js"
 
 # Generates the API documentation.
-doc:
+doc: node_modules
 	@node_modules/.bin/jsdoc -c jsdoc.config.json src README.md
 
 # Bumps the version of the bower and npm packages.
