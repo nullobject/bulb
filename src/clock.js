@@ -15,9 +15,5 @@ module.exports = {
    * @param n The number of milliseconds between each clock tick.
    * @returns A new signal.
    */
-  interval: function (n) {
-    return new Signal(function (next) {
-      setInterval(function (e) { next(n) }, n)
-    })
-  }
+  interval: n => new Signal(next => setInterval(e => next(n), n))
 }

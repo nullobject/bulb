@@ -14,11 +14,9 @@ module.exports = {
    * @param target The event target that the signal listens on.
    * @returns A new signal.
    */
-  position: function (target) {
-    return new Signal(function (next) {
-      target.addEventListener('mousemove', function (e) { next([e.clientX, e.clientY]) })
-    })
-  },
+  position: target => new Signal(next => {
+    target.addEventListener('mousemove', e => next([e.clientX, e.clientY]))
+  }),
 
   /**
    * Returns a new signal that generates an event when a mouse button is
@@ -28,10 +26,8 @@ module.exports = {
    * @param target The event target that the signal listens on.
    * @returns A new signal.
    */
-  button: function (target) {
-    return new Signal(function (next) {
-      target.addEventListener('mousedown', function (e) { next(true) })
-      target.addEventListener('mouseup', function (e) { next(false) })
-    })
-  }
+  button: target => new Signal(next => {
+    target.addEventListener('mousedown', e => next(true))
+    target.addEventListener('mouseup', e => next(false))
+  })
 }

@@ -2,17 +2,17 @@ const assert = require('chai').assert
 const clock = require('../src/clock')
 const sinon = require('sinon')
 
-describe('clock', function () {
-  beforeEach(function () {
+describe('clock', () => {
+  beforeEach(() => {
     this.clock = sinon.useFakeTimers()
   })
 
-  afterEach(function () {
+  afterEach(() => {
     this.clock.restore()
   })
 
-  describe('.interval', function () {
-    it('should return a new clock signal', function () {
+  describe('.interval', () => {
+    it('should return a new clock signal', () => {
       const spy = sinon.spy()
       const s = clock.interval(1000)
 

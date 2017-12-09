@@ -3,9 +3,9 @@ const event = require('./support/event')
 const mouse = require('../src/mouse')
 const sinon = require('sinon')
 
-describe('mouse', function () {
-  describe('.position', function () {
-    it('should return a new mouse position signal', function () {
+describe('mouse', () => {
+  describe('.position', () => {
+    it('should return a new mouse position signal', () => {
       const spy = sinon.spy()
       const emitter = event.emitter()
       const s = mouse.position(emitter)
@@ -17,8 +17,8 @@ describe('mouse', function () {
     })
   })
 
-  describe('.button', function () {
-    it('should return a new mouse button signal', function () {
+  describe('.button', () => {
+    it('should return a new mouse button signal', () => {
       const spy = sinon.spy()
       const emitter = event.emitter()
       const s = mouse.button(emitter)

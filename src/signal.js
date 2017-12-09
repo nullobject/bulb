@@ -31,7 +31,7 @@ Signal.prototype.constructor = Signal
  * @returns A new signal.
  */
 Signal.empty = function () {
-  return new Signal(function (next, error, done) {
+  return new Signal((next, error, done) => {
     if (done) { done() }
   })
 }
@@ -43,7 +43,7 @@ Signal.empty = function () {
  * @returns A new signal.
  */
 Signal.of = function (a) {
-  return new Signal(function (next, error, done) {
+  return new Signal((next, error, done) => {
     if (a) { next(a) }
     done()
   })
@@ -56,7 +56,7 @@ Signal.of = function (a) {
  * @returns A new signal.
  */
 Signal.fromArray = function (as) {
-  return new Signal(function (next, error, done) {
+  return new Signal((next, error, done) => {
     as.map(F.apply(next))
     if (done) { done() }
   })
@@ -69,8 +69,8 @@ Signal.fromArray = function (as) {
  * @returns A new signal.
  */
 Signal.fromCallback = function (f) {
-  return new Signal(function (next, error, done) {
-    f(function (message, value) {
+  return new Signal((next, error, done) => {
+    f((message, value) => {
       if (typeof message !== 'undefined' && message !== null) {
         error(message)
       } else {
@@ -89,7 +89,7 @@ Signal.fromCallback = function (f) {
  * @returns A new signal.
  */
 Signal.fromEvent = function (target, type) {
-  return new Signal(function (next, error, done) {
+  return new Signal((next, error, done) => {
     if (target.on) {
       target.on(type, next)
     } else if (target.addEventListener) {
@@ -105,7 +105,7 @@ Signal.fromEvent = function (target, type) {
  * @returns A new signal.
  */
 Signal.fromPromise = function (p) {
-  return new Signal(function (next, error, done) {
+  return new Signal((next, error, done) => {
     p.then(next, error)
   })
 }
@@ -121,8 +121,8 @@ Signal.fromPromise = function (p) {
 Signal.sequentially = function (n, as) {
   let handle
 
-  return new Signal(function (next, error, done) {
-    handle = setInterval(function () {
+  return new Signal((next, error, done) => {
+    handle = setInterval(() => {
       next(F.head(as))
 
       as = F.tail(as)
@@ -145,11 +145,11 @@ Signal.prototype.delay = function (n) {
   const env = this
 
   return F.copy(this, {
-    subscribe: function (next, error, done) {
+    subscribe: (next, error, done) => {
       env.subscribe(
-        function (a) { setTimeout(function () { next(a) }, n) },
+        a => setTimeout(() => next(a), n),
         error,
-        function () { setTimeout(function () { done() }, n) }
+        () => setTimeout(() => done(), n)
       )
     }
   })
@@ -165,9 +165,9 @@ Signal.prototype.concatMap = function (f) {
   const env = this
 
   return F.copy(this, {
-    subscribe: function (next, error, done) {
-      env.subscribe(function (a) {
-        f(a).subscribe(next, error, function () {})
+    subscribe: (next, error, done) => {
+      env.subscribe(a => {
+        f(a).subscribe(next, error, () => {})
       }, error, done)
     }
   })
@@ -183,7 +183,7 @@ Signal.prototype.map = function (f) {
   const env = this
 
   return F.copy(this, {
-    subscribe: function (next, error, done) {
+    subscribe: (next, error, done) => {
       env.subscribe(F.compose(next, f), error, done)
     }
   })
@@ -200,8 +200,8 @@ Signal.prototype.filter = function (p) {
   const env = this
 
   return F.copy(this, {
-    subscribe: function (next, error, done) {
-      env.subscribe(function (a) {
+    subscribe: (next, error, done) => {
+      env.subscribe(a => {
         if (p(a)) { next(a) }
       }, error, done)
     }
@@ -220,14 +220,14 @@ Signal.prototype.fold = function (a, f) {
   const env = this
 
   return F.copy(this, {
-    subscribe: function (next, error, done) {
+    subscribe: (next, error, done) => {
       env.subscribe(
-        function (b) {
+        b => {
           a = f(a, b)
           return a
         },
         error,
-        function () {
+        () => {
           next(a)
           return done()
         }
@@ -248,9 +248,9 @@ Signal.prototype.scan = function (a, f) {
   const env = this
 
   return F.copy(this, {
-    subscribe: function (next, error, done) {
+    subscribe: (next, error, done) => {
       next(a)
-      env.subscribe(function (b) {
+      env.subscribe(b => {
         a = f(a, b)
         return next(a)
       }, error, done)
@@ -269,15 +269,13 @@ Signal.prototype.merge = F.variadic(function (ss) {
   const env = this
 
   return F.copy(this, {
-    subscribe: function (next, error, done) {
+    subscribe: (next, error, done) => {
       let count = 0
-      const onDone = function () {
+      const onDone = () => {
         if (++count > ss.length) { done() }
-      };
+      }
 
-      [env].concat(ss).map(function (s) {
-        s.subscribe(next, error, onDone)
-      })
+      [env].concat(ss).map(s => s.subscribe(next, error, onDone))
     }
   })
 })
@@ -297,25 +295,23 @@ Signal.prototype.split = function (n) {
 
   const signals = F
     .range(0, n)
-    .map(function () {
-      return F.copy(env, {
-        subscribe: function (next, error, done) {
-          nexts.push(next)
-          errors.push(next)
-          dones.push(done)
-          onSubscribe()
-        }
-      })
-    })
+    .map(() => F.copy(env, {
+      subscribe: (next, error, done) => {
+        nexts.push(next)
+        errors.push(next)
+        dones.push(done)
+        onSubscribe()
+      }
+    }))
 
   return signals
 
   function onSubscribe () {
     if (!isSubscribed) {
       env.subscribe(
-        function (a) { nexts.map(F.applyRight(a)) },
-        function () { errors.map(F.applyRight()) },
-        function () { dones.map(F.applyRight()) }
+        a => nexts.map(F.applyRight(a)),
+        () => errors.map(F.applyRight()),
+        () => dones.map(F.applyRight())
       )
     }
 
@@ -334,11 +330,11 @@ Signal.prototype.zip = F.variadic(function (ss) {
   const env = this
 
   return F.copy(this, {
-    subscribe: function (next, error, done) {
+    subscribe: (next, error, done) => {
       let as = null
       let count = 0
 
-      const onNext = function (a, index) {
+      const onNext = (a, index) => {
         if (!as) { as = F.array(ss.length) }
 
         as[index] = a
@@ -349,13 +345,11 @@ Signal.prototype.zip = F.variadic(function (ss) {
         }
       }
 
-      const onDone = function () {
+      const onDone = () => {
         if (++count > ss.length) { done() }
-      };
+      }
 
-      [env].concat(ss).map(function (s, index) {
-        s.subscribe(function (a) { onNext(a, index) }, error, onDone)
-      })
+      [env].concat(ss).map((s, index) => s.subscribe(a => onNext(a, index), error, onDone))
     }
   })
 })
