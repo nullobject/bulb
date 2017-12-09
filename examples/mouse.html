@@ -7,12 +7,18 @@
     <script src="../dist/bulb.js"></script>
   </head>
   <body>
-    <script>
-      var s = bulb.mouse.position(document)
-      var t = bulb.mouse.button(document)
-      var u = s.merge(t)
+    <h1 id="results">Move your mouse!</h1>
 
-      u.subscribe(console.log.bind(console))
+    <script>
+      const s = bulb.mouse.position(document)
+      const t = bulb.mouse.button(document)
+      const u = s.merge(t)
+
+      function showValue(value) {
+        document.getElementById('results').textContent = value
+      }
+
+      u.subscribe(showValue)
     </script>
   </body>
 </html>
