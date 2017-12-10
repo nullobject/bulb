@@ -1,29 +1,87 @@
 const F = require('fkit')
+const Subscription = require('./subscription')
 
 /**
- * Returns a new signal with the `subscribe` function.
+ * Creates a new signal.
  *
- * The `subscribe` function is called by an observer who wishes to subscribe to
- * the signal values.
+ * The `mount` function is called when an observer subscribes to the signal.
+ * The `mount` function can optionally return another function, which is called
+ * when the signal is unmounted.
  *
  * @class
- * @summary The Signal class represents a value which changes over time.
- * @param subscribe A subscribe function.
- * @author Josh Bassett
+ * @summary The `Signal` class represents a value which changes over time.
+ * @param mount A mount function.
  */
-function Signal (subscribe) {
-  /**
-   * Subscribes to the signal with the callbacks `next`, `error`, and `complete`.
-   *
-   * @param next A callback function.
-   * @param error A callback function.
-   * @param complete A callback function.
-   * @function Signal#subscribe
-   */
-  this.subscribe = subscribe
+function Signal (mount) {
+  if (typeof mount !== 'function') {
+    throw new TypeError('Signal mount must be a function')
+  }
+
+  this._mount = mount
+  this._unmount = undefined
+  this._subscriptions = new Set()
 }
 
 Signal.prototype.constructor = Signal
+
+/**
+ * Subscribes to the signal with the callback functions `next`, `error`, and
+ * `complete`.
+ *
+ * @function Signal#subscribe
+ * @param next A callback function.
+ * @param error A callback function.
+ * @param complete A callback function.
+ * @returns A subscription object.
+ */
+Signal.prototype.subscribe = function (observer, ...args) {
+  if (typeof observer === 'function') {
+    observer = { next: observer, error: args[0], complete: args[1] }
+  } else if (typeof observer !== 'object') {
+    observer = {}
+  }
+
+  const nextHandler = value => {
+    for (let s of this._subscriptions) {
+      s.observer.next(value)
+    }
+  }
+
+  const errorHandler = value => {
+    for (let s of this._subscriptions) {
+      s.observer.error(value)
+    }
+  }
+
+  const completeHandler = () => {
+    for (let s of this._subscriptions) {
+      s.observer.complete()
+    }
+  }
+
+  // Create a new subscription to the signal.
+  const subscription = new Subscription(observer, () => {
+    // Remove the subscription.
+    this._subscriptions.delete(subscription)
+
+    // Call the unmount function if we're removing the last subscription.
+    if (this._subscriptions.size === 0 && typeof this._unmount === 'function') {
+      this._unmount()
+    }
+  })
+
+  // Add the subscription.
+  this._subscriptions.add(subscription)
+
+  // Call the mount function if we added the first subscription.
+  if (this._subscriptions.size === 1) {
+    // The `mount` function optionally returns another function. We can call
+    // this function when we need to unmount the signal.
+    this._unmount = this._mount(nextHandler, errorHandler, completeHandler)
+  }
+
+  return subscription
+}
 
 /**
  * Returns a new signal that contains no values.
@@ -90,10 +148,18 @@ Signal.fromCallback = function (f) {
  */
 Signal.fromEvent = F.curry(function (type, target) {
   return new Signal((next, error, complete) => {
+    const handler = F.compose(next, F.get('detail'))
+
     if (target.on) {
       target.on(type, next)
     } else if (target.addEventListener) {
-      target.addEventListener(type, F.compose(next, F.get('detail')))
+      console.log('Calling mount function...')
+      target.addEventListener(type, handler, true)
+    }
+
+    return () => {
+      console.log('Calling unmount function...')
+      target.removeEventListener('type', handler, true)
     }
   })
 })
@@ -132,6 +198,8 @@ Signal.sequentially = F.curry(function (n, as) {
         complete()
       }
     }, n)
+
+    return () => clearInterval(id)
   })
 })
 
@@ -142,13 +210,13 @@ Signal.sequentially = F.curry(function (n, as) {
  * @returns A new signal.
  */
 Signal.prototype.delay = function (n) {
-  return new Signal((next, error, complete) => {
+  return new Signal((next, error, complete) =>
     this.subscribe(
       a => setTimeout(() => next(a), n),
       error,
       () => setTimeout(() => complete(), n)
     )
-  })
+  )
 }
 
 /**
@@ -158,11 +226,11 @@ Signal.prototype.delay = function (n) {
  * @returns A new signal.
  */
 Signal.prototype.concatMap = function (f) {
-  return new Signal((next, error, complete) => {
+  return new Signal((next, error, complete) =>
     this.subscribe(a => {
       f(a).subscribe(next, error, () => {})
     }, error, complete)
-  })
+  )
 }
 
 /**
@@ -172,9 +240,9 @@ Signal.prototype.concatMap = function (f) {
  * @returns A new signal.
  */
 Signal.prototype.map = function (f) {
-  return new Signal((next, error, complete) => {
+  return new Signal((next, error, complete) =>
     this.subscribe(F.compose(next, f), error, complete)
-  })
+  )
 }
 
 /**
@@ -185,23 +253,24 @@ Signal.prototype.map = function (f) {
  * @returns A new signal.
  */
 Signal.prototype.filter = function (p) {
-  return new Signal((next, error, complete) => {
+  return new Signal((next, error, complete) =>
     this.subscribe(a => {
       if (p(a)) { next(a) }
     }, error, complete)
-  })
+  )
 }
 
 /**
- * Returns a new signal that reduces the signal values with the starting value
- * `a` and binary function `f`.
+ * Returns a new signal that folds the signal values with the starting value
+ * `a` and binary function `f`. The final value is emitted when the signal
+ * completes.
  *
  * @param f A binary function.
  * @param a A starting value.
  * @returns A new signal.
  */
 Signal.prototype.fold = F.curry(function (f, a) {
-  return new Signal((next, error, complete) => {
+  return new Signal((next, error, complete) =>
     this.subscribe(
       b => {
         a = f(a, b)
@@ -213,7 +282,7 @@ Signal.prototype.fold = F.curry(function (f, a) {
         return complete()
       }
     )
-  })
+  )
 })
 
 /**
@@ -226,8 +295,10 @@ Signal.prototype.fold = F.curry(function (f, a) {
  */
 Signal.prototype.scan = F.curry(function (f, a) {
   return new Signal((next, error, complete) => {
+    // Emit the starting value.
     next(a)
-    this.subscribe(b => {
+
+    return this.subscribe(b => {
       a = f(a, b)
       return next(a)
     }, error, complete)
@@ -244,6 +315,7 @@ Signal.prototype.scan = F.curry(function (f, a) {
 Signal.prototype.merge = F.variadic(function (ss) {
   return new Signal((next, error, complete) => {
     let count = 0
+
     const onComplete = () => {
       if (++count > ss.length) { complete() }
     };

@@ -15,7 +15,9 @@ module.exports = {
    * @returns A new signal.
    */
   position: target => new Signal(next => {
-    target.addEventListener('mousemove', e => next([e.clientX, e.clientY]))
+    const moveHandler = e => next([e.clientX, e.clientY])
+    target.addEventListener('mousemove', moveHandler, true)
+    return () => target.removeEventListener('mousemove', moveHandler, true)
   }),
 
   /**
@@ -27,7 +29,15 @@ module.exports = {
    * @returns A new signal.
    */
   button: target => new Signal(next => {
-    target.addEventListener('mousedown', e => next(true))
-    target.addEventListener('mouseup', e => next(false))
+    const downHandler = e => next(true)
+    const upHandler = e => next(false)
+
+    target.addEventListener('mousedown', downHandler, true)
+    target.addEventListener('mouseup', upHandler, true)
+
+    return () => {
+      target.removeEventListener('mousedown', downHandler, true)
+      target.removeEventListener('mouseup', upHandler, true)
+    }
   })
 }

@@ -130,15 +130,43 @@ describe('Signal', () => {
   })
 
   describe('#subscribe', () => {
-    it('binds to the signal events with a callback', () => {
-      const spy = sinon.spy()
-      const s = new Signal(spy)
+    it('calls the mount function when the first observer subscribes', () => {
+      const mount = sinon.spy()
+      const s = new Signal(mount)
+
+      s.subscribe(F.const())
+      assert.isTrue(mount.called)
+
+      s.subscribe(F.const())
+      assert.isTrue(mount.calledOnce)
+    })
+
+    it('calls the unmount function when the last observer unsubscribes', () => {
+      const unmount = sinon.spy()
+      const s = new Signal(() => unmount)
+
+      const a = s.subscribe(F.const())
+      const b = s.subscribe(F.const())
+
+      a.unsubscribe()
+      assert.isFalse(unmount.called)
+
+      b.unsubscribe()
+      assert.isTrue(unmount.calledOnce)
+    })
+
+    it('calls the next callback when the mounted function emits a value', () => {
+      const mount = sinon.stub().callsFake(next => next())
+      const s = new Signal(mount)
 
       s.subscribe(this.next, this.error, this.complete)
 
-      assert.isTrue(spy.calledOnce)
-      assert.isTrue(spy.calledWithExactly(this.next, this.error, this.complete))
+      assert.isTrue(this.next.called)
+      assert.isFalse(this.error.called)
+      assert.isFalse(this.complete.called)
     })
+
+    it('completes the observers when the mounted function is complete')
   })
 
   describe('#delay', () => {
