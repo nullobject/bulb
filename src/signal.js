@@ -41,7 +41,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
     observer = {}
   }
 
-  const nextHandler = value => {
+  const onNext = value => {
     for (let s of this._subscriptions) {
       if (typeof s.observer.next === 'function') {
         s.observer.next(value)
@@ -49,7 +49,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
     }
   }
 
-  const errorHandler = value => {
+  const onError = value => {
     for (let s of this._subscriptions) {
       if (typeof s.observer.error === 'function') {
         s.observer.error(value)
@@ -57,7 +57,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
     }
   }
 
-  const completeHandler = () => {
+  const onComplete = () => {
     for (let s of this._subscriptions) {
       if (typeof s.observer.complete === 'function') {
         s.observer.complete()
@@ -83,7 +83,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
   if (this._subscriptions.size === 1) {
     // The `mount` function optionally returns another function. We can call
     // this function when we need to unmount the signal.
-    this._unmount = this._mount(nextHandler, errorHandler, completeHandler)
+    this._unmount = this._mount(onNext, onError, onComplete)
   }
 
   return subscription
@@ -133,12 +133,12 @@ Signal.fromArray = function (as) {
  * @returns A new signal.
  */
 Signal.fromCallback = function (f) {
-  return new Signal((next, error, complete) => {
-    f((message, value) => {
-      if (typeof message !== 'undefined' && message !== null) {
-        error(message)
+  return new Signal((next, error) => {
+    f((e, a) => {
+      if (typeof e !== 'undefined' && e !== null) {
+        error(e)
       } else {
-        next(value)
+        next(a)
       }
     })
   })
@@ -148,12 +148,14 @@ Signal.fromCallback = function (f) {
  * Returns a new signal by listening for events of `type` on the `target`
  * object.
  *
+ * @curried
+ * @function Signal.fromEvent
  * @param type A string representing the event type to listen for.
  * @param target A DOM element.
  * @returns A new signal.
  */
 Signal.fromEvent = F.curry(function (type, target) {
-  return new Signal((next, error, complete) => {
+  return new Signal(next => {
     const handler = F.compose(next, F.get('detail'))
 
     if (target.on) {
@@ -184,6 +186,8 @@ Signal.fromPromise = function (p) {
  * Returns a new signal that emits a value from the array of `as` every `n`
  * milliseconds.
  *
+ * @curried
+ * @function Signal.sequentially
  * @param n The number of milliseconds between each clock tick.
  * @param as A list.
  * @returns A new signal.
@@ -232,7 +236,7 @@ Signal.prototype.delay = function (n) {
 Signal.prototype.concatMap = function (f) {
   return new Signal((next, error, complete) =>
     this.subscribe(a => {
-      f(a).subscribe(next, error, () => {})
+      f(a).subscribe(next, error)
     }, error, complete)
   )
 }
@@ -269,6 +273,8 @@ Signal.prototype.filter = function (p) {
  * `a` and binary function `f`. The final value is emitted when the signal
  * completes.
  *
+ * @curried
+ * @function Signal#fold
  * @param f A binary function.
  * @param a A starting value.
  * @returns A new signal.
@@ -293,6 +299,8 @@ Signal.prototype.fold = F.curry(function (f, a) {
  * Returns a new signal that scans the signal values with the starting value
  * `a` and binary function `f`.
  *
+ * @curried
+ * @function Signal#scan
  * @param f A binary function.
  * @param a A starting value.
  * @returns A new signal.
