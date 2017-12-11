@@ -153,12 +153,10 @@ Signal.fromEvent = F.curry(function (type, target) {
     if (target.on) {
       target.on(type, next)
     } else if (target.addEventListener) {
-      console.log('Calling mount function...')
       target.addEventListener(type, handler, true)
     }
 
     return () => {
-      console.log('Calling unmount function...')
       target.removeEventListener('type', handler, true)
     }
   })
