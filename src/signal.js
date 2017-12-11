@@ -43,19 +43,25 @@ Signal.prototype.subscribe = function (observer, ...args) {
 
   const nextHandler = value => {
     for (let s of this._subscriptions) {
-      s.observer.next(value)
+      if (typeof s.observer.next === 'function') {
+        s.observer.next(value)
+      }
     }
   }
 
   const errorHandler = value => {
     for (let s of this._subscriptions) {
-      s.observer.error(value)
+      if (typeof s.observer.error === 'function') {
+        s.observer.error(value)
+      }
     }
   }
 
   const completeHandler = () => {
     for (let s of this._subscriptions) {
-      s.observer.complete()
+      if (typeof s.observer.complete === 'function') {
+        s.observer.complete()
+      }
     }
   }
 
@@ -90,7 +96,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
  */
 Signal.empty = function () {
   return new Signal((next, error, complete) => {
-    if (complete) { complete() }
+    if (typeof complete === 'function') { complete() }
   })
 }
 
@@ -102,7 +108,7 @@ Signal.empty = function () {
  */
 Signal.of = function (a) {
   return new Signal((next, error, complete) => {
-    if (a) { next(a) }
+    if (typeof complete === 'function') { next(a) }
     complete()
   })
 }
@@ -116,7 +122,7 @@ Signal.of = function (a) {
 Signal.fromArray = function (as) {
   return new Signal((next, error, complete) => {
     as.map(F.apply(next))
-    if (complete) { complete() }
+    if (typeof complete === 'function') { complete() }
   })
 }
 
