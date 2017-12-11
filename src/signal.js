@@ -337,33 +337,45 @@ Signal.prototype.merge = F.variadic(function (ss) {
 })
 
 /**
- * Returns a new signal that zips the signal with one or more signals.
+ * Returns a new signal that zips the signal with another signal.
  *
- * @function Signal#zip
- * @param ss A list of signals.
+ * @param s A signal.
  * @returns A new signal.
  */
-Signal.prototype.zip = F.variadic(function (ss) {
+Signal.prototype.zip = function (s) {
+  return this.zipWith(F.pair, s)
+}
+
+/**
+ * Generalises the `zip` method by zipping the signals using a binary function.
+ *
+ * @curried
+ * @function Signal#zipWith
+ * @param f A binary function.
+ * @param s A signal.
+ * @returns A new signal.
+ */
+Signal.prototype.zipWith = F.curry(function (f, s) {
   return new Signal((next, error, complete) => {
     let as = null
     let count = 0
 
     const onNext = (a, index) => {
-      if (!as) { as = F.array(ss.length) }
+      if (!as) { as = [] }
 
       as[index] = a
 
-      if (as.length > ss.length) {
-        next(as)
+      if (as.length >= 2) {
+        next(f(as[0], as[1]))
         as = null
       }
     }
 
     const onComplete = () => {
-      if (++count > ss.length) { complete() }
+      if (++count >= 2) { complete() }
     };
 
-    [this].concat(ss).map((s, index) => s.subscribe(a => onNext(a, index), error, onComplete))
+    [this, s].map((s, index) => s.subscribe(a => onNext(a, index), error, onComplete))
   })
 })
 

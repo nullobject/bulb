@@ -184,6 +184,8 @@ describe('Signal', () => {
 
       s.delay(1000).subscribe(this.next, this.error, this.complete)
 
+      assert.isFalse(this.next.called)
+
       this.clock.tick(1000)
 
       F.range(1, 3).map((n, index) => {
@@ -292,9 +294,8 @@ describe('Signal', () => {
     it('zips the signals', () => {
       const s = Signal.sequentially(1000, F.range(1, 3))
       const t = Signal.sequentially(1000, F.range(4, 3))
-      const u = Signal.sequentially(1000, F.range(7, 3))
 
-      s.zip(t, u).subscribe(this.next, this.error, this.complete)
+      s.zip(t).subscribe(this.next, this.error, this.complete)
 
       this.clock.tick(1000)
       this.clock.tick(1000)
@@ -302,7 +303,29 @@ describe('Signal', () => {
 
       assert.strictEqual(this.next.callCount, 3);
 
-      [[1, 4, 7], [2, 5, 8], [3, 6, 9]].map((ns, index) => {
+      [[1, 4], [2, 5], [3, 6]].map((ns, index) => {
+        const call = this.next.getCall(index)
+        assert.isTrue(call.calledWithExactly(ns))
+      }, this)
+
+      assert.isTrue(this.complete.calledAfter(this.next))
+    })
+  })
+
+  describe('#zipWith', () => {
+    it('zips the signals', () => {
+      const s = Signal.sequentially(1000, F.range(1, 3))
+      const t = Signal.sequentially(1000, F.range(4, 3))
+
+      s.zipWith(F.add, t).subscribe(this.next, this.error, this.complete)
+
+      this.clock.tick(1000)
+      this.clock.tick(1000)
+      this.clock.tick(1000)
+
+      assert.strictEqual(this.next.callCount, 3);
+
+      [5, 7, 9].map((ns, index) => {
         const call = this.next.getCall(index)
         assert.isTrue(call.calledWithExactly(ns))
       }, this)
