@@ -17,7 +17,7 @@ describe('Signal', () => {
   })
 
   describe('.empty', () => {
-    it('returns a signal with no values', () => {
+    it('returns a signal that has already completed', () => {
       const s = Signal.empty()
 
       s.subscribe(this.next, this.error, this.complete)
@@ -25,6 +25,18 @@ describe('Signal', () => {
       assert.isFalse(this.next.called)
       assert.isFalse(this.error.called)
       assert.isTrue(this.complete.called)
+    })
+  })
+
+  describe('.never', () => {
+    it('returns a signal that never completes', () => {
+      const s = Signal.never()
+
+      s.subscribe(this.next, this.error, this.complete)
+
+      assert.isFalse(this.next.called)
+      assert.isFalse(this.error.called)
+      assert.isFalse(this.complete.called)
     })
   })
 

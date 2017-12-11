@@ -90,7 +90,10 @@ Signal.prototype.subscribe = function (observer, ...args) {
 }
 
 /**
- * Returns a new signal that contains no values.
+ * Returns a signal that has already completed and never emits any values.
+ *
+ * It is not very useful on its own, but it can be used with other combinators
+ * (e.g. `fold`, `scan`, etc).
  *
  * @returns A new signal.
  */
@@ -98,6 +101,18 @@ Signal.empty = function () {
   return new Signal((next, error, complete) => {
     if (typeof complete === 'function') { complete() }
   })
+}
+
+/**
+ * Returns a signal that never completes or emits any values.
+ *
+ * It is not very useful on its own, but it can be used with other combinators
+ * (e.g. `fold`, `scan`, etc).
+ *
+ * @returns A new signal.
+ */
+Signal.never = function () {
+  return new Signal(F.const)
 }
 
 /**
