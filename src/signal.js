@@ -90,7 +90,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
 }
 
 /**
- * Returns a signal that has already completed and never emits any values.
+ * Returns a signal that never emits any values and has already completed.
  *
  * It is not very useful on its own, but it can be used with other combinators
  * (e.g. `fold`, `scan`, etc).
@@ -104,7 +104,7 @@ Signal.empty = function () {
 }
 
 /**
- * Returns a signal that never completes or emits any values.
+ * Returns a signal that never emits any values or completes.
  *
  * It is not very useful on its own, but it can be used with other combinators
  * (e.g. `fold`, `scan`, etc).
@@ -116,7 +116,8 @@ Signal.never = function () {
 }
 
 /**
- * Returns a new signal that contains a single value `a`.
+ * Returns a signal that emits a single value `a`. It completes after it has
+ * emitted the value.
  *
  * @param a A value.
  * @returns A new signal.
@@ -129,7 +130,8 @@ Signal.of = function (a) {
 }
 
 /**
- * Returns a new signal that emits values from the array of `as`.
+ * Returns a signal that emits values from the array of `as`. It completes
+ * after it has emitted the last value in the array.
  *
  * @param as An array of values.
  * @returns A new signal.
@@ -142,7 +144,7 @@ Signal.fromArray = function (as) {
 }
 
 /**
- * Returns a new signal from the callback function `f`.
+ * Returns a signal that emits the result of the callback function `f`.
  *
  * @param f A callback function.
  * @returns A new signal.
@@ -160,8 +162,8 @@ Signal.fromCallback = function (f) {
 }
 
 /**
- * Returns a new signal by listening for events of `type` on the `target`
- * object.
+ * Returns a signal that emits events of `type` from the
+ * `EventListener`-compatible `target` object (e.g. a DOM element).
  *
  * @curried
  * @function Signal.fromEvent
@@ -186,7 +188,8 @@ Signal.fromEvent = F.curry(function (type, target) {
 })
 
 /**
- * Returns a new signal from the promise `p`.
+ * Returns a signal that emits the result of the promise `p`. It completes
+ * after the promise has resolved.
  *
  * @param p A Promises/A+ conformant promise.
  * @returns A new signal.
@@ -198,7 +201,7 @@ Signal.fromPromise = function (p) {
 }
 
 /**
- * Returns a new signal that emits a value from the array of `as` every `n`
+ * Returns a signal that emits a value from the array of `as` every `n`
  * milliseconds.
  *
  * @curried
@@ -227,7 +230,7 @@ Signal.sequentially = F.curry(function (n, as) {
 })
 
 /**
- * Returns a new signal that delays the signal values by `n` milliseconds.
+ * Returns a signal that delays the signal values by `n` milliseconds.
  *
  * @param n The number of milliseconds between each clock tick.
  * @returns A new signal.
@@ -243,9 +246,10 @@ Signal.prototype.delay = function (n) {
 }
 
 /**
- * Returns a new signal that applies the function `f` to the signal values.
+ * Returns a signal that applies the function `f` to the signal values. The
+ * function `f` must also return a `Signal`.
  *
- * @param f A unary function that returns a signal.
+ * @param f A unary function that returns a new signal.
  * @returns A new signal.
  */
 Signal.prototype.concatMap = function (f) {
@@ -257,9 +261,9 @@ Signal.prototype.concatMap = function (f) {
 }
 
 /**
- * Returns a new signal that applies the function `f` to the signal values.
+ * Returns a signal that applies the function `f` to the signal values.
  *
- * @param f A unary function that returns a signal value.
+ * @param f A unary function that returns a new signal value.
  * @returns A new signal.
  */
 Signal.prototype.map = function (f) {
@@ -269,10 +273,10 @@ Signal.prototype.map = function (f) {
 }
 
 /**
- * Returns a new signal that filters the signal values using the predicate
- * function `p`.
+ * Returns a signal that filters the signal values using the predicate `p`.
  *
- * @param p A predicate function.
+ * @param p A predicate function that returns truthy of falsey for a given
+ * signal value.
  * @returns A new signal.
  */
 Signal.prototype.filter = function (p) {
@@ -284,8 +288,8 @@ Signal.prototype.filter = function (p) {
 }
 
 /**
- * Returns a new signal that folds the signal values with the starting value
- * `a` and binary function `f`. The final value is emitted when the signal
+ * Returns a signal that folds the signal values with the starting value `a`
+ * and a binary function `f`. The final value is emitted when the signal
  * completes.
  *
  * @curried
@@ -311,12 +315,15 @@ Signal.prototype.fold = F.curry(function (f, a) {
 })
 
 /**
- * Returns a new signal that scans the signal values with the starting value
- * `a` and binary function `f`.
+ * Returns a signal that scans the signal values with the starting value `a`
+ * and a binary function `f`.
+ *
+ * Unlike the `fold` function, the signal values are emitted incrementally.
  *
  * @curried
  * @function Signal#scan
- * @param f A binary function.
+ * @param f A binary function that returns a new signal value for the given
+ * starting value and signal value.
  * @param a A starting value.
  * @returns A new signal.
  */
@@ -352,7 +359,8 @@ Signal.prototype.merge = F.variadic(function (ss) {
 })
 
 /**
- * Returns a new signal that zips the signal with another signal.
+ * Returns a signal that zips the signal with another signal to produce a
+ * signal that emits pairs of values.
  *
  * @param s A signal.
  * @returns A new signal.
@@ -366,7 +374,8 @@ Signal.prototype.zip = function (s) {
  *
  * @curried
  * @function Signal#zipWith
- * @param f A binary function.
+ * @param f A binary function that returns a new signal value for the two given
+ * signal values.
  * @param s A signal.
  * @returns A new signal.
  */
