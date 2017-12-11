@@ -92,20 +92,29 @@ describe('Signal', () => {
 
   describe('.fromPromise', () => {
     it('returns a signal of values from the promise', () => {
-      let emit
+      let next
+      let complete
+
       const s = Signal.fromPromise({
-        then: callback => { emit = callback }
+        then: onFulfilled => {
+          next = onFulfilled
+          return {
+            finally: (onFinally) => { complete = onFinally }
+          }
+        }
       })
 
       s.subscribe(this.next, this.error, this.complete)
 
       F.range(1, 3).map((n, index) => {
-        emit(n)
+        next(n)
         const call = this.next.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
 
-      assert.isFalse(this.complete.called)
+      complete()
+
+      assert.isTrue(this.complete.called)
     })
   })
 

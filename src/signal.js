@@ -176,7 +176,7 @@ Signal.fromEvent = F.curry(function (type, target) {
  */
 Signal.fromPromise = function (p) {
   return new Signal((next, error, complete) => {
-    p.then(next, error)
+    p.then(next, error).finally(complete)
   })
 }
 
