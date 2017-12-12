@@ -31,7 +31,7 @@ unit: node_modules
 
 # Runs jslint.
 lint: node_modules
-	@node_modules/.bin/standard "src/**/*.js" "test/**/*.js"
+	@node_modules/.bin/standard "*.js" "src/**/*.js" "test/**/*.js"
 
 # Generates the API documentation.
 doc: node_modules
