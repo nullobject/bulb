@@ -14,8 +14,8 @@ module.exports = {
    * @param target The event target that the signal listens on.
    * @returns A new signal.
    */
-  position: target => new Signal(next => {
-    const moveHandler = e => next([e.clientX, e.clientY])
+  position: target => new Signal(observer => {
+    const moveHandler = e => observer.next([e.clientX, e.clientY])
     target.addEventListener('mousemove', moveHandler, true)
     return () => target.removeEventListener('mousemove', moveHandler, true)
   }),
@@ -28,9 +28,9 @@ module.exports = {
    * @param target The event target that the signal listens on.
    * @returns A new signal.
    */
-  button: target => new Signal(next => {
-    const downHandler = e => next(true)
-    const upHandler = e => next(false)
+  button: target => new Signal(observer => {
+    const downHandler = e => observer.next(true)
+    const upHandler = e => observer.next(false)
 
     target.addEventListener('mousedown', downHandler, true)
     target.addEventListener('mouseup', upHandler, true)

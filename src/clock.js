@@ -15,8 +15,8 @@ module.exports = {
    * @param n The number of milliseconds between each clock tick.
    * @returns A new signal.
    */
-  interval: n => new Signal(next => {
-    const id = setInterval(e => next(n), n)
+  interval: n => new Signal(observer => {
+    const id = setInterval(e => observer.next(n), n)
     return () => clearInterval(id)
   })
 }

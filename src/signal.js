@@ -41,7 +41,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
     observer = {}
   }
 
-  const onNext = value => {
+  const next = value => {
     for (let s of this._subscriptions) {
       if (typeof s.observer.next === 'function') {
         s.observer.next(value)
@@ -49,7 +49,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
     }
   }
 
-  const onError = value => {
+  const error = value => {
     for (let s of this._subscriptions) {
       if (typeof s.observer.error === 'function') {
         s.observer.error(value)
@@ -57,7 +57,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
     }
   }
 
-  const onComplete = () => {
+  const complete = () => {
     for (let s of this._subscriptions) {
       if (typeof s.observer.complete === 'function') {
         s.observer.complete()
@@ -83,7 +83,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
   if (this._subscriptions.size === 1) {
     // The `mount` function optionally returns another function. We can call
     // this function when we need to unmount the signal.
-    this._unmount = this._mount(onNext, onError, onComplete)
+    this._unmount = this._mount({next, error, complete})
   }
 
   return subscription
@@ -98,8 +98,8 @@ Signal.prototype.subscribe = function (observer, ...args) {
  * @returns A new signal.
  */
 Signal.empty = function () {
-  return new Signal((next, error, complete) => {
-    if (typeof complete === 'function') { complete() }
+  return new Signal(observer => {
+    observer.complete()
   })
 }
 
@@ -123,9 +123,9 @@ Signal.never = function () {
  * @returns A new signal.
  */
 Signal.of = function (a) {
-  return new Signal((next, error, complete) => {
-    if (typeof complete === 'function') { next(a) }
-    complete()
+  return new Signal(observer => {
+    observer.next(a)
+    observer.complete()
   })
 }
 
@@ -137,9 +137,9 @@ Signal.of = function (a) {
  * @returns A new signal.
  */
 Signal.fromArray = function (as) {
-  return new Signal((next, error, complete) => {
-    as.map(F.apply(next))
-    if (typeof complete === 'function') { complete() }
+  return new Signal(observer => {
+    as.map(F.apply(observer.next))
+    observer.complete()
   })
 }
 
@@ -150,12 +150,12 @@ Signal.fromArray = function (as) {
  * @returns A new signal.
  */
 Signal.fromCallback = function (f) {
-  return new Signal((next, error) => {
+  return new Signal(observer => {
     f((e, a) => {
       if (typeof e !== 'undefined' && e !== null) {
-        error(e)
+        observer.error(e)
       } else {
-        next(a)
+        observer.next(a)
       }
     })
   })
@@ -172,11 +172,11 @@ Signal.fromCallback = function (f) {
  * @returns A new signal.
  */
 Signal.fromEvent = F.curry(function (type, target) {
-  return new Signal(next => {
-    const handler = F.compose(next, F.get('detail'))
+  return new Signal(observer => {
+    const handler = F.compose(observer.next, F.get('detail'))
 
     if (target.on) {
-      target.on(type, next)
+      target.on(type, observer.next)
     } else if (target.addEventListener) {
       target.addEventListener(type, handler, true)
     }
@@ -195,8 +195,8 @@ Signal.fromEvent = F.curry(function (type, target) {
  * @returns A new signal.
  */
 Signal.fromPromise = function (p) {
-  return new Signal((next, error, complete) => {
-    p.then(next, error).finally(complete)
+  return new Signal(observer => {
+    p.then(observer.next, observer.error).finally(observer.complete)
   })
 }
 
@@ -213,15 +213,15 @@ Signal.fromPromise = function (p) {
 Signal.sequentially = F.curry(function (n, as) {
   let id
 
-  return new Signal((next, error, complete) => {
+  return new Signal(observer => {
     id = setInterval(() => {
-      next(F.head(as))
+      observer.next(F.head(as))
 
       as = F.tail(as)
 
       if (F.empty(as)) {
         clearInterval(id)
-        complete()
+        observer.complete()
       }
     }, n)
 
@@ -236,13 +236,24 @@ Signal.sequentially = F.curry(function (n, as) {
  * @returns A new signal.
  */
 Signal.prototype.delay = function (n) {
-  return new Signal((next, error, complete) =>
-    this.subscribe(
-      a => setTimeout(() => next(a), n),
-      error,
-      () => setTimeout(() => complete(), n)
-    )
-  )
+  let id
+
+  return new Signal(observer => {
+    const next = a => {
+      id = setTimeout(() => observer.next(a), n)
+    }
+
+    const complete = () => {
+      setTimeout(() => observer.complete(), n)
+    }
+
+    const unmount = this.subscribe(next, observer.error, complete)
+
+    return () => {
+      clearTimeout(id)
+      unmount()
+    }
+  })
 }
 
 /**
@@ -253,11 +264,13 @@ Signal.prototype.delay = function (n) {
  * @returns A new signal.
  */
 Signal.prototype.concatMap = function (f) {
-  return new Signal((next, error, complete) =>
-    this.subscribe(a => {
-      f(a).subscribe(next, error)
-    }, error, complete)
-  )
+  return new Signal(observer => {
+    const next = a => {
+      f(a).subscribe(observer.next, observer.error)
+    }
+
+    return this.subscribe(next, observer.error, observer.complete)
+  })
 }
 
 /**
@@ -267,8 +280,8 @@ Signal.prototype.concatMap = function (f) {
  * @returns A new signal.
  */
 Signal.prototype.map = function (f) {
-  return new Signal((next, error, complete) =>
-    this.subscribe(F.compose(next, f), error, complete)
+  return new Signal(observer =>
+    this.subscribe(F.compose(observer.next, f), observer.error, observer.complete)
   )
 }
 
@@ -280,11 +293,13 @@ Signal.prototype.map = function (f) {
  * @returns A new signal.
  */
 Signal.prototype.filter = function (p) {
-  return new Signal((next, error, complete) =>
-    this.subscribe(a => {
-      if (p(a)) { next(a) }
-    }, error, complete)
-  )
+  return new Signal(observer => {
+    const next = a => {
+      if (p(a)) { observer.next(a) }
+    }
+
+    return this.subscribe(next, observer.error, observer.complete)
+  })
 }
 
 /**
@@ -299,19 +314,20 @@ Signal.prototype.filter = function (p) {
  * @returns A new signal.
  */
 Signal.prototype.fold = F.curry(function (f, a) {
-  return new Signal((next, error, complete) =>
-    this.subscribe(
-      b => {
-        a = f(a, b)
-        return a
-      },
-      error,
-      () => {
-        next(a)
-        return complete()
-      }
-    )
-  )
+  return new Signal(observer => {
+    const next = b => {
+      // Fold the next value with the previous value.
+      a = f(a, b)
+    }
+
+    const complete = () => {
+      // Emit the final value.
+      observer.next(a)
+      observer.complete()
+    }
+
+    return this.subscribe(next, observer.error, complete)
+  })
 })
 
 /**
@@ -328,14 +344,16 @@ Signal.prototype.fold = F.curry(function (f, a) {
  * @returns A new signal.
  */
 Signal.prototype.scan = F.curry(function (f, a) {
-  return new Signal((next, error, complete) => {
+  return new Signal(observer => {
     // Emit the starting value.
-    next(a)
+    observer.next(a)
 
-    return this.subscribe(b => {
+    const next = b => {
       a = f(a, b)
-      return next(a)
-    }, error, complete)
+      observer.next(a)
+    }
+
+    return this.subscribe(next, observer.error, observer.complete)
   })
 })
 
@@ -347,14 +365,16 @@ Signal.prototype.scan = F.curry(function (f, a) {
  * @returns A new signal.
  */
 Signal.prototype.merge = F.variadic(function (ss) {
-  return new Signal((next, error, complete) => {
+  return new Signal(observer => {
     let count = 0
 
-    const onComplete = () => {
-      if (++count > ss.length) { complete() }
-    };
+    const complete = () => {
+      if (++count > ss.length) { observer.complete() }
+    }
 
-    [this].concat(ss).map(s => s.subscribe(next, error, onComplete))
+    const unmounters = [this].concat(ss).map(s => s.subscribe(observer.next, observer.error, complete))
+
+    return () => { unmounters.forEach(F.applyRight()) }
   })
 })
 
@@ -380,26 +400,28 @@ Signal.prototype.zip = function (s) {
  * @returns A new signal.
  */
 Signal.prototype.zipWith = F.curry(function (f, s) {
-  return new Signal((next, error, complete) => {
+  return new Signal(observer => {
     let as = null
     let count = 0
 
-    const onNext = (a, index) => {
+    const next = (a, index) => {
       if (!as) { as = [] }
 
       as[index] = a
 
       if (as.length >= 2) {
-        next(f(as[0], as[1]))
+        observer.next(f(as[0], as[1]))
         as = null
       }
     }
 
-    const onComplete = () => {
-      if (++count >= 2) { complete() }
-    };
+    const complete = () => {
+      if (++count >= 2) { observer.complete() }
+    }
 
-    [this, s].map((s, index) => s.subscribe(a => onNext(a, index), error, onComplete))
+    const unmounters = [this, s].map((s, index) => s.subscribe(a => next(a, index), observer.error, complete))
+
+    return () => { unmounters.forEach(F.applyRight()) }
   })
 })
 

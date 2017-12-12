@@ -177,7 +177,7 @@ describe('Signal', () => {
     })
 
     it('calls the next callback when the mounted function emits a value', () => {
-      const mount = sinon.stub().callsFake(next => next())
+      const mount = sinon.stub().callsFake(observer => observer.next())
       const s = new Signal(mount)
 
       s.subscribe(this.next, this.error, this.complete)
