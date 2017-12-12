@@ -1,5 +1,5 @@
-const F = require('fkit')
-const Subscription = require('./subscription')
+import {always, apply, applyRight, compose, empty, get, head, pair, tail} from 'fkit'
+import Subscription from './subscription'
 
 /**
  * Creates a new signal.
@@ -138,12 +138,12 @@ Signal.empty = function () {
  * @returns A new signal.
  */
 Signal.never = function () {
-  return new Signal(F.const)
+  return new Signal(always)
 }
 
 /**
- * Returns a signal that emits a single value `a`. It completes after it has
- * emitted the value.
+ * Returns a signal that emits a single value `a`. It completes after the value
+ * has been emited.
  *
  * @param a A value.
  * @returns A new signal.
@@ -157,14 +157,14 @@ Signal.of = function (a) {
 
 /**
  * Returns a signal that emits values from the array of `as`. It completes
- * after it has emitted the last value in the array.
+ * after the last value in the array has been emitted.
  *
  * @param as An array of values.
  * @returns A new signal.
  */
 Signal.fromArray = function (as) {
   return new Signal(observer => {
-    as.map(F.apply(observer.next))
+    as.map(apply(observer.next))
     observer.complete()
   })
 }
@@ -191,15 +191,14 @@ Signal.fromCallback = function (f) {
  * Returns a signal that emits events of `type` from the
  * `EventListener`-compatible `target` object (e.g. a DOM element).
  *
- * @curried
  * @function Signal.fromEvent
  * @param type A string representing the event type to listen for.
  * @param target A DOM element.
  * @returns A new signal.
  */
-Signal.fromEvent = F.curry(function (type, target) {
+Signal.fromEvent = function (type, target) {
   return new Signal(observer => {
-    const handler = F.compose(observer.next, F.get('detail'))
+    const handler = compose(observer.next, get('detail'))
 
     if (target.on) {
       target.on(type, observer.next)
@@ -211,7 +210,7 @@ Signal.fromEvent = F.curry(function (type, target) {
       target.removeEventListener('type', handler, true)
     }
   })
-})
+}
 
 /**
  * Returns a signal that emits the result of the promise `p`. It completes
@@ -230,22 +229,21 @@ Signal.fromPromise = function (p) {
  * Returns a signal that emits a value from the array of `as` every `n`
  * milliseconds.
  *
- * @curried
  * @function Signal.sequentially
  * @param n The number of milliseconds between each clock tick.
  * @param as A list.
  * @returns A new signal.
  */
-Signal.sequentially = F.curry(function (n, as) {
+Signal.sequentially = function (n, as) {
   let id
 
   return new Signal(observer => {
     id = setInterval(() => {
-      observer.next(F.head(as))
+      observer.next(head(as))
 
-      as = F.tail(as)
+      as = tail(as)
 
-      if (F.empty(as)) {
+      if (empty(as)) {
         clearInterval(id)
         observer.complete()
       }
@@ -253,7 +251,7 @@ Signal.sequentially = F.curry(function (n, as) {
 
     return () => clearInterval(id)
   })
-})
+}
 
 /**
  * Returns a signal that delays the signal values by `n` milliseconds.
@@ -307,7 +305,7 @@ Signal.prototype.concatMap = function (f) {
  */
 Signal.prototype.map = function (f) {
   return new Signal(observer =>
-    this.subscribe(F.compose(observer.next, f), observer.error, observer.complete)
+    this.subscribe(compose(observer.next, f), observer.error, observer.complete)
   )
 }
 
@@ -333,13 +331,12 @@ Signal.prototype.filter = function (p) {
  * and a binary function `f`. The final value is emitted when the signal
  * completes.
  *
- * @curried
  * @function Signal#fold
  * @param f A binary function.
  * @param a A starting value.
  * @returns A new signal.
  */
-Signal.prototype.fold = F.curry(function (f, a) {
+Signal.prototype.fold = function (f, a) {
   return new Signal(observer => {
     const next = b => {
       // Fold the next value with the previous value.
@@ -354,7 +351,7 @@ Signal.prototype.fold = F.curry(function (f, a) {
 
     return this.subscribe(next, observer.error, complete)
   })
-})
+}
 
 /**
  * Returns a signal that scans the signal values with the starting value `a`
@@ -362,14 +359,13 @@ Signal.prototype.fold = F.curry(function (f, a) {
  *
  * Unlike the `fold` function, the signal values are emitted incrementally.
  *
- * @curried
  * @function Signal#scan
  * @param f A binary function that returns a new signal value for the given
  * starting value and signal value.
  * @param a A starting value.
  * @returns A new signal.
  */
-Signal.prototype.scan = F.curry(function (f, a) {
+Signal.prototype.scan = function (f, a) {
   return new Signal(observer => {
     // Emit the starting value.
     observer.next(a)
@@ -381,7 +377,7 @@ Signal.prototype.scan = F.curry(function (f, a) {
 
     return this.subscribe(next, observer.error, observer.complete)
   })
-})
+}
 
 /**
  * Returns a new signal that merges the signal with one or more signals.
@@ -390,7 +386,7 @@ Signal.prototype.scan = F.curry(function (f, a) {
  * @param ss A list of signals.
  * @returns A new signal.
  */
-Signal.prototype.merge = F.variadic(function (ss) {
+Signal.prototype.merge = function (ss) {
   return new Signal(observer => {
     let count = 0
 
@@ -400,9 +396,9 @@ Signal.prototype.merge = F.variadic(function (ss) {
 
     const unmounters = [this].concat(ss).map(s => s.subscribe(observer.next, observer.error, complete))
 
-    return () => { unmounters.forEach(F.applyRight()) }
+    return () => { unmounters.forEach(applyRight()) }
   })
-})
+}
 
 /**
  * Returns a signal that zips the signal with another signal to produce a
@@ -412,20 +408,19 @@ Signal.prototype.merge = F.variadic(function (ss) {
  * @returns A new signal.
  */
 Signal.prototype.zip = function (s) {
-  return this.zipWith(F.pair, s)
+  return this.zipWith(pair, s)
 }
 
 /**
  * Generalises the `zip` method by zipping the signals using a binary function.
  *
- * @curried
  * @function Signal#zipWith
  * @param f A binary function that returns a new signal value for the two given
  * signal values.
  * @param s A signal.
  * @returns A new signal.
  */
-Signal.prototype.zipWith = F.curry(function (f, s) {
+Signal.prototype.zipWith = function (f, s) {
   return new Signal(observer => {
     let as = null
     let count = 0
@@ -447,8 +442,8 @@ Signal.prototype.zipWith = F.curry(function (f, s) {
 
     const unmounters = [this, s].map((s, index) => s.subscribe(a => next(a, index), observer.error, complete))
 
-    return () => { unmounters.forEach(F.applyRight()) }
+    return () => { unmounters.forEach(applyRight()) }
   })
-})
+}
 
-module.exports = Signal
+export default Signal

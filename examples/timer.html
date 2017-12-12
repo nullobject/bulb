@@ -10,8 +10,8 @@
     <pre><code id="results"></code></pre>
 
     <script>
-      const s = bulb.clock.interval(500).map(Math.random)
-      const t = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random))
+      const s = bulb.interval(500).map(Math.random)
+      const t = bulb.interval(500).map(F.compose(F.mul(-1), Math.random))
       const u = s.zip(t).map(F.sum)
 
       function showValue(value) {

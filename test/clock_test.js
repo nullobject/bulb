@@ -1,14 +1,16 @@
-const assert = require('chai').assert
-const clock = require('../src/clock')
-const sinon = require('sinon')
+import * as clock from '../src/clock'
+import sinon from 'sinon'
+import {assert} from 'chai'
+
+let fakeClock
 
 describe('clock', () => {
   beforeEach(() => {
-    this.clock = sinon.useFakeTimers()
+    fakeClock = sinon.useFakeTimers()
   })
 
   afterEach(() => {
-    this.clock.restore()
+    fakeClock.restore()
   })
 
   describe('.interval', () => {
@@ -18,9 +20,9 @@ describe('clock', () => {
 
       s.subscribe(spy)
 
-      this.clock.tick(1000)
-      this.clock.tick(1000)
-      this.clock.tick(1000)
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
 
       assert.isTrue(spy.calledThrice)
       assert.isTrue(spy.calledWithExactly(1000))

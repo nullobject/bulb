@@ -1,7 +1,7 @@
-const assert = require('chai').assert
-const event = require('./support/event')
-const mouse = require('../src/mouse')
-const sinon = require('sinon')
+import * as event from './support/event'
+import * as mouse from '../src/mouse'
+import sinon from 'sinon'
+import {assert} from 'chai'
 
 describe('mouse', () => {
   describe('.position', () => {
