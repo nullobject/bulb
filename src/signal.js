@@ -25,10 +25,38 @@ function Signal (mount) {
 Signal.prototype.constructor = Signal
 
 /**
+ * Mounts the signal with an `observer`.
+ *
+ * The `mount` function optionally returns another function. We call this
+ * function when we want to unmount the signal.
+ *
+ * @param observer An observer.
+ */
+Signal.prototype.mount = function (observer) {
+  try {
+    this._unmount = this._mount(observer)
+  } catch (e) {
+    observer.error(e)
+  }
+}
+
+/**
+ * Unmounts the signal.
+ */
+Signal.prototype.unmount = function () {
+  if (typeof this._unmount === 'function') {
+    try {
+      this._unmount()
+    } catch (e) {}
+  }
+
+  this._unmount = undefined
+}
+
+/**
  * Subscribes to the signal with the callback functions `next`, `error`, and
  * `complete`.
  *
- * @function Signal#subscribe
  * @param next A callback function.
  * @param error A callback function.
  * @param complete A callback function.
@@ -71,8 +99,8 @@ Signal.prototype.subscribe = function (observer, ...args) {
     this._subscriptions.delete(subscription)
 
     // Call the unmount function if we're removing the last subscription.
-    if (this._subscriptions.size === 0 && typeof this._unmount === 'function') {
-      this._unmount()
+    if (this._subscriptions.size === 0) {
+      this.unmount()
     }
   })
 
@@ -81,9 +109,7 @@ Signal.prototype.subscribe = function (observer, ...args) {
 
   // Call the mount function if we added the first subscription.
   if (this._subscriptions.size === 1) {
-    // The `mount` function optionally returns another function. We can call
-    // this function when we need to unmount the signal.
-    this._unmount = this._mount({next, error, complete})
+    this.mount({next, error, complete})
   }
 
   return subscription
