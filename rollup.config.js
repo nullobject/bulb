@@ -3,8 +3,8 @@ import commonjs from 'rollup-plugin-commonjs'
 import resolve from 'rollup-plugin-node-resolve'
 import uglify from 'rollup-plugin-uglify'
 
-const name = process.env.BUILD === 'production' ? 'bulb.min.js' : 'bulb.js'
-const plugins = [babel({ exclude: 'node_modules/**' }), resolve(), commonjs()]
+const filename = process.env.BUILD === 'production' ? 'bulb.min.js' : 'bulb.js'
+const plugins = [commonjs(), babel({exclude: 'node_modules/**'}), resolve()]
 
 if (process.env.BUILD === 'production') {
   plugins.push(uglify())
@@ -13,9 +13,9 @@ if (process.env.BUILD === 'production') {
 export default {
   input: 'src/bulb',
   output: {
-    file: 'dist/' + name,
+    file: 'dist/' + filename,
     format: 'iife'
   },
   name: 'bulb',
-  plugins: plugins
+  plugins
 }
