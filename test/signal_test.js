@@ -132,6 +132,22 @@ describe('Signal', () => {
     })
   })
 
+  describe('.periodic', () => {
+    it('delays the signal values', () => {
+      const spy = sinon.spy()
+      const s = Signal.periodic(1000)
+
+      s.subscribe(spy)
+
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+
+      assert.isTrue(spy.calledThrice)
+      assert.isTrue(spy.calledWithExactly(undefined))
+    })
+  })
+
   describe('.sequentially', () => {
     it('delays the signal values', () => {
       const s = Signal.sequentially(1000, range(1, 3))

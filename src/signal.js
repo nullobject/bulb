@@ -226,6 +226,21 @@ Signal.fromPromise = function (p) {
 }
 
 /**
+ * Returns a signal that periodically emits a value every `n` milliseconds.
+ *
+ * @param n The number of milliseconds between each emitted value.
+ * @returns A new signal.
+ */
+Signal.periodic = function (n) {
+  let id
+
+  return new Signal(observer => {
+    id = setInterval(() => observer.next(), n)
+    return () => clearInterval(id)
+  })
+}
+
+/**
  * Returns a signal that emits a value from the array of `as` every `n`
  * milliseconds.
  *
