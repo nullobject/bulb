@@ -1,4 +1,4 @@
-import {always, apply, applyRight, compose, empty, get, head, pair, tail} from 'fkit'
+import {always, apply, compose, empty, get, head, pair, tail} from 'fkit'
 import Subscription from './subscription'
 
 /**
@@ -191,7 +191,6 @@ Signal.fromCallback = function (f) {
  * Returns a signal that emits events of `type` from the
  * `EventListener`-compatible `target` object (e.g. a DOM element).
  *
- * @function Signal.fromEvent
  * @param type A string representing the event type to listen for.
  * @param target A DOM element.
  * @returns A new signal.
@@ -244,7 +243,6 @@ Signal.periodic = function (n) {
  * Returns a signal that emits a value from the array of `as` every `n`
  * milliseconds.
  *
- * @function Signal.sequentially
  * @param n The number of milliseconds between each clock tick.
  * @param as A list.
  * @returns A new signal.
@@ -359,7 +357,6 @@ Signal.prototype.filter = function (p) {
  * and a binary function `f`. The final value is emitted when the signal
  * completes.
  *
- * @function Signal#fold
  * @param f A binary function.
  * @param a A starting value.
  * @returns A new signal.
@@ -387,7 +384,6 @@ Signal.prototype.fold = function (f, a) {
  *
  * Unlike the `fold` function, the signal values are emitted incrementally.
  *
- * @function Signal#scan
  * @param f A binary function that returns a new signal value for the given
  * starting value and signal value.
  * @param a A starting value.
@@ -410,21 +406,22 @@ Signal.prototype.scan = function (f, a) {
 /**
  * Returns a new signal that merges the signal with one or more signals.
  *
- * @function Signal#merge
  * @param ss A list of signals.
  * @returns A new signal.
  */
 Signal.prototype.merge = function (ss) {
-  return new Signal(observer => {
-    let count = 0
+  let count = 0
 
+  return new Signal(observer => {
     const complete = () => {
       if (++count > ss.length) { observer.complete() }
     }
 
-    const unmounters = [this].concat(ss).map(s => s.subscribe(observer.next, observer.error, complete))
+    this.subscribe(observer.next, observer.error, complete)
 
-    return () => { unmounters.forEach(applyRight()) }
+    const subscriptions = ss.map(s => s.subscribe(observer.next, observer.error, complete))
+
+    return () => subscriptions.forEach(s => s.unsubscribe())
   })
 }
 
@@ -442,17 +439,16 @@ Signal.prototype.zip = function (s) {
 /**
  * Generalises the `zip` method by zipping the signals using a binary function.
  *
- * @function Signal#zipWith
  * @param f A binary function that returns a new signal value for the two given
  * signal values.
  * @param s A signal.
  * @returns A new signal.
  */
 Signal.prototype.zipWith = function (f, s) {
-  return new Signal(observer => {
-    let as = null
-    let count = 0
+  let as = null
+  let count = 0
 
+  return new Signal(observer => {
     const next = (a, index) => {
       if (!as) { as = [] }
 
@@ -468,9 +464,33 @@ Signal.prototype.zipWith = function (f, s) {
       if (++count >= 2) { observer.complete() }
     }
 
-    const unmounters = [this, s].map((s, index) => s.subscribe(a => next(a, index), observer.error, complete))
+    this.subscribe(a => next(a, 0), observer.error, complete)
 
-    return () => { unmounters.forEach(applyRight()) }
+    const subscription = s.subscribe(a => next(a, 1), observer.error, complete)
+
+    return () => subscription.unsubscribe()
+  })
+}
+
+/**
+ * Emits the most recent value when there is an event on the sampler signal
+ * `s`.
+ *
+ * @param s A signal.
+ * @returns A new signal.
+ */
+Signal.prototype.sample = function (s) {
+  let value
+
+  return new Signal(observer => {
+    // Buffer the value.
+    this.subscribe(a => { value = a }, observer.error, observer.complete)
+
+    // Emit the buffered value.
+    const subscription = s.subscribe(() => observer.next(value), observer.error)
+
+    // Unsubscribe the sampler.
+    return () => subscription.unsubscribe()
   })
 }
 

@@ -183,7 +183,6 @@ describe('Signal', () => {
     it('calls the unmount function when the last observer unsubscribes', () => {
       const unmount = sinon.spy()
       const s = new Signal(() => unmount)
-
       const a = s.subscribe(always())
       const b = s.subscribe(always())
 
@@ -376,6 +375,67 @@ describe('Signal', () => {
       }, this)
 
       assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+  })
+
+  describe('#sample', () => {
+    it('emits the most recent value when there is an event on the sampler signal', () => {
+      const s = Signal.sequentially(500, range(1, 6))
+      const t = Signal.periodic(1000)
+
+      s.sample(t).subscribe(nextSpy, errorSpy, completeSpy)
+
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+
+      assert.strictEqual(nextSpy.callCount, 3);
+
+      [2, 4, 6].map((ns, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly(ns))
+      }, this)
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if the signal emits an error', () => {
+      let error
+      const s = Signal.fromCallback(callback => {
+        error = e => { callback(e) }
+      })
+      const t = Signal.never()
+
+      s.sample(t).subscribe(nextSpy, errorSpy, completeSpy)
+
+      error('foo')
+
+      assert.isTrue(errorSpy.called)
+    })
+
+    it('emits an error if the sampler emits an error', () => {
+      let error
+      const s = Signal.never()
+      const t = Signal.fromCallback(callback => {
+        error = e => { callback(e) }
+      })
+
+      s.sample(t).subscribe(nextSpy, errorSpy, completeSpy)
+
+      error('foo')
+
+      assert.isTrue(errorSpy.called)
+    })
+
+    it('unmounts the sampler when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = Signal.never()
+      const t = new Signal(() => unmount)
+      const a = s.sample(t).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
     })
   })
 })
