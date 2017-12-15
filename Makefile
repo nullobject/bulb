@@ -10,8 +10,9 @@ dev: node_modules
 
 production: node_modules
 	@node_modules/.bin/webpack --colors --progress --optimize-minimize --env.NODE_ENV=production
+	@node_modules/.bin/babel src --out-dir build
 
-test: lint unit
+test: unit lint
 
 release: production test publish
 

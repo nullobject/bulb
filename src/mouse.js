@@ -1,4 +1,4 @@
-const Signal = require('./signal')
+import Signal from './signal'
 
 /**
  * This module defines mouse signals.
@@ -6,38 +6,39 @@ const Signal = require('./signal')
  * @module bulb/mouse
  * @summary Mouse Signals
  */
-module.exports = {
-  /**
-   * Returns a new signal that generates an event when the mouse is moved.
-   *
-   * @summary Creates a mouse position signal.
-   * @param target The event target that the signal listens on.
-   * @returns A new signal.
-   */
-  position: target => new Signal(observer => {
-    const moveHandler = e => observer.next([e.clientX, e.clientY])
-    target.addEventListener('mousemove', moveHandler, true)
-    return () => target.removeEventListener('mousemove', moveHandler, true)
-  }),
 
-  /**
-   * Returns a new signal that generates an event when a mouse button is
-   * pressed.
-   *
-   * @summary Creates a mouse button signal.
-   * @param target The event target that the signal listens on.
-   * @returns A new signal.
-   */
-  button: target => new Signal(observer => {
-    const downHandler = e => observer.next(true)
-    const upHandler = e => observer.next(false)
+/**
+ * Returns a new signal that generates an event when the mouse is moved.
+ *
+ * @function
+ * @summary Creates a mouse position signal.
+ * @param target The event target that the signal listens on.
+ * @returns A new signal.
+ */
+export const position = target => new Signal(observer => {
+  const moveHandler = e => observer.next([e.clientX, e.clientY])
+  target.addEventListener('mousemove', moveHandler, true)
+  return () => target.removeEventListener('mousemove', moveHandler, true)
+})
 
-    target.addEventListener('mousedown', downHandler, true)
-    target.addEventListener('mouseup', upHandler, true)
+/**
+ * Returns a new signal that generates an event when a mouse button is
+ * pressed.
+ *
+ * @function
+ * @summary Creates a mouse button signal.
+ * @param target The event target that the signal listens on.
+ * @returns A new signal.
+ */
+export const button = target => new Signal(observer => {
+  const downHandler = e => observer.next(true)
+  const upHandler = e => observer.next(false)
 
-    return () => {
-      target.removeEventListener('mousedown', downHandler, true)
-      target.removeEventListener('mouseup', upHandler, true)
-    }
-  })
-}
+  target.addEventListener('mousedown', downHandler, true)
+  target.addEventListener('mouseup', upHandler, true)
+
+  return () => {
+    target.removeEventListener('mousedown', downHandler, true)
+    target.removeEventListener('mouseup', upHandler, true)
+  }
+})

@@ -23,4 +23,4 @@ function Subscription (observer, unsubscribe) {
 
 Subscription.prototype.constructor = Subscription
 
-module.exports = Subscription
+export default Subscription
