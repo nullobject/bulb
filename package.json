@@ -14,6 +14,7 @@
   "main": "src/bulb.js",
   "module": "dist/bulb.js",
   "files": [
+    "build",
     "src"
   ],
   "scripts": {
