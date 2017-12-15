@@ -12,7 +12,7 @@ import Subscription from './subscription'
  * @summary The `Signal` class represents a value which changes over time.
  * @param mount A mount function.
  */
-function Signal (mount) {
+export function Signal (mount) {
   if (typeof mount !== 'function') {
     throw new TypeError('Signal mount must be a function')
   }

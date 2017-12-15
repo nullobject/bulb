@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8">
     <title>Timer Example</title>
-    <script src="https://cdn.rawgit.com/nullobject/fkit/v1.0.2/dist/fkit.min.js"></script>
+    <script src="https://cdn.rawgit.com/nullobject/fkit/v1.0.1/dist/fkit.min.js"></script>
     <script src="../dist/bulb.js"></script>
   </head>
   <body>
     <pre><code id="results"></code></pre>
 
     <script>
-      const s = bulb.interval(500).map(Math.random)
-      const t = bulb.interval(500).map(F.compose(F.mul(-1), Math.random))
+      const s = bulb.clock.interval(500).map(Math.random)
+      const t = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random))
       const u = s.zip(t).map(F.sum)
 
       function showValue(value) {

@@ -1,6 +1,6 @@
-export * from './clock'
-export * from './mouse'
-export {Signal} from './signal'
+import * as clock from './clock'
+import * as mouse from './mouse'
+import Signal from './signal'
 
 /**
  * This module provides the Bulb functional reactive programming libarary.
@@ -8,3 +8,8 @@ export {Signal} from './signal'
  * @module bulb
  * @summary The bulb FRP library.
  */
+export default {
+  Signal,
+  clock,
+  mouse
+}

@@ -9,8 +9,8 @@
     <pre><code id="results"></code></pre>
 
     <script>
-      const s = bulb.position(document)
-      const t = bulb.button(document)
+      const s = bulb.mouse.position(document)
+      const t = bulb.mouse.button(document)
       const u = s.merge(t)
 
       function showValue(value) {
