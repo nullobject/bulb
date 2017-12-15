@@ -1,4 +1,4 @@
-import {always, apply, compose, empty, get, head, pair, tail} from 'fkit'
+import {always, apply, compose, empty, get, head, id, pair, tail} from 'fkit'
 import Subscription from './subscription'
 
 /**
@@ -426,8 +426,8 @@ Signal.prototype.merge = function (ss) {
 }
 
 /**
- * Returns a signal that zips the signal with another signal to produce a
- * signal that emits pairs of values.
+ * Zips the signal with another signal to produce a signal that emits pairs of
+ * values.
  *
  * @param s A signal.
  * @returns A new signal.
@@ -437,10 +437,11 @@ Signal.prototype.zip = function (s) {
 }
 
 /**
- * Generalises the `zip` method by zipping the signals using a binary function.
+ * Generalises the `zip` function to zip the signals using a binary function
+ * `f`.
  *
- * @param f A binary function that returns a new signal value for the two given
- * signal values.
+ * @param f A binary function that returns a new signal value for the two
+ * given signal values.
  * @param s A signal.
  * @returns A new signal.
  */
@@ -480,14 +481,27 @@ Signal.prototype.zipWith = function (f, s) {
  * @returns A new signal.
  */
 Signal.prototype.sample = function (s) {
-  let value
+  return this.sampleWith(id, s)
+}
+
+/**
+ * Generalises the `sample` function to sample the most recent value when
+ * there is an event on the sampler signal `s`. The most recent value, and the
+ * sampler value are combined using the binary function `f`.
+ *
+ * @param f A binary function.
+ * @param s A signal.
+ * @returns A new signal.
+ */
+Signal.prototype.sampleWith = function (f, s) {
+  let lastValue
 
   return new Signal(observer => {
     // Buffer the value.
-    this.subscribe(a => { value = a }, observer.error, observer.complete)
+    this.subscribe(a => { lastValue = a }, observer.error, observer.complete)
 
     // Emit the buffered value.
-    const subscription = s.subscribe(() => observer.next(value), observer.error)
+    const subscription = s.subscribe(a => observer.next(f(lastValue, a)), observer.error)
 
     // Unsubscribe the sampler.
     return () => subscription.unsubscribe()
