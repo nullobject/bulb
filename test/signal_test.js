@@ -192,6 +192,21 @@ describe('Signal', () => {
     it('completes the observers when the mounted function is complete')
   })
 
+  describe('#always', () => {
+    it('replaces signal values with a constant', () => {
+      const s = Signal.fromArray(range(1, 3)).always('x')
+
+      s.subscribe(nextSpy, errorSpy, completeSpy)
+
+      range(1, 3).map((n, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly('x'))
+      }, this)
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+  })
+
   describe('#delay', () => {
     it('delays the signal values', () => {
       const s = Signal.fromArray(range(1, 3))

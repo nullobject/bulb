@@ -254,6 +254,19 @@ Signal.sequentially = function (n, as) {
 }
 
 /**
+ * Returns a signal that replaces the signal values with a constant.
+ *
+ * @param c The constant value.
+ * @returns A new signal.
+ */
+Signal.prototype.always = function (c) {
+  return new Signal(observer => {
+    const next = () => observer.next(c)
+    return this.subscribe(next, observer.error, observer.complete)
+  })
+}
+
+/**
  * Returns a signal that delays the signal values by `n` milliseconds.
  *
  * @param n The number of milliseconds between each clock tick.
