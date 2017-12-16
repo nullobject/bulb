@@ -428,14 +428,14 @@ export default class Signal {
     return new Signal(observer => {
       const next = b => {
         // Fold the next value with the previous value.
-        const {value, emit} = f(a, b)
+        const result = f(a, b)
 
         // Set the next starting value.
-        a = value
+        a = result && result.value
 
         // Emit a value if one was returned.
-        if (emit !== undefined) {
-          observer.next(emit)
+        if (result && result.emit !== undefined) {
+          observer.next(result.emit)
         }
       }
 
