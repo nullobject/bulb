@@ -194,18 +194,22 @@ export default class Signal {
    * @param target A DOM element.
    * @returns A new signal.
    */
-  static fromEvent (type, target) {
+  static fromEvent (type, target, useCapture = true) {
     return new Signal(observer => {
       const handler = compose(observer.next, get('detail'))
 
-      if (target.on) {
-        target.on(type, observer.next)
+      if (target.addListener) {
+        target.addListener(type, observer.next)
       } else if (target.addEventListener) {
-        target.addEventListener(type, handler, true)
+        target.addEventListener(type, handler, useCapture)
       }
 
       return () => {
-        target.removeEventListener('type', handler, true)
+        if (target.addListener) {
+          target.removeListener(type, observer.next)
+        } else {
+          target.removeEventListener('type', handler, useCapture)
+        }
       }
     })
   }
