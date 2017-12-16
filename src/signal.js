@@ -511,6 +511,45 @@ Signal.prototype.sampleWith = function (f, s) {
 }
 
 /**
+ * Pauses emitting values when the most recent value on the sampler signal `s`
+ * is truthy. It will resume emitting events after there is a falsey value.
+ *
+ * @param s A signal.
+ * @returns A new signal.
+ */
+Signal.prototype.hold = function (s) {
+  return this.holdWith(id, s)
+}
+
+/**
+ * Generalises the `hold` function to pause emitting values when the predicate
+ * function `f` is true for the most recent sampler signal value.
+ *
+ * @param p A predicate function.
+ * @param s A signal.
+ * @returns A new signal.
+ */
+Signal.prototype.holdWith = function (p, s) {
+  let lastValue
+
+  return new Signal(observer => {
+    const next = a => {
+      if (!lastValue) {
+        observer.next(a)
+      }
+    }
+
+    this.subscribe(next, observer.error, observer.complete)
+
+    // Store the hold value.
+    const subscription = s.subscribe(a => { lastValue = p(a) }, observer.error)
+
+    // Unsubscribe the sampler.
+    return () => subscription.unsubscribe()
+  })
+}
+
+/**
  * Removes duplicate values from the signal.
  *
  * @returns A new signal.
