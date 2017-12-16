@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Keyboard Example</title>
+    <script src="../dist/bulb.js"></script>
+  </head>
+  <body>
+    <pre><code id="results"></code></pre>
+
+    <script>
+      const s = bulb.keyboard.keys(document)
+
+      s.subscribe(function (value) {
+        document.getElementById('results').textContent = JSON.stringify(value)
+      })
+    </script>
+  </body>
+</html>

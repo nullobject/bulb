@@ -1,3 +1,4 @@
+import * as keyboard from './keyboard'
 import * as mouse from './mouse'
 import Signal from './signal'
 
@@ -9,5 +10,6 @@ import Signal from './signal'
  */
 export default {
   Signal,
+  keyboard,
   mouse
 }
