@@ -132,6 +132,22 @@ describe('Signal', () => {
     })
   })
 
+  describe('.periodic', () => {
+    it('delays the signal values', () => {
+      const spy = sinon.spy()
+      const s = Signal.periodic(1000)
+
+      s.subscribe(spy)
+
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+
+      assert.isTrue(spy.calledThrice)
+      assert.isTrue(spy.calledWithExactly(undefined))
+    })
+  })
+
   describe('.sequentially', () => {
     it('delays the signal values', () => {
       const s = Signal.sequentially(1000, range(1, 3))
@@ -167,7 +183,6 @@ describe('Signal', () => {
     it('calls the unmount function when the last observer unsubscribes', () => {
       const unmount = sinon.spy()
       const s = new Signal(() => unmount)
-
       const a = s.subscribe(always())
       const b = s.subscribe(always())
 
@@ -183,13 +198,47 @@ describe('Signal', () => {
       const s = new Signal(mount)
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
-
-      assert.isTrue(nextSpy.called)
-      assert.isFalse(errorSpy.called)
-      assert.isFalse(completeSpy.called)
+      assert.isTrue(nextSpy.calledOnce)
     })
 
-    it('completes the observers when the mounted function is complete')
+    it('calls the error callback when the mounted function emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
+
+    it('calls the error callback when the mounted function is complete', () => {
+      const mount = sinon.stub().callsFake(observer => observer.complete())
+      const s = new Signal(mount)
+
+      s.subscribe({complete: completeSpy})
+      assert.isTrue(completeSpy.calledOnce)
+    })
+  })
+
+  describe('#always', () => {
+    it('replaces signal values with a constant', () => {
+      const s = Signal.fromArray(range(1, 3)).always('x')
+
+      s.subscribe(nextSpy, errorSpy, completeSpy)
+
+      range(1, 3).map((n, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly('x'))
+      }, this)
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.always('x').subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
   })
 
   describe('#delay', () => {
@@ -209,6 +258,14 @@ describe('Signal', () => {
 
       assert.isTrue(completeSpy.calledAfter(nextSpy))
     })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.delay(1000).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
   })
 
   describe('#concatMap', () => {
@@ -225,6 +282,14 @@ describe('Signal', () => {
 
       assert.isTrue(completeSpy.calledAfter(nextSpy))
     })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.concatMap(always()).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
   })
 
   describe('#map', () => {
@@ -240,6 +305,14 @@ describe('Signal', () => {
 
       assert.isTrue(completeSpy.calledAfter(nextSpy))
     })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.map(always()).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
   })
 
   describe('#filter', () => {
@@ -253,6 +326,14 @@ describe('Signal', () => {
       assert.isFalse(nextSpy.calledWithExactly(3))
       assert.isTrue(completeSpy.calledAfter(nextSpy))
     })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.filter(always()).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
   })
 
   describe('#fold', () => {
@@ -263,6 +344,14 @@ describe('Signal', () => {
 
       assert.isTrue(nextSpy.calledWithExactly(6))
       assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.fold(always(), 0).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
     })
   })
 
@@ -278,6 +367,14 @@ describe('Signal', () => {
       }, this)
 
       assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.scan(always(), 0).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
     })
   })
 
@@ -302,10 +399,39 @@ describe('Signal', () => {
 
       assert.isTrue(completeSpy.calledAfter(nextSpy))
     })
+
+    it('emits an error if either signal emits an error', () => {
+      let a
+      let b
+      const s = Signal.fromCallback(callback => {
+        a = e => { callback(e) }
+      })
+      const t = Signal.fromCallback(callback => {
+        b = e => { callback(e) }
+      })
+
+      s.merge([t]).subscribe({error: errorSpy})
+
+      a('foo')
+      b('foo')
+
+      assert.isTrue(errorSpy.calledTwice)
+    })
+
+    it('unmounts the signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = Signal.never()
+      const t = new Signal(() => unmount)
+      const a = s.merge([t]).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
   })
 
   describe('#zip', () => {
-    it('zips the signals', () => {
+    it('emits a value if both signals emit a value', () => {
       const s = Signal.sequentially(1000, range(1, 3))
       const t = Signal.sequentially(1000, range(4, 3))
 
@@ -327,7 +453,7 @@ describe('Signal', () => {
   })
 
   describe('#zipWith', () => {
-    it('zips the signals', () => {
+    it('emits a value if both signals emit a value', () => {
       const s = Signal.sequentially(1000, range(1, 3))
       const t = Signal.sequentially(1000, range(4, 3))
 
@@ -345,6 +471,108 @@ describe('Signal', () => {
       }, this)
 
       assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if either signal emits an error', () => {
+      let a
+      let b
+      const s = Signal.fromCallback(callback => {
+        a = e => { callback(e) }
+      })
+      const t = Signal.fromCallback(callback => {
+        b = e => { callback(e) }
+      })
+
+      s.zipWith(always(), t).subscribe({error: errorSpy})
+
+      a('foo')
+      b('foo')
+
+      assert.isTrue(errorSpy.calledTwice)
+    })
+
+    it('unmounts the signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = Signal.never()
+      const t = new Signal(() => unmount)
+      const a = s.zipWith(always(), t).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
+  })
+
+  describe('#sample', () => {
+    it('emits the most recent value when there is an event on the sampler signal', () => {
+      const s = Signal.sequentially(500, range(1, 6))
+      const t = Signal.periodic(1000).always(1)
+
+      s.sample(t).subscribe(nextSpy, errorSpy, completeSpy)
+
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+
+      assert.strictEqual(nextSpy.callCount, 3);
+
+      [2, 4, 6].map((ns, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly(ns))
+      }, this)
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+  })
+
+  describe('#sampleWith', () => {
+    it('emits the most recent value when there is an event on the sampler signal', () => {
+      const s = Signal.sequentially(500, range(1, 6))
+      const t = Signal.periodic(1000).always(1)
+
+      s.sampleWith(add, t).subscribe(nextSpy, errorSpy, completeSpy)
+
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+      fakeClock.tick(1000)
+
+      assert.strictEqual(nextSpy.callCount, 3);
+
+      [3, 5, 7].map((ns, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly(ns))
+      }, this)
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if either signal emits an error', () => {
+      let a
+      let b
+      const s = Signal.fromCallback(callback => {
+        a = e => { callback(e) }
+      })
+      const t = Signal.fromCallback(callback => {
+        b = e => { callback(e) }
+      })
+
+      s.sampleWith(always(), t).subscribe({error: errorSpy})
+
+      a('foo')
+      b('foo')
+
+      assert.isTrue(errorSpy.calledTwice)
+    })
+
+    it('unmounts the sampler when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = Signal.never()
+      const t = new Signal(() => unmount)
+      const a = s.sampleWith(always(), t).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
     })
   })
 })

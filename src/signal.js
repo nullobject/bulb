@@ -1,4 +1,4 @@
-import {always, apply, applyRight, compose, empty, get, head, pair, tail} from 'fkit'
+import {always, apply, compose, empty, get, head, id, pair, tail} from 'fkit'
 import Subscription from './subscription'
 
 /**
@@ -191,7 +191,6 @@ Signal.fromCallback = function (f) {
  * Returns a signal that emits events of `type` from the
  * `EventListener`-compatible `target` object (e.g. a DOM element).
  *
- * @function Signal.fromEvent
  * @param type A string representing the event type to listen for.
  * @param target A DOM element.
  * @returns A new signal.
@@ -226,10 +225,24 @@ Signal.fromPromise = function (p) {
 }
 
 /**
+ * Returns a signal that periodically emits a value every `n` milliseconds.
+ *
+ * @param n The number of milliseconds between each emitted value.
+ * @returns A new signal.
+ */
+Signal.periodic = function (n) {
+  let id
+
+  return new Signal(observer => {
+    id = setInterval(() => observer.next(), n)
+    return () => clearInterval(id)
+  })
+}
+
+/**
  * Returns a signal that emits a value from the array of `as` every `n`
  * milliseconds.
  *
- * @function Signal.sequentially
  * @param n The number of milliseconds between each clock tick.
  * @param as A list.
  * @returns A new signal.
@@ -254,6 +267,19 @@ Signal.sequentially = function (n, as) {
 }
 
 /**
+ * Returns a signal that replaces the signal values with a constant.
+ *
+ * @param c The constant value.
+ * @returns A new signal.
+ */
+Signal.prototype.always = function (c) {
+  return new Signal(observer => {
+    const next = () => observer.next(c)
+    return this.subscribe(next, observer.error, observer.complete)
+  })
+}
+
+/**
  * Returns a signal that delays the signal values by `n` milliseconds.
  *
  * @param n The number of milliseconds between each clock tick.
@@ -271,12 +297,9 @@ Signal.prototype.delay = function (n) {
       setTimeout(() => observer.complete(), n)
     }
 
-    const unmount = this.subscribe(next, observer.error, complete)
+    this.subscribe(next, observer.error, complete)
 
-    return () => {
-      clearTimeout(id)
-      unmount()
-    }
+    return () => clearTimeout(id)
   })
 }
 
@@ -331,7 +354,6 @@ Signal.prototype.filter = function (p) {
  * and a binary function `f`. The final value is emitted when the signal
  * completes.
  *
- * @function Signal#fold
  * @param f A binary function.
  * @param a A starting value.
  * @returns A new signal.
@@ -359,7 +381,6 @@ Signal.prototype.fold = function (f, a) {
  *
  * Unlike the `fold` function, the signal values are emitted incrementally.
  *
- * @function Signal#scan
  * @param f A binary function that returns a new signal value for the given
  * starting value and signal value.
  * @param a A starting value.
@@ -382,27 +403,29 @@ Signal.prototype.scan = function (f, a) {
 /**
  * Returns a new signal that merges the signal with one or more signals.
  *
- * @function Signal#merge
  * @param ss A list of signals.
  * @returns A new signal.
  */
 Signal.prototype.merge = function (ss) {
-  return new Signal(observer => {
-    let count = 0
+  let count = 0
 
+  return new Signal(observer => {
     const complete = () => {
       if (++count > ss.length) { observer.complete() }
     }
 
-    const unmounters = [this].concat(ss).map(s => s.subscribe(observer.next, observer.error, complete))
+    this.subscribe(observer.next, observer.error, complete)
 
-    return () => { unmounters.forEach(applyRight()) }
+    // Emit values from any signal.
+    const subscriptions = ss.map(s => s.subscribe(observer.next, observer.error, complete))
+
+    return () => subscriptions.forEach(s => s.unsubscribe())
   })
 }
 
 /**
- * Returns a signal that zips the signal with another signal to produce a
- * signal that emits pairs of values.
+ * Zips the signal with another signal to produce a signal that emits pairs of
+ * values.
  *
  * @param s A signal.
  * @returns A new signal.
@@ -412,19 +435,19 @@ Signal.prototype.zip = function (s) {
 }
 
 /**
- * Generalises the `zip` method by zipping the signals using a binary function.
+ * Generalises the `zip` function to zip the signals using a binary function
+ * `f`.
  *
- * @function Signal#zipWith
- * @param f A binary function that returns a new signal value for the two given
- * signal values.
+ * @param f A binary function that returns a new signal value for the two
+ * given signal values.
  * @param s A signal.
  * @returns A new signal.
  */
 Signal.prototype.zipWith = function (f, s) {
-  return new Signal(observer => {
-    let as = null
-    let count = 0
+  let as = null
+  let count = 0
 
+  return new Signal(observer => {
     const next = (a, index) => {
       if (!as) { as = [] }
 
@@ -440,9 +463,46 @@ Signal.prototype.zipWith = function (f, s) {
       if (++count >= 2) { observer.complete() }
     }
 
-    const unmounters = [this, s].map((s, index) => s.subscribe(a => next(a, index), observer.error, complete))
+    this.subscribe(a => next(a, 0), observer.error, complete)
 
-    return () => { unmounters.forEach(applyRight()) }
+    const subscription = s.subscribe(a => next(a, 1), observer.error, complete)
+
+    return () => subscription.unsubscribe()
+  })
+}
+
+/**
+ * Emits the most recent value when there is an event on the sampler signal
+ * `s`.
+ *
+ * @param s A signal.
+ * @returns A new signal.
+ */
+Signal.prototype.sample = function (s) {
+  return this.sampleWith(id, s)
+}
+
+/**
+ * Generalises the `sample` function to sample the most recent value when
+ * there is an event on the sampler signal `s`. The most recent value, and the
+ * sampler value are combined using the binary function `f`.
+ *
+ * @param f A binary function.
+ * @param s A signal.
+ * @returns A new signal.
+ */
+Signal.prototype.sampleWith = function (f, s) {
+  let lastValue
+
+  return new Signal(observer => {
+    // Buffer the value.
+    this.subscribe(a => { lastValue = a }, observer.error, observer.complete)
+
+    // Emit the buffered value.
+    const subscription = s.subscribe(a => observer.next(f(lastValue, a)), observer.error)
+
+    // Unsubscribe the sampler.
+    return () => subscription.unsubscribe()
   })
 }
 
