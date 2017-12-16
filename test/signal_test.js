@@ -1,7 +1,7 @@
 import Signal from '../src/signal'
 import events from 'events'
 import sinon from 'sinon'
-import {add, always, eq, inc, range} from 'fkit'
+import {add, always, equal, inc, range} from 'fkit'
 import {assert} from 'chai'
 
 let nextSpy, errorSpy, completeSpy, clock
@@ -318,7 +318,7 @@ describe('Signal', () => {
     it('filters the signal values with a predicate', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      s.filter(eq(2)).subscribe(nextSpy, errorSpy, completeSpy)
+      s.filter(equal(2)).subscribe(nextSpy, errorSpy, completeSpy)
 
       assert.isFalse(nextSpy.calledWithExactly(1))
       assert.isTrue(nextSpy.calledWithExactly(2))
@@ -569,6 +569,50 @@ describe('Signal', () => {
       a.unsubscribe()
 
       assert.isTrue(unmount.calledOnce)
+    })
+  })
+
+  describe('#dedupe', () => {
+    it('removes duplicate values from the signal', () => {
+      let a
+      const s = Signal.fromCallback(callback => {
+        a = a => { callback(null, a) }
+      })
+
+      s.dedupe().subscribe(nextSpy, errorSpy, completeSpy)
+
+      a('foo')
+      a('foo')
+      assert.isTrue(nextSpy.firstCall.calledWithExactly('foo'))
+
+      a('bar')
+      assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
+    })
+  })
+
+  describe('#dedupeWith', () => {
+    it('removes duplicate values from the signal using a comparator function', () => {
+      let a
+      const s = Signal.fromCallback(callback => {
+        a = a => { callback(null, a) }
+      })
+
+      s.dedupeWith(equal).subscribe(nextSpy, errorSpy, completeSpy)
+
+      a('foo')
+      a('foo')
+      assert.isTrue(nextSpy.firstCall.calledWithExactly('foo'))
+
+      a('bar')
+      assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
+    })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.dedupeWith(equal).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
     })
   })
 })

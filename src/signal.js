@@ -1,4 +1,4 @@
-import {always, apply, compose, empty, get, head, id, pair, tail} from 'fkit'
+import {always, apply, compose, empty, equal, get, head, id, pair, tail} from 'fkit'
 import Subscription from './subscription'
 
 /**
@@ -507,6 +507,36 @@ Signal.prototype.sampleWith = function (f, s) {
 
     // Unsubscribe the sampler.
     return () => subscription.unsubscribe()
+  })
+}
+
+/**
+ * Removes duplicate values from the signal.
+ *
+ * @returns A new signal.
+ */
+Signal.prototype.dedupe = function () {
+  return this.dedupeWith(equal)
+}
+
+/**
+ * Removes duplicate values from the signal using the comparator function `f`.
+ *
+ * @param f A comparator function.
+ * @returns A new signal.
+ */
+Signal.prototype.dedupeWith = function (f) {
+  let lastValue
+
+  return new Signal(observer => {
+    const next = a => {
+      if (!f(a, lastValue)) {
+        observer.next(a)
+      }
+      lastValue = a
+    }
+
+    this.subscribe(next, observer.error, observer.complete)
   })
 }
 
