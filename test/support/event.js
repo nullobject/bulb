@@ -1,4 +1,4 @@
-const events = require('events')
+import events from 'events'
 
 /**
  * Returns a new event emitter that can be used as a mock object in tests.
