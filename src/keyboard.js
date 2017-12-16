@@ -20,13 +20,17 @@ export function keys (target) {
 
   return new Signal(observer => {
     const downHandler = e => {
-      state[e.keyCode] = true
-      observer.next(state)
+      if (state[e.keyCode] !== true) {
+        state[e.keyCode] = true
+        observer.next(state)
+      }
     }
 
     const upHandler = e => {
-      delete state[e.keyCode]
-      observer.next(state)
+      if (state[e.keyCode] !== undefined) {
+        delete state[e.keyCode]
+        observer.next(state)
+      }
     }
 
     target.addEventListener('keydown', downHandler, true)
