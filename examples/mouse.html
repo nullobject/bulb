@@ -3,21 +3,35 @@
   <head>
     <meta charset="utf-8">
     <title>Mouse Example</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <style>
+      body { padding: 10px 0; }
+      .container { max-width: 730px; }
+    </style>
     <script src="../dist/bulb.js"></script>
   </head>
   <body>
-    <pre><code id="results"></code></pre>
+    <div class="container">
+      <div class="jumbotron">
+        <h1>Mouse Example</h1>
+        <p>This example illustrates how the <code>mouse.position</code> and
+          <code>mouse.button</code> signals emits values containing the current
+          state of the mouse.</p>
+        <p>Move your mouse see how it works. If you hold your mouse button then
+          it will pause the mouse position from updating.</p>
+      </div>
+
+      <h2>Results</h2>
+      <pre><code id="results"></code></pre>
+    </div>
 
     <script>
       const s = bulb.mouse.position(document)
       const t = bulb.mouse.button(document)
-      const u = s.merge(t)
 
-      function showValue(value) {
-        document.getElementById('results').textContent = value
-      }
-
-      u.subscribe(showValue)
+      s.hold(t).subscribe(function (value) {
+        document.getElementById('results').textContent = JSON.stringify(value)
+      })
     </script>
   </body>
 </html>

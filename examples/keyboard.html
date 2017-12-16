@@ -3,10 +3,25 @@
   <head>
     <meta charset="utf-8">
     <title>Keyboard Example</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <style>
+      body { padding: 10px 0; }
+      .container { max-width: 730px; }
+    </style>
     <script src="../dist/bulb.js"></script>
   </head>
   <body>
-    <pre><code id="results"></code></pre>
+    <div class="container">
+      <div class="jumbotron">
+        <h1>Keyboard Example</h1>
+        <p>This example illustrates how the <code>keyboard.keys</code> signal
+          emits values containing the current state of the keyboard.</p>
+        <p>Press some keys to see how it works.</p>
+      </div>
+
+      <h2>Results</h2>
+      <pre><code id="results"></code></pre>
+    </div>
 
     <script>
       const s = bulb.keyboard.keys(document)
