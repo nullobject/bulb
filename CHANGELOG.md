@@ -1,3 +1,9 @@
+v0.3.1 / 2017-12-16
+===================
+
+  * Don't generate duplicate keyboard events
+  * Handle no transform function result in Signal#stateMachine
+
 v0.3.0 / 2017-12-16
 ===================
 
