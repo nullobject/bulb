@@ -1,7 +1,7 @@
 import Signal from '../src/signal'
 import events from 'events'
 import sinon from 'sinon'
-import {add, always, equal, gt, inc, range} from 'fkit'
+import {add, always, equal, inc, range} from 'fkit'
 import {assert} from 'chai'
 
 let nextSpy, errorSpy, completeSpy, clock
@@ -565,84 +565,6 @@ describe('Signal', () => {
       const s = Signal.never()
       const t = new Signal(() => unmount)
       const a = s.sampleWith(always(), t).subscribe(always())
-
-      a.unsubscribe()
-
-      assert.isTrue(unmount.calledOnce)
-    })
-  })
-
-  describe('#hold', () => {
-    it('pauses emitting values when the most recent value on the sampler signal is truthy', () => {
-      let a
-      const s = Signal.sequentially(1000, range(1, 3))
-      const t = Signal.fromCallback(callback => {
-        a = a => { callback(null, a) }
-      })
-
-      s.hold(t).subscribe(nextSpy, errorSpy, completeSpy)
-
-      clock.tick(1000)
-      assert.strictEqual(nextSpy.callCount, 1);
-
-      a(true)
-      clock.tick(1000)
-      assert.strictEqual(nextSpy.callCount, 1);
-
-      a(false)
-      clock.tick(1000)
-      assert.strictEqual(nextSpy.callCount, 2);
-
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
-    })
-  })
-
-  describe('#holdWith', () => {
-    it('pauses emitting values when the predicate function is true for the most recent sampler signal value', () => {
-      let a
-      const s = Signal.sequentially(1000, range(1, 3))
-      const t = Signal.fromCallback(callback => {
-        a = a => { callback(null, a) }
-      })
-
-      s.holdWith(gt(1), t).subscribe(nextSpy, errorSpy, completeSpy)
-
-      clock.tick(1000)
-      assert.strictEqual(nextSpy.callCount, 1);
-
-      a(2)
-      clock.tick(1000)
-      assert.strictEqual(nextSpy.callCount, 1);
-
-      a(1)
-      clock.tick(1000)
-      assert.strictEqual(nextSpy.callCount, 2);
-
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
-    })
-
-    it('emits an error if either signal emits an error', () => {
-      let a, b
-      const s = Signal.fromCallback(callback => {
-        a = e => { callback(e) }
-      })
-      const t = Signal.fromCallback(callback => {
-        b = e => { callback(e) }
-      })
-
-      s.holdWith(always(), t).subscribe({error: errorSpy})
-
-      a('foo')
-      b('foo')
-
-      assert.isTrue(errorSpy.calledTwice)
-    })
-
-    it('unmounts the sampler when it is unsubscribed', () => {
-      const unmount = sinon.spy()
-      const s = Signal.never()
-      const t = new Signal(() => unmount)
-      const a = s.holdWith(always(), t).subscribe(always())
 
       a.unsubscribe()
 

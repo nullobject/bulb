@@ -10,17 +10,15 @@
  * @param observer An observer object.
  * @param unsubscribe An unsubscribe function.
  */
-function Subscription (observer, unsubscribe) {
-  this.observer = observer
+export default class Subscription {
+  constructor (observer, unsubscribe) {
+    this.observer = observer
 
-  /**
-   * Unsubscribes the observer from the signal.
-   *
-   * @function Subscription#unsubscribe
-   */
-  this.unsubscribe = unsubscribe
+    /**
+     * Unsubscribes the observer from the signal.
+     *
+     * @function Subscription#unsubscribe
+     */
+    this.unsubscribe = unsubscribe
+  }
 }
-
-Subscription.prototype.constructor = Subscription
-
-export default Subscription
