@@ -573,9 +573,7 @@ export default class Signal {
 
     return new Signal(observer => {
       const next = a => {
-        if (!lastValue) {
-          observer.next(a)
-        }
+        if (!lastValue) { observer.next(a) }
       }
 
       this.subscribe(next, observer.error, observer.complete)
@@ -604,17 +602,10 @@ export default class Signal {
    * @returns A new signal.
    */
   dedupeWith (f) {
-    let lastValue
-
-    return new Signal(observer => {
-      const next = a => {
-        if (!f(a, lastValue)) {
-          observer.next(a)
-        }
-        lastValue = a
-      }
-
-      this.subscribe(next, observer.error, observer.complete)
+    return this.stateMachine((a, value) => {
+      let emit
+      if (!f(a, value)) { emit = value }
+      return {value, emit}
     })
   }
 }
