@@ -231,8 +231,8 @@ export default class Signal {
    * Returns a signal that periodically emits a value every `n` milliseconds.
    *
    * @example
-   *   // Emits the value 'x' every 1 second.
-   *   const s = Signal.periodic(1000).always('x')
+   *   // A signal that emits the value 'x' every second.
+   *   Signal.periodic(1000).always('x')
    *
    * @param n The number of milliseconds between each emitted value.
    * @returns A new signal.
@@ -401,6 +401,42 @@ export default class Signal {
       const next = b => {
         a = f(a, b)
         observer.next(a)
+      }
+
+      return this.subscribe(next, observer.error, observer.complete)
+    })
+  }
+
+  /**
+   * Runs a state machine for the signal, with the starting value `a` and the
+   * transform function `f`.
+   *
+   * The transform function must return an object which contains a `value` property. It
+   * can also optionally contain an `emit` property to produce a signal value.
+   *
+   * @example
+   *   signal.stateMachine((a, b) => {
+   *     return {value: a + b, emit: a * b}
+   *   }, 0)
+   *
+   * @param f A binary function.
+   * @param a A starting value.
+   * @returns A new signal.
+   *
+   */
+  stateMachine (f, a) {
+    return new Signal(observer => {
+      const next = b => {
+        // Fold the next value with the previous value.
+        const {value, emit} = f(a, b)
+
+        // Set the next starting value.
+        a = value
+
+        // Emit a value if one was returned.
+        if (emit !== undefined) {
+          observer.next(emit)
+        }
       }
 
       return this.subscribe(next, observer.error, observer.complete)

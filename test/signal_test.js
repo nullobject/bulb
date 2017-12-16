@@ -377,6 +377,29 @@ describe('Signal', () => {
     })
   })
 
+  describe('#stateMachine', () => {
+    it('scans a function over the signal values', () => {
+      const s = Signal.fromArray(range(1, 3))
+
+      s.stateMachine((a, b) => {
+        return {value: a + b, emit: a * b}
+      }, 0).subscribe(nextSpy, errorSpy, completeSpy);
+
+      [0, 2, 9].map((n, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly(n))
+      }, this)
+    })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.stateMachine(always(), 0).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
+  })
+
   describe('#merge', () => {
     it('merges the signals', () => {
       const s = Signal.sequentially(1000, range(1, 3))
