@@ -297,12 +297,9 @@ Signal.prototype.delay = function (n) {
       setTimeout(() => observer.complete(), n)
     }
 
-    const unmount = this.subscribe(next, observer.error, complete)
+    this.subscribe(next, observer.error, complete)
 
-    return () => {
-      clearTimeout(id)
-      unmount()
-    }
+    return () => clearTimeout(id)
   })
 }
 
@@ -419,6 +416,7 @@ Signal.prototype.merge = function (ss) {
 
     this.subscribe(observer.next, observer.error, complete)
 
+    // Emit values from any signal.
     const subscriptions = ss.map(s => s.subscribe(observer.next, observer.error, complete))
 
     return () => subscriptions.forEach(s => s.unsubscribe())
