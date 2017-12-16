@@ -10,15 +10,11 @@
     <pre><code id="results"></code></pre>
 
     <script>
-      const s = bulb.clock.interval(500).map(Math.random)
-      const t = bulb.clock.interval(500).map(F.compose(F.mul(-1), Math.random))
-      const u = s.zip(t).map(F.sum)
+      const s = bulb.Signal.periodic(1000).map(() => F.randomFloat(0, 1))
 
-      function showValue(value) {
+      s.subscribe(function (value) {
         document.getElementById('results').textContent = value
-      }
-
-      u.subscribe(showValue)
+      })
     </script>
   </body>
 </html>

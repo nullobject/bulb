@@ -227,6 +227,10 @@ Signal.fromPromise = function (p) {
 /**
  * Returns a signal that periodically emits a value every `n` milliseconds.
  *
+ * @example
+ *   // Emits the value 'x' every 1 second.
+ *   const s = Signal.periodic(1000).always('x')
+ *
  * @param n The number of milliseconds between each emitted value.
  * @returns A new signal.
  */

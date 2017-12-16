@@ -1,4 +1,3 @@
-import * as clock from './clock'
 import * as mouse from './mouse'
 import Signal from './signal'
 
@@ -10,6 +9,5 @@ import Signal from './signal'
  */
 export default {
   Signal,
-  clock,
   mouse
 }

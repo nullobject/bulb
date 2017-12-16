@@ -4,18 +4,18 @@ import sinon from 'sinon'
 import {add, always, eq, inc, range} from 'fkit'
 import {assert} from 'chai'
 
-let nextSpy, errorSpy, completeSpy, fakeClock
+let nextSpy, errorSpy, completeSpy, clock
 
 describe('Signal', () => {
   beforeEach(() => {
     nextSpy = sinon.spy()
     errorSpy = sinon.spy()
     completeSpy = sinon.spy()
-    fakeClock = sinon.useFakeTimers()
+    clock = sinon.useFakeTimers()
   })
 
   afterEach(() => {
-    fakeClock.restore()
+    clock.restore()
   })
 
   describe('.empty', () => {
@@ -106,8 +106,7 @@ describe('Signal', () => {
 
   describe('.fromPromise', () => {
     it('returns a signal of values from the promise', () => {
-      let next
-      let complete
+      let next, complete
 
       const s = Signal.fromPromise({
         then: onFulfilled => {
@@ -139,9 +138,9 @@ describe('Signal', () => {
 
       s.subscribe(spy)
 
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
 
       assert.isTrue(spy.calledThrice)
       assert.isTrue(spy.calledWithExactly(undefined))
@@ -154,15 +153,15 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      fakeClock.tick(1000)
+      clock.tick(1000)
       assert.isTrue(nextSpy.calledWithExactly(1))
       assert.isFalse(completeSpy.called)
 
-      fakeClock.tick(1000)
+      clock.tick(1000)
       assert.isTrue(nextSpy.calledWithExactly(2))
       assert.isFalse(completeSpy.called)
 
-      fakeClock.tick(1000)
+      clock.tick(1000)
       assert.isTrue(nextSpy.calledWithExactly(3))
       assert.isTrue(completeSpy.calledAfter(nextSpy))
     })
@@ -249,7 +248,7 @@ describe('Signal', () => {
 
       assert.isFalse(nextSpy.called)
 
-      fakeClock.tick(1000)
+      clock.tick(1000)
 
       range(1, 3).map((n, index) => {
         const call = nextSpy.getCall(index)
@@ -386,9 +385,9 @@ describe('Signal', () => {
 
       s.merge([t, u]).subscribe(nextSpy, errorSpy, completeSpy)
 
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
 
       assert.strictEqual(nextSpy.callCount, 9);
 
@@ -401,8 +400,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if either signal emits an error', () => {
-      let a
-      let b
+      let a, b
       const s = Signal.fromCallback(callback => {
         a = e => { callback(e) }
       })
@@ -437,9 +435,9 @@ describe('Signal', () => {
 
       s.zip(t).subscribe(nextSpy, errorSpy, completeSpy)
 
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
 
       assert.strictEqual(nextSpy.callCount, 3);
 
@@ -459,9 +457,9 @@ describe('Signal', () => {
 
       s.zipWith(add, t).subscribe(nextSpy, errorSpy, completeSpy)
 
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
 
       assert.strictEqual(nextSpy.callCount, 3);
 
@@ -474,8 +472,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if either signal emits an error', () => {
-      let a
-      let b
+      let a, b
       const s = Signal.fromCallback(callback => {
         a = e => { callback(e) }
       })
@@ -510,9 +507,9 @@ describe('Signal', () => {
 
       s.sample(t).subscribe(nextSpy, errorSpy, completeSpy)
 
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
 
       assert.strictEqual(nextSpy.callCount, 3);
 
@@ -532,9 +529,9 @@ describe('Signal', () => {
 
       s.sampleWith(add, t).subscribe(nextSpy, errorSpy, completeSpy)
 
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
-      fakeClock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
+      clock.tick(1000)
 
       assert.strictEqual(nextSpy.callCount, 3);
 
@@ -547,8 +544,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if either signal emits an error', () => {
-      let a
-      let b
+      let a, b
       const s = Signal.fromCallback(callback => {
         a = e => { callback(e) }
       })
