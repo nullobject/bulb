@@ -251,6 +251,29 @@ describe('Signal', () => {
     })
   })
 
+  describe('#startWith', () => {
+    it('emits the given value before all other values', () => {
+      const s = Signal.fromArray(range(1, 3)).startWith('x')
+
+      s.subscribe(nextSpy, errorSpy, completeSpy);
+
+      ['x', 1, 2, 3].forEach((n, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly(n))
+      }, this)
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(observer => observer.error())
+      const s = new Signal(mount)
+
+      s.startWith('x').subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
+  })
+
   describe('#delay', () => {
     it('delays the signal values', () => {
       const s = Signal.fromArray(range(1, 3))

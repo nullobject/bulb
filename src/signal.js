@@ -287,6 +287,20 @@ export default class Signal {
   }
 
   /**
+   * Creates a new signal that emits the signal value `a` before all other
+   * values.
+   *
+   * @param a A signal value.
+   * @returns A new signal.
+   */
+  startWith (a) {
+    return new Signal(observer => {
+      observer.next(a)
+      return this.subscribe(observer)
+    })
+  }
+
+  /**
    * Returns a signal that delays the signal values by `n` milliseconds.
    *
    * @param n The number of milliseconds between each clock tick.
