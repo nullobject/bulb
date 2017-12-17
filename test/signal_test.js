@@ -193,19 +193,30 @@ describe('Signal', () => {
     })
 
     it('calls the next callback when the mounted function emits a value', () => {
-      const mount = sinon.stub().callsFake(observer => observer.next())
+      const mount = sinon.stub().callsFake(observer => observer.next('foo'))
       const s = new Signal(mount)
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
-      assert.isTrue(nextSpy.calledOnce)
+      assert.isTrue(nextSpy.calledWithExactly('foo'))
     })
 
     it('calls the error callback when the mounted function emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(observer => observer.error('foo'))
       const s = new Signal(mount)
 
       s.subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      assert.isTrue(errorSpy.calledWithExactly('foo'))
+    })
+
+    it('calls the error callback when the mounted function raises an error', () => {
+      const error = new Error('foo')
+      const mount = sinon.stub().callsFake(() => {
+        throw error
+      })
+      const s = new Signal(mount)
+
+      s.subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledWithExactly(error))
     })
 
     it('calls the error callback when the mounted function is complete', () => {
@@ -213,7 +224,7 @@ describe('Signal', () => {
       const s = new Signal(mount)
 
       s.subscribe({complete: completeSpy})
-      assert.isTrue(completeSpy.calledOnce)
+      assert.isTrue(completeSpy.called)
     })
   })
 
@@ -320,9 +331,7 @@ describe('Signal', () => {
 
       s.filter(equal(2)).subscribe(nextSpy, errorSpy, completeSpy)
 
-      assert.isFalse(nextSpy.calledWithExactly(1))
-      assert.isTrue(nextSpy.calledWithExactly(2))
-      assert.isFalse(nextSpy.calledWithExactly(3))
+      assert.isTrue(nextSpy.alwaysCalledWithExactly(2))
       assert.isTrue(completeSpy.calledAfter(nextSpy))
     })
 
