@@ -1,3 +1,9 @@
+v0.3.2 / 2017-12-17
+===================
+
+  * Store keyboard state in a set
+  * Add Signal#startWith function
+
 v0.3.1 / 2017-12-16
 ===================
 
