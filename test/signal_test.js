@@ -59,7 +59,7 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).map((n, index) => {
+      range(1, 3).forEach((n, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
@@ -77,7 +77,7 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).map((n, index) => {
+      range(1, 3).forEach((n, index) => {
         emit(n)
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
@@ -94,7 +94,7 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).map((n, index) => {
+      range(1, 3).forEach((n, index) => {
         emitter.emit('lol', n)
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
@@ -119,7 +119,7 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).map((n, index) => {
+      range(1, 3).forEach((n, index) => {
         next(n)
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
@@ -234,7 +234,7 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).map((n, index) => {
+      range(1, 3).forEach((n, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly('x'))
       }, this)
@@ -284,7 +284,7 @@ describe('Signal', () => {
 
       clock.tick(1000)
 
-      range(1, 3).map((n, index) => {
+      range(1, 3).forEach((n, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
@@ -308,7 +308,7 @@ describe('Signal', () => {
 
       s.concatMap(f).subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).map((n, index) => {
+      range(1, 3).forEach((n, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
@@ -331,7 +331,7 @@ describe('Signal', () => {
 
       s.map(inc).subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(2, 3).map((n, index) => {
+      range(2, 3).forEach((n, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
@@ -392,7 +392,7 @@ describe('Signal', () => {
 
       s.scan(add, 0).subscribe(nextSpy, errorSpy, completeSpy);
 
-      [0, 1, 3, 6].map((n, index) => {
+      [0, 1, 3, 6].forEach((n, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
@@ -417,7 +417,7 @@ describe('Signal', () => {
         return {value: a + b, emit: a * b}
       }, 0).subscribe(nextSpy, errorSpy, completeSpy);
 
-      [0, 2, 9].map((n, index) => {
+      [0, 2, 9].forEach((n, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
@@ -446,7 +446,7 @@ describe('Signal', () => {
 
       assert.strictEqual(nextSpy.callCount, 9);
 
-      [1, 4, 7, 2, 5, 8, 3, 6, 9].map((n, index) => {
+      [1, 4, 7, 2, 5, 8, 3, 6, 9].forEach((n, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(n))
       }, this)
@@ -496,7 +496,7 @@ describe('Signal', () => {
 
       assert.strictEqual(nextSpy.callCount, 3);
 
-      [[1, 4], [2, 5], [3, 6]].map((ns, index) => {
+      [[1, 4], [2, 5], [3, 6]].forEach((ns, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(ns))
       }, this)
@@ -518,7 +518,7 @@ describe('Signal', () => {
 
       assert.strictEqual(nextSpy.callCount, 3);
 
-      [5, 7, 9].map((ns, index) => {
+      [5, 7, 9].forEach((ns, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(ns))
       }, this)
@@ -568,7 +568,7 @@ describe('Signal', () => {
 
       assert.strictEqual(nextSpy.callCount, 3);
 
-      [2, 4, 6].map((ns, index) => {
+      [2, 4, 6].forEach((ns, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(ns))
       }, this)
@@ -590,7 +590,7 @@ describe('Signal', () => {
 
       assert.strictEqual(nextSpy.callCount, 3);
 
-      [3, 5, 7].map((ns, index) => {
+      [3, 5, 7].forEach((ns, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(ns))
       }, this)
