@@ -16,19 +16,21 @@ import Signal from './signal'
  * @returns A new signal.
  */
 export function keys (target) {
-  let state = {}
+  let state = new Set()
 
   return new Signal(observer => {
     const downHandler = e => {
-      if (state[e.keyCode] !== true) {
-        state[e.keyCode] = true
+      const key = parseInt(e.keyCode)
+      if (!state.has(key)) {
+        state.add(key)
         observer.next(state)
       }
     }
 
     const upHandler = e => {
-      if (state[e.keyCode] !== undefined) {
-        delete state[e.keyCode]
+      const key = parseInt(e.keyCode)
+      if (state.has(key)) {
+        state.delete(key)
         observer.next(state)
       }
     }

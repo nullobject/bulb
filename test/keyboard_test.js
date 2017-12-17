@@ -14,11 +14,11 @@ describe('keyboard', () => {
 
       emitter.emit('keydown', {keyCode: '1'})
       assert.isTrue(spy.calledOnce)
-      assert.deepEqual(spy.firstCall.args[0], {'1': true})
+      assert.deepEqual(Array.from(spy.firstCall.args[0]), [1])
 
       emitter.emit('keyup', {keyCode: '1'})
       assert.isTrue(spy.calledTwice)
-      assert.deepEqual(spy.secondCall.args[0], {})
+      assert.deepEqual(Array.from(spy.secondCall.args[0]), [])
     })
   })
 })
