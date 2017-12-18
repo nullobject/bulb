@@ -15,8 +15,7 @@
   "module": "dist/bulb.es.js",
   "unpkg": "dist/bulb.min.js",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "test": "make test"
