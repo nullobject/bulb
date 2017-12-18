@@ -413,8 +413,9 @@ describe('Signal', () => {
     it('scans a function over the signal values', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      s.stateMachine((a, b) => {
-        return {value: a + b, emit: a * b}
+      s.stateMachine((a, b, observer) => {
+        observer.next(a * b)
+        return a + b
       }, 0).subscribe(nextSpy, errorSpy, completeSpy);
 
       [0, 2, 9].forEach((n, index) => {

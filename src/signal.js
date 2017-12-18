@@ -413,7 +413,10 @@ export default class Signal {
       observer.next(a)
 
       const next = b => {
+        // Fold the current value with the previous value.
         a = f(a, b)
+
+        // Emit the next value.
         observer.next(a)
       }
 
@@ -422,15 +425,16 @@ export default class Signal {
   }
 
   /**
-   * Runs a state machine for the signal, with the starting value `a` and the
-   * transform function `f`.
+   * Returns a new signal that runs a state machine, with the starting value
+   * `a` and transform function `f`.
    *
-   * The transform function must return an object which contains a `value` property. It
-   * can also optionally contain an `emit` property to produce a signal value.
+   * The transform function should return the new state. It can also optionally
+   * emit values or errors using the `observer` argument.
    *
    * @example
-   *   signal.stateMachine((a, b) => {
-   *     return {value: a + b, emit: a * b}
+   *   signal.stateMachine((a, b, observer) => {
+   *     observer.next(a * b)
+   *     return a + b
    *   }, 0)
    *
    * @param f A binary function.
@@ -442,15 +446,7 @@ export default class Signal {
     return new Signal(observer => {
       const next = b => {
         // Fold the next value with the previous value.
-        const result = f(a, b)
-
-        // Set the next starting value.
-        a = result && result.value
-
-        // Emit a value if one was returned.
-        if (result && result.emit !== undefined) {
-          observer.next(result.emit)
-        }
+        a = f(a, b, observer)
       }
 
       return this.subscribe(next, observer.error, observer.complete)
