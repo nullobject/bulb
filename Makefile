@@ -3,17 +3,17 @@ status  := $(shell git status --porcelain)
 version := $(shell git describe --tags)
 regex   := "s/\([\"\']version[\"\'][[:space:]]*:[[:space:]]*\)\([\"\'].*[\"\']\)/\1\"$(version)\"/g"
 
-.PHONY: build bump changelog clean dev doc lint publish publish-api publish-npm release test unit
+.PHONY: bump changelog clean dev dist doc lint publish publish-api publish-npm release test unit
 
 dev: node_modules
-	@node_modules/.bin/rollup -c -w
+	@BABEL_ENV=rollup node_modules/.bin/rollup -c -w
 
-build: node_modules
-	@node_modules/.bin/rollup -c
+dist: node_modules
+	@BABEL_ENV=rollup node_modules/.bin/rollup -c
 
 test: unit lint
 
-release: build test publish
+release: dist test publish
 
 publish: bump changelog publish-api publish-npm
 
@@ -27,7 +27,7 @@ node_modules:
 
 # Runs the unit tests.
 unit: node_modules
-	@node_modules/.bin/mocha
+	@BABEL_ENV=mocha node_modules/.bin/mocha
 
 # Runs jslint.
 lint: node_modules
