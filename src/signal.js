@@ -282,7 +282,7 @@ export default class Signal {
   always (c) {
     return new Signal(observer => {
       const next = () => observer.next(c)
-      return this.subscribe(next, observer.error, observer.complete)
+      return this.subscribe({...observer, next})
     })
   }
 
@@ -318,7 +318,7 @@ export default class Signal {
         setTimeout(() => observer.complete(), n)
       }
 
-      this.subscribe(next, observer.error, complete)
+      this.subscribe({...observer, next, complete})
 
       return () => clearTimeout(id)
     })
@@ -337,7 +337,7 @@ export default class Signal {
         f(a).subscribe(observer.next, observer.error)
       }
 
-      return this.subscribe(next, observer.error, observer.complete)
+      return this.subscribe({...observer, next})
     })
   }
 
@@ -348,9 +348,10 @@ export default class Signal {
    * @returns A new signal.
    */
   map (f) {
-    return new Signal(observer =>
-      this.subscribe(compose(observer.next, f), observer.error, observer.complete)
-    )
+    return new Signal(observer => {
+      const next = compose(observer.next, f)
+      this.subscribe({...observer, next})
+    })
   }
 
   /**
@@ -366,7 +367,7 @@ export default class Signal {
         if (p(a)) { observer.next(a) }
       }
 
-      return this.subscribe(next, observer.error, observer.complete)
+      return this.subscribe({...observer, next})
     })
   }
 
@@ -392,7 +393,7 @@ export default class Signal {
         observer.complete()
       }
 
-      return this.subscribe(next, observer.error, complete)
+      return this.subscribe({...observer, next, complete})
     })
   }
 
@@ -420,7 +421,7 @@ export default class Signal {
         observer.next(a)
       }
 
-      return this.subscribe(next, observer.error, observer.complete)
+      return this.subscribe({...observer, next})
     })
   }
 
@@ -449,7 +450,7 @@ export default class Signal {
         a = f(a, b, observer)
       }
 
-      return this.subscribe(next, observer.error, observer.complete)
+      return this.subscribe({...observer, next})
     })
   }
 
@@ -467,10 +468,10 @@ export default class Signal {
         if (++count > ss.length) { observer.complete() }
       }
 
-      this.subscribe(observer.next, observer.error, complete)
+      this.subscribe({...observer, complete})
 
       // Emit values from any signal.
-      const subscriptions = ss.map(s => s.subscribe(observer.next, observer.error, complete))
+      const subscriptions = ss.map(s => s.subscribe({...observer, complete}))
 
       return () => subscriptions.forEach(s => s.unsubscribe())
     })
@@ -549,7 +550,9 @@ export default class Signal {
 
     return new Signal(observer => {
       // Buffer the value.
-      this.subscribe(a => { lastValue = a }, observer.error, observer.complete)
+      const next = a => { lastValue = a }
+
+      this.subscribe({...observer, next})
 
       // Emit the buffered value.
       const subscription = s.subscribe(a => observer.next(f(lastValue, a)), observer.error)
@@ -586,7 +589,7 @@ export default class Signal {
         if (!lastValue) { observer.next(a) }
       }
 
-      this.subscribe(next, observer.error, observer.complete)
+      this.subscribe({...observer, next})
 
       // Store the hold value.
       const subscription = s.subscribe(a => { lastValue = p(a) }, observer.error)
