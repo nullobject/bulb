@@ -1,3 +1,10 @@
+v0.4.0 / 2017-12-18
+===================
+
+  * Fix rollup packaging
+  * Allow merge to take many arguments
+  * Refactor stateMachine to take observer argument
+
 v0.3.2 / 2017-12-17
 ===================
 
