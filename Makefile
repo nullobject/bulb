@@ -20,7 +20,7 @@ publish: bump changelog publish-api publish-npm
 unpublish: delete-tag unpublish-npm
 
 clean:
-	@rm -rf doc node_modules
+	@rm -rf dist doc node_modules
 
 node_modules:
 	@npm install
