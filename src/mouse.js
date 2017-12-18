@@ -15,8 +15,8 @@ import Signal from './signal'
  * @returns A new signal.
  */
 export function position (target) {
-  return new Signal(observer => {
-    const moveHandler = e => observer.next([e.clientX, e.clientY])
+  return new Signal(emit => {
+    const moveHandler = e => emit.next([e.clientX, e.clientY])
     target.addEventListener('mousemove', moveHandler, true)
     return () => target.removeEventListener('mousemove', moveHandler, true)
   })
@@ -31,9 +31,9 @@ export function position (target) {
  * @returns A new signal.
  */
 export function button (target) {
-  return new Signal(observer => {
-    const downHandler = e => observer.next(true)
-    const upHandler = e => observer.next(false)
+  return new Signal(emit => {
+    const downHandler = e => emit.next(true)
+    const upHandler = e => emit.next(false)
 
     target.addEventListener('mousedown', downHandler, true)
     target.addEventListener('mouseup', upHandler, true)

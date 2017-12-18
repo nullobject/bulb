@@ -4,8 +4,8 @@ import Subscription from './subscription'
 /**
  * Creates a new signal.
  *
- * The `mount` function is called when an observer subscribes to the signal.
- * The `mount` function can optionally return another function, which is called
+ * The `mount` function is called when an emit subscribes to the signal. The
+ * `mount` function can optionally return another function, which is called
  * when the signal is unmounted.
  *
  * @class
@@ -24,18 +24,18 @@ export default class Signal {
   }
 
   /**
-   * Mounts the signal with an `observer`.
+   * Mounts the signal with an `emit`.
    *
    * The `mount` function optionally returns another function. We call this
    * function when we want to unmount the signal.
    *
-   * @param observer An observer.
+   * @param emit An observer.
    */
-  mount (observer) {
+  mount (emit) {
     try {
-      this._unmount = this._mount(observer)
+      this._unmount = this._mount(emit)
     } catch (e) {
-      observer.error(e)
+      emit.error(e)
     }
   }
 
@@ -61,39 +61,39 @@ export default class Signal {
    * @param complete A callback function.
    * @returns A subscription object.
    */
-  subscribe (observer, ...args) {
-    if (typeof observer === 'function') {
-      observer = { next: observer, error: args[0], complete: args[1] }
-    } else if (typeof observer !== 'object') {
-      observer = {}
+  subscribe (emit, ...args) {
+    if (typeof emit === 'function') {
+      emit = { next: emit, error: args[0], complete: args[1] }
+    } else if (typeof emit !== 'object') {
+      emit = {}
     }
 
     const next = value => {
       for (let s of this._subscriptions) {
-        if (typeof s.observer.next === 'function') {
-          s.observer.next(value)
+        if (typeof s.emit.next === 'function') {
+          s.emit.next(value)
         }
       }
     }
 
     const error = value => {
       for (let s of this._subscriptions) {
-        if (typeof s.observer.error === 'function') {
-          s.observer.error(value)
+        if (typeof s.emit.error === 'function') {
+          s.emit.error(value)
         }
       }
     }
 
     const complete = () => {
       for (let s of this._subscriptions) {
-        if (typeof s.observer.complete === 'function') {
-          s.observer.complete()
+        if (typeof s.emit.complete === 'function') {
+          s.emit.complete()
         }
       }
     }
 
     // Create a new subscription to the signal.
-    const subscription = new Subscription(observer, () => {
+    const subscription = new Subscription(emit, () => {
       // Remove the subscription.
       this._subscriptions.delete(subscription)
 
@@ -123,8 +123,8 @@ export default class Signal {
    * @returns A new signal.
    */
   static empty () {
-    return new Signal(observer => {
-      observer.complete()
+    return new Signal(emit => {
+      emit.complete()
     })
   }
 
@@ -148,9 +148,9 @@ export default class Signal {
    * @returns A new signal.
    */
   static of (a) {
-    return new Signal(observer => {
-      observer.next(a)
-      observer.complete()
+    return new Signal(emit => {
+      emit.next(a)
+      emit.complete()
     })
   }
 
@@ -162,9 +162,9 @@ export default class Signal {
    * @returns A new signal.
    */
   static fromArray (as) {
-    return new Signal(observer => {
-      as.map(apply(observer.next))
-      observer.complete()
+    return new Signal(emit => {
+      as.map(apply(emit.next))
+      emit.complete()
     })
   }
 
@@ -175,12 +175,12 @@ export default class Signal {
    * @returns A new signal.
    */
   static fromCallback (f) {
-    return new Signal(observer => {
+    return new Signal(emit => {
       f((e, a) => {
         if (typeof e !== 'undefined' && e !== null) {
-          observer.error(e)
+          emit.error(e)
         } else {
-          observer.next(a)
+          emit.next(a)
         }
       })
     })
@@ -195,18 +195,18 @@ export default class Signal {
    * @returns A new signal.
    */
   static fromEvent (type, target, useCapture = true) {
-    return new Signal(observer => {
-      const handler = compose(observer.next, get('detail'))
+    return new Signal(emit => {
+      const handler = compose(emit.next, get('detail'))
 
       if (target.addListener) {
-        target.addListener(type, observer.next)
+        target.addListener(type, emit.next)
       } else if (target.addEventListener) {
         target.addEventListener(type, handler, useCapture)
       }
 
       return () => {
         if (target.addListener) {
-          target.removeListener(type, observer.next)
+          target.removeListener(type, emit.next)
         } else {
           target.removeEventListener('type', handler, useCapture)
         }
@@ -222,8 +222,8 @@ export default class Signal {
    * @returns A new signal.
    */
   static fromPromise (p) {
-    return new Signal(observer => {
-      p.then(observer.next, observer.error).finally(observer.complete)
+    return new Signal(emit => {
+      p.then(emit.next, emit.error).finally(emit.complete)
     })
   }
 
@@ -240,8 +240,8 @@ export default class Signal {
   static periodic (n) {
     let id
 
-    return new Signal(observer => {
-      id = setInterval(() => observer.next(), n)
+    return new Signal(emit => {
+      id = setInterval(() => emit.next(), n)
       return () => clearInterval(id)
     })
   }
@@ -257,15 +257,15 @@ export default class Signal {
   static sequentially (n, as) {
     let id
 
-    return new Signal(observer => {
+    return new Signal(emit => {
       id = setInterval(() => {
-        observer.next(head(as))
+        emit.next(head(as))
 
         as = tail(as)
 
         if (empty(as)) {
           clearInterval(id)
-          observer.complete()
+          emit.complete()
         }
       }, n)
 
@@ -280,9 +280,9 @@ export default class Signal {
    * @returns A new signal.
    */
   always (c) {
-    return new Signal(observer => {
-      const next = () => observer.next(c)
-      return this.subscribe({...observer, next})
+    return new Signal(emit => {
+      const next = () => emit.next(c)
+      return this.subscribe({...emit, next})
     })
   }
 
@@ -294,9 +294,9 @@ export default class Signal {
    * @returns A new signal.
    */
   startWith (a) {
-    return new Signal(observer => {
-      observer.next(a)
-      return this.subscribe(observer)
+    return new Signal(emit => {
+      emit.next(a)
+      return this.subscribe(emit)
     })
   }
 
@@ -309,16 +309,16 @@ export default class Signal {
   delay (n) {
     let id
 
-    return new Signal(observer => {
+    return new Signal(emit => {
       const next = a => {
-        id = setTimeout(() => observer.next(a), n)
+        id = setTimeout(() => emit.next(a), n)
       }
 
       const complete = () => {
-        setTimeout(() => observer.complete(), n)
+        setTimeout(() => emit.complete(), n)
       }
 
-      this.subscribe({...observer, next, complete})
+      this.subscribe({...emit, next, complete})
 
       return () => clearTimeout(id)
     })
@@ -332,12 +332,9 @@ export default class Signal {
    * @returns A new signal.
    */
   concatMap (f) {
-    return new Signal(observer => {
-      const next = a => {
-        f(a).subscribe(observer.next, observer.error)
-      }
-
-      return this.subscribe({...observer, next})
+    return new Signal(emit => {
+      const next = a => f(a).subscribe(emit.next, emit.error)
+      return this.subscribe({...emit, next})
     })
   }
 
@@ -348,9 +345,9 @@ export default class Signal {
    * @returns A new signal.
    */
   map (f) {
-    return new Signal(observer => {
-      const next = compose(observer.next, f)
-      this.subscribe({...observer, next})
+    return new Signal(emit => {
+      const next = compose(emit.next, f)
+      this.subscribe({...emit, next})
     })
   }
 
@@ -362,12 +359,9 @@ export default class Signal {
    * @returns A new signal.
    */
   filter (p) {
-    return new Signal(observer => {
-      const next = a => {
-        if (p(a)) { observer.next(a) }
-      }
-
-      return this.subscribe({...observer, next})
+    return new Signal(emit => {
+      const next = a => { if (p(a)) { emit.next(a) } }
+      return this.subscribe({...emit, next})
     })
   }
 
@@ -381,19 +375,17 @@ export default class Signal {
    * @returns A new signal.
    */
   fold (f, a) {
-    return new Signal(observer => {
-      const next = b => {
-        // Fold the next value with the previous value.
-        a = f(a, b)
-      }
+    return new Signal(emit => {
+      // Fold the next value with the previous value.
+      const next = b => { a = f(a, b) }
 
       const complete = () => {
         // Emit the final value.
-        observer.next(a)
-        observer.complete()
+        emit.next(a)
+        emit.complete()
       }
 
-      return this.subscribe({...observer, next, complete})
+      return this.subscribe({...emit, next, complete})
     })
   }
 
@@ -409,19 +401,17 @@ export default class Signal {
    * @returns A new signal.
    */
   scan (f, a) {
-    return new Signal(observer => {
+    return new Signal(emit => {
       // Emit the starting value.
-      observer.next(a)
+      emit.next(a)
 
+      // Fold the current value with the previous value and emit the next value
       const next = b => {
-        // Fold the current value with the previous value.
         a = f(a, b)
-
-        // Emit the next value.
-        observer.next(a)
+        emit.next(a)
       }
 
-      return this.subscribe({...observer, next})
+      return this.subscribe({...emit, next})
     })
   }
 
@@ -430,11 +420,11 @@ export default class Signal {
    * `a` and transform function `f`.
    *
    * The transform function should return the new state. It can also optionally
-   * emit values or errors using the `observer` argument.
+   * emit values or errors using the `emit` argument.
    *
    * @example
-   *   signal.stateMachine((a, b, observer) => {
-   *     observer.next(a * b)
+   *   signal.stateMachine((a, b, emit) => {
+   *     emit.next(a * b)
    *     return a + b
    *   }, 0)
    *
@@ -444,13 +434,13 @@ export default class Signal {
    *
    */
   stateMachine (f, a) {
-    return new Signal(observer => {
+    return new Signal(emit => {
       const next = b => {
         // Fold the next value with the previous value.
-        a = f(a, b, observer)
+        a = f(a, b, emit)
       }
 
-      return this.subscribe({...observer, next})
+      return this.subscribe({...emit, next})
     })
   }
 
@@ -463,15 +453,15 @@ export default class Signal {
   merge (...ss) {
     let count = 0
 
-    return new Signal(observer => {
+    return new Signal(emit => {
       const complete = () => {
-        if (++count > ss.length) { observer.complete() }
+        if (++count > ss.length) { emit.complete() }
       }
 
-      this.subscribe({...observer, complete})
+      this.subscribe({...emit, complete})
 
       // Emit values from any signal.
-      const subscriptions = ss.map(s => s.subscribe({...observer, complete}))
+      const subscriptions = ss.map(s => s.subscribe({...emit, complete}))
 
       return () => subscriptions.forEach(s => s.unsubscribe())
     })
@@ -501,25 +491,25 @@ export default class Signal {
     let as = null
     let count = 0
 
-    return new Signal(observer => {
+    return new Signal(emit => {
       const next = (a, index) => {
         if (!as) { as = [] }
 
         as[index] = a
 
         if (as.length >= 2) {
-          observer.next(f(as[0], as[1]))
+          emit.next(f(as[0], as[1]))
           as = null
         }
       }
 
       const complete = () => {
-        if (++count >= 2) { observer.complete() }
+        if (++count >= 2) { emit.complete() }
       }
 
-      this.subscribe(a => next(a, 0), observer.error, complete)
+      this.subscribe(a => next(a, 0), emit.error, complete)
 
-      const subscription = s.subscribe(a => next(a, 1), observer.error, complete)
+      const subscription = s.subscribe(a => next(a, 1), emit.error, complete)
 
       return () => subscription.unsubscribe()
     })
@@ -548,14 +538,14 @@ export default class Signal {
   sampleWith (f, s) {
     let lastValue
 
-    return new Signal(observer => {
+    return new Signal(emit => {
       // Buffer the value.
       const next = a => { lastValue = a }
 
-      this.subscribe({...observer, next})
+      this.subscribe({...emit, next})
 
       // Emit the buffered value.
-      const subscription = s.subscribe(a => observer.next(f(lastValue, a)), observer.error)
+      const subscription = s.subscribe(a => emit.next(f(lastValue, a)), emit.error)
 
       // Unsubscribe the sampler.
       return () => subscription.unsubscribe()
@@ -584,15 +574,13 @@ export default class Signal {
   holdWith (p, s) {
     let lastValue
 
-    return new Signal(observer => {
-      const next = a => {
-        if (!lastValue) { observer.next(a) }
-      }
+    return new Signal(emit => {
+      const next = a => { if (!lastValue) { emit.next(a) } }
 
-      this.subscribe({...observer, next})
+      this.subscribe({...emit, next})
 
       // Store the hold value.
-      const subscription = s.subscribe(a => { lastValue = p(a) }, observer.error)
+      const subscription = s.subscribe(a => { lastValue = p(a) }, emit.error)
 
       // Unsubscribe the sampler.
       return () => subscription.unsubscribe()
@@ -615,9 +603,9 @@ export default class Signal {
    * @returns A new signal.
    */
   dedupeWith (f) {
-    return this.stateMachine((a, value, observer) => {
-      if (!f(a, value)) { observer.next(value) }
-      return value
+    return this.stateMachine((a, b, emit) => {
+      if (!f(a, b)) { emit.next(b) }
+      return b
     })
   }
 }

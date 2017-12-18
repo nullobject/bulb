@@ -18,12 +18,12 @@ import Signal from './signal'
 export function keys (target) {
   let state = new Set()
 
-  return new Signal(observer => {
+  return new Signal(emit => {
     const downHandler = e => {
       const key = parseInt(e.keyCode)
       if (!state.has(key)) {
         state.add(key)
-        observer.next(state)
+        emit.next(state)
       }
     }
 
@@ -31,7 +31,7 @@ export function keys (target) {
       const key = parseInt(e.keyCode)
       if (state.has(key)) {
         state.delete(key)
-        observer.next(state)
+        emit.next(state)
       }
     }
 

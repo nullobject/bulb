@@ -168,7 +168,7 @@ describe('Signal', () => {
   })
 
   describe('#subscribe', () => {
-    it('calls the mount function when the first observer subscribes', () => {
+    it('calls the mount function when the first emit subscribes', () => {
       const mount = sinon.spy()
       const s = new Signal(mount)
 
@@ -179,7 +179,7 @@ describe('Signal', () => {
       assert.isTrue(mount.calledOnce)
     })
 
-    it('calls the unmount function when the last observer unsubscribes', () => {
+    it('calls the unmount function when the last emit unsubscribes', () => {
       const unmount = sinon.spy()
       const s = new Signal(() => unmount)
       const a = s.subscribe(always())
@@ -193,7 +193,7 @@ describe('Signal', () => {
     })
 
     it('calls the next callback when the mounted function emits a value', () => {
-      const mount = sinon.stub().callsFake(observer => observer.next('foo'))
+      const mount = sinon.stub().callsFake(emit => emit.next('foo'))
       const s = new Signal(mount)
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
@@ -201,7 +201,7 @@ describe('Signal', () => {
     })
 
     it('calls the error callback when the mounted function emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error('foo'))
+      const mount = sinon.stub().callsFake(emit => emit.error('foo'))
       const s = new Signal(mount)
 
       s.subscribe({error: errorSpy})
@@ -220,7 +220,7 @@ describe('Signal', () => {
     })
 
     it('calls the error callback when the mounted function is complete', () => {
-      const mount = sinon.stub().callsFake(observer => observer.complete())
+      const mount = sinon.stub().callsFake(emit => emit.complete())
       const s = new Signal(mount)
 
       s.subscribe({complete: completeSpy})
@@ -243,7 +243,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.always('x').subscribe({error: errorSpy})
@@ -266,7 +266,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.startWith('x').subscribe({error: errorSpy})
@@ -293,7 +293,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.delay(1000).subscribe({error: errorSpy})
@@ -317,7 +317,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.concatMap(always()).subscribe({error: errorSpy})
@@ -340,7 +340,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.map(always()).subscribe({error: errorSpy})
@@ -359,7 +359,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.filter(always()).subscribe({error: errorSpy})
@@ -378,7 +378,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.fold(always(), 0).subscribe({error: errorSpy})
@@ -401,7 +401,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.scan(always(), 0).subscribe({error: errorSpy})
@@ -413,8 +413,8 @@ describe('Signal', () => {
     it('scans a function over the signal values', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      s.stateMachine((a, b, observer) => {
-        observer.next(a * b)
+      s.stateMachine((a, b, emit) => {
+        emit.next(a * b)
         return a + b
       }, 0).subscribe(nextSpy, errorSpy, completeSpy);
 
@@ -425,7 +425,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.stateMachine(always(), 0).subscribe({error: errorSpy})
@@ -664,7 +664,7 @@ describe('Signal', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(observer => observer.error())
+      const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
       s.dedupeWith(equal).subscribe({error: errorSpy})

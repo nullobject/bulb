@@ -1,5 +1,5 @@
 /**
- * Creates a new subscription object for the `observer`.
+ * Creates a new subscription for the `emit` object.
  *
  * The observer may unsubscribe from the signal by calling the `unsubscribe`
  * method.
@@ -7,12 +7,12 @@
  * @class
  * @summary The `Subscription` class represents an observer who has subscribed
  * to a `Signal`.
- * @param observer An observer object.
+ * @param emit An observer.
  * @param unsubscribe An unsubscribe function.
  */
 export default class Subscription {
-  constructor (observer, unsubscribe) {
-    this.observer = observer
+  constructor (emit, unsubscribe) {
+    this.emit = emit
 
     /**
      * Unsubscribes the observer from the signal.
