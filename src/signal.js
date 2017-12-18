@@ -459,7 +459,7 @@ export default class Signal {
    * @param ss A list of signals.
    * @returns A new signal.
    */
-  merge (ss) {
+  merge (...ss) {
     let count = 0
 
     return new Signal(observer => {
@@ -612,10 +612,9 @@ export default class Signal {
    * @returns A new signal.
    */
   dedupeWith (f) {
-    return this.stateMachine((a, value) => {
-      let emit
-      if (!f(a, value)) { emit = value }
-      return {value, emit}
+    return this.stateMachine((a, value, observer) => {
+      if (!f(a, value)) { observer.next(value) }
+      return value
     })
   }
 }

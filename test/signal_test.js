@@ -439,7 +439,7 @@ describe('Signal', () => {
       const t = Signal.sequentially(1000, range(4, 3))
       const u = Signal.sequentially(1000, range(7, 3))
 
-      s.merge([t, u]).subscribe(nextSpy, errorSpy, completeSpy)
+      s.merge(t, u).subscribe(nextSpy, errorSpy, completeSpy)
 
       clock.tick(1000)
       clock.tick(1000)
@@ -464,7 +464,7 @@ describe('Signal', () => {
         b = e => { callback(e) }
       })
 
-      s.merge([t]).subscribe({error: errorSpy})
+      s.merge(t).subscribe({error: errorSpy})
 
       a('foo')
       b('foo')
@@ -476,7 +476,7 @@ describe('Signal', () => {
       const unmount = sinon.spy()
       const s = Signal.never()
       const t = new Signal(() => unmount)
-      const a = s.merge([t]).subscribe(always())
+      const a = s.merge(t).subscribe(always())
 
       a.unsubscribe()
 
