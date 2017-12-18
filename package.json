@@ -48,6 +48,6 @@
     "uglify-es": "^3.2.2"
   },
   "dependencies": {
-    "fkit": "^1.0.1"
+    "fkit": "^1.0.4"
   }
 }
