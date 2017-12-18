@@ -3,18 +3,17 @@ status  := $(shell git status --porcelain)
 version := $(shell git describe --tags)
 regex   := "s/\([\"\']version[\"\'][[:space:]]*:[[:space:]]*\)\([\"\'].*[\"\']\)/\1\"$(version)\"/g"
 
-.PHONY: bump changelog clean dev doc lint publish publish-api publish-npm production release test unit
+.PHONY: build bump changelog clean dev doc lint publish publish-api publish-npm release test unit
 
 dev: node_modules
-	@node_modules/.bin/rollup -c
+	@node_modules/.bin/rollup -c -w
 
-production: node_modules
-	@NODE_ENV=production node_modules/.bin/rollup -c
-	@node_modules/.bin/babel src --out-dir build
+build: node_modules
+	@node_modules/.bin/rollup -c
 
 test: unit lint
 
-release: production test publish
+release: build test publish
 
 publish: bump changelog publish-api publish-npm
 

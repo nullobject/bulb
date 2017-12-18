@@ -1,21 +1,25 @@
+import pkg from './package.json'
 import resolve from 'rollup-plugin-node-resolve'
 import uglify from 'rollup-plugin-uglify'
 import {minify} from 'uglify-es'
 
-const filename = process.env.NODE_ENV === 'production' ? 'bulb.min.js' : 'bulb.js'
-
-const config = {
-  input: 'src/bulb',
-  output: {
-    file: 'dist/' + filename,
-    format: 'iife'
+export default [
+  // UMD and ES versions.
+  {
+    input: 'src/bulb',
+    output: [
+      {file: pkg.main, format: 'umd', name: 'bulb'},
+      {file: pkg.module, format: 'es'}
+    ],
+    plugins: [resolve()]
   },
-  name: 'bulb',
-  plugins: [resolve()]
-}
 
-if (process.env.NODE_ENV === 'production') {
-  config.plugins.push(uglify({}, minify))
-}
-
-export default config
+  // Browser minified version.
+  {
+    input: 'src/bulb',
+    output: [
+      {file: pkg.unpkg, format: 'umd', name: 'bulb'}
+    ],
+    plugins: [resolve(), uglify({}, minify)]
+  }
+]

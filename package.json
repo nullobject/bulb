@@ -11,10 +11,11 @@
     "programming",
     "library"
   ],
-  "main": "src/bulb.js",
-  "module": "dist/bulb.js",
+  "main": "dist/bulb.js",
+  "module": "dist/bulb.es.js",
+  "unpkg": "dist/bulb.min.js",
   "files": [
-    "build",
+    "dist",
     "src"
   ],
   "scripts": {

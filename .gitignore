@@ -1,4 +1,3 @@
-build
-dist/bulb.js
+dist
 doc
 node_modules
