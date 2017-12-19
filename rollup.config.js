@@ -3,7 +3,6 @@ import babel from 'rollup-plugin-babel'
 import filesize from 'rollup-plugin-filesize'
 import resolve from 'rollup-plugin-node-resolve'
 import uglify from 'rollup-plugin-uglify'
-import {minify} from 'uglify-es'
 
 const plugins = [
   babel({exclude: '**/node_modules/**'}),
@@ -28,6 +27,6 @@ export default [
     output: [
       {file: pkg.unpkg, format: 'umd', name: 'bulb'}
     ],
-    plugins: plugins.concat([uglify({}, minify)])
+    plugins: plugins.concat([uglify()])
   }
 ]
