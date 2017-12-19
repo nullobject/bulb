@@ -3,64 +3,52 @@
   <head>
     <meta charset="utf-8">
     <title>Random Example</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
-    <style>
-      body { padding: 10px 0; }
-      .container { max-width: 730px; }
-    </style>
-    <script src="https://cdn.rawgit.com/nullobject/fkit/v1.0.1/dist/fkit.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+    <script src="https://unpkg.com/fkit/dist/fkit.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.8.1/superagent.min.js"></script>
     <script src="../dist/bulb.js"></script>
   </head>
-  <body>
-    <div class="container">
-      <div class="jumbotron">
-        <h1>Random Example</h1>
-        <p>This example makes use of the <code>Signal</code> class to handle
-          user interaction and trigger AJAX requests.</p>
-        <p>It uses the <a href="http://www.random.org">RANDOM.ORG</a> API to
-          generate a number of random strings every time the "more" or "less"
-          button is clicked.</p>
-        <p>
-          <button type="button" class="btn btn-success" id="more">More</button>
-          <button type="button" class="btn btn-danger" id="less">Less</button>
-        </p>
-      </div>
-
-      <h2>Results</h2>
+  <body class="sans-serif pa3">
+    <article class="mw7 center ph3 ph5-ns tc br2 pv5 ba b--light-blue bg-lightest-blue black-70 mb5">
+      <h1 class="fw6 f3 f2-ns lh-title mt0 mb3 blue">Random Example</h1>
+      <p class="fw2 f4 lh-copy mt0 mb3">This example makes use of the <code>Signal</code> class to handle
+        user interaction and trigger AJAX requests.</p>
+      <p class="fw1 f5 mt0 mb3">It uses the <a href="http://www.random.org">RANDOM.ORG</a> API to
+        generate a number of random strings every time the "more" or "less"
+        button is clicked.</p>
+      <p>
+        <button class="f6 link br-pill ph3 pv2 mb2 dib white bg-green" id="more">More</button>
+        <button class="f6 link br-pill ph3 pv2 mb2 dib white bg-red" id="less">Less</button>
+      </p>
       <pre><code id="results"></code></pre>
-    </div>
+    </article>
 
     <script>
       const URL = 'https://www.random.org/strings/?num=@&len=8&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new'
 
-      function splitOnNewline(x) {
-        return x.trim().split(/\n/)
+      function splitOnNewline(s) {
+        return s.trim().split(/\n/)
       }
 
       function randomNumbers(count) {
-        return bulb.Signal
-          .fromCallback(request)
-          .map(F.compose(splitOnNewline, F.get('text')))
-
-        function request(callback) {
+        request = callback => {
           superagent
             .get(URL.replace('@', count))
             .set('X-Requested-With', null)
             .end(callback)
         }
+
+        return bulb.Signal
+          .fromCallback(request)
+          .map(F.compose(splitOnNewline, F.get('text')))
       }
 
       function showValue(value) {
-        document
-          .getElementById('results')
-          .appendChild(document.createTextNode(value.join(', ') + '\n'))
+        document.getElementById('results').textContent = JSON.stringify(value)
       }
 
       function showError(message) {
-        document
-          .getElementById('results')
-          .appendChild(document.createTextNode(message + '\n'))
+        console.error(message)
       }
 
       const more = bulb.Signal.fromEvent('click', document.getElementById('more')).map(F.always(+1))
@@ -68,7 +56,7 @@
 
       more
         .merge(less)
-        .scan(function(a, b) { return Math.max(1, a + b) }, 1)
+        .scan((a, b) => F.clamp(1, 5, a + b), 1)
         .concatMap(randomNumbers)
         .subscribe(showValue, showError)
     </script>

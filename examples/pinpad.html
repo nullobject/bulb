@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Pinpad Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+    <script src="../dist/bulb.js"></script>
+  </head>
+  <body class="sans-serif pa3">
+    <article class="mw7 center ph3 ph5-ns tc br2 pv5 ba b--light-blue bg-lightest-blue black-70 mb5">
+      <h1 class="fw6 f3 f2-ns lh-title mt0 mb3 blue">PIN Pad 🔒</h1>
+
+      <p class="fw2 f4 lh-copy mt0 mb3">This example illustrates how to use
+        signals to create a PIN pad for entering a password.</p>
+
+      <p class="fw1 f5 mt0 mb3">Enter a four-digit PIN.</p>
+
+      <div id="pinpad">
+        <div>
+          <button class="ph3 pv2" data-value="1">1</button><button class="ph3 pv2" data-value="2">2</button><button class="ph3 pv2" data-value="3">3</button>
+        </div>
+        <div>
+          <button class="ph3 pv2" data-value="4">4</button><button class="ph3 pv2" data-value="5">5</button><button class="ph3 pv2" data-value="6">6</button>
+        </div>
+        <div>
+          <button class="ph3 pv2" data-value="7">7</button><button class="ph3 pv2" data-value="8">8</button><button class="ph3 pv2" data-value="9">9</button>
+        </div>
+      </div>
+
+      <pre><code id="results"></code></pre>
+    </article>
+
+    <script>
+      const PIN_LENGTH = 4
+
+      // Creates a signal for the given button element.
+      function buttonSignal (button) {
+        return bulb.Signal.fromEvent('click', button).map(() => button.dataset.value)
+      }
+
+      // Appends the value `a` to the list of `as`.
+      function appendNumber (as, a) {
+        return as.length < PIN_LENGTH ? as + a : a
+      }
+
+      // Returns true if the string `s` is of length `n`.
+      const lengthEqualTo = n => s => s.length === n
+
+      // Get the button elements in the pinpad.
+      const buttons = Array.from(document.getElementById('pinpad').querySelectorAll('button'))
+
+      // Map the buttons to button signals.
+      const buttonSignals = buttons.map(buttonSignal)
+
+      // Merge all the button signals together.
+      const valueSignal = bulb.merge(buttonSignals)
+
+      // Create a signal that emits completed PINs.
+      const pinSignal = valueSignal.scan(appendNumber, '').filter(lengthEqualTo(PIN_LENGTH))
+
+      // Get the results element.
+      const results = document.getElementById('results')
+
+      pinSignal.subscribe(value => {
+        results.textContent = JSON.stringify(Array.from(value))
+      })
+    </script>
+  </body>
+</html>
