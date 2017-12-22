@@ -8,8 +8,4 @@ import Signal from './signal'
  * @module bulb
  * @summary The bulb FRP library.
  */
-export default {
-  Signal,
-  keyboard,
-  mouse
-}
+export {Signal, keyboard, mouse}
