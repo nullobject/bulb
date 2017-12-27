@@ -698,4 +698,36 @@ describe('Signal', () => {
       assert.isTrue(unmount.calledOnce)
     })
   })
+
+  describe('#encode', () => {
+    it('encodes the signal', () => {
+      let a
+      const s = Signal.fromCallback(callback => {
+        a = a => { callback(null, a) }
+      })
+      const t = Signal.periodic(1000).always('foo')
+      const u = Signal.periodic(1000).always('bar')
+
+      s.encode(t, u).subscribe(nextSpy, errorSpy, completeSpy)
+
+      a(0)
+      clock.tick(1000)
+      assert.isTrue(nextSpy.firstCall.calledWithExactly('foo'))
+
+      a(1)
+      clock.tick(1000)
+      assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
+    })
+
+    it('unmounts the signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = Signal.of(0)
+      const t = new Signal(() => unmount)
+      const a = s.encode(t).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
+  })
 })

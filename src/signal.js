@@ -637,4 +637,15 @@ export default class Signal {
       }
     })
   }
+
+  /**
+   * Switches between the given signals based on the last stream value. The
+   * stream value should be the index of the stream to switch to.
+   *
+   * @param ss A list of signals.
+   * @returns A new signal.
+   */
+  encode (...ss) {
+    return this.map(a => ss[a]).switch()
+  }
 }
