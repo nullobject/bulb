@@ -8,7 +8,7 @@ import Subscription from './subscription'
  * `mount` function can optionally return another function, which is called
  * when the signal is unmounted.
  *
- * @class
+ * @class Signal
  * @summary The `Signal` class represents a value which changes over time.
  * @param mount A mount function.
  */
@@ -452,6 +452,11 @@ export default class Signal {
    */
   merge (...ss) {
     let count = 0
+
+    // Allow the signals to be given as an array.
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
+    }
 
     return new Signal(emit => {
       const complete = () => {

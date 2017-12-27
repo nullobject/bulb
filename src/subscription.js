@@ -4,7 +4,7 @@
  * The observer may unsubscribe from the signal by calling the `unsubscribe`
  * method.
  *
- * @class
+ * @class Subscription
  * @summary The `Subscription` class represents an observer who has subscribed
  * to a `Signal`.
  * @param emit An observer.
