@@ -323,6 +323,28 @@ describe('Signal', () => {
       s.concatMap(always()).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
+
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = new Signal(() => unmount)
+      const f = a => Signal.of(a)
+      const a = s.concatMap(f).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
+
+    it('unmounts the returned signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = Signal.of(0)
+      const f = a => new Signal(() => unmount)
+      const a = s.concatMap(f).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
   })
 
   describe('#map', () => {
@@ -472,7 +494,18 @@ describe('Signal', () => {
       assert.isTrue(errorSpy.calledTwice)
     })
 
-    it('unmounts the signal when it is unsubscribed', () => {
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = new Signal(() => unmount)
+      const t = Signal.never()
+      const a = s.merge(t).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
+
+    it('unmounts the merged signal when it is unsubscribed', () => {
       const unmount = sinon.spy()
       const s = Signal.never()
       const t = new Signal(() => unmount)
@@ -544,7 +577,18 @@ describe('Signal', () => {
       assert.isTrue(errorSpy.calledTwice)
     })
 
-    it('unmounts the signal when it is unsubscribed', () => {
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = new Signal(() => unmount)
+      const t = Signal.never()
+      const a = s.zipWith(always(), t).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
+
+    it('unmounts the zipped signal when it is unsubscribed', () => {
       const unmount = sinon.spy()
       const s = Signal.never()
       const t = new Signal(() => unmount)
@@ -687,7 +731,17 @@ describe('Signal', () => {
       assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
     })
 
-    it('unmounts the signal when it is unsubscribed', () => {
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = new Signal(() => unmount)
+      const a = s.switch().subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
+
+    it('unmounts the returned signal when it is unsubscribed', () => {
       const unmount = sinon.spy()
       const s = new Signal(() => unmount)
       const t = Signal.of(s)
@@ -717,17 +771,6 @@ describe('Signal', () => {
       a(1)
       clock.tick(1000)
       assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
-    })
-
-    it('unmounts the signal when it is unsubscribed', () => {
-      const unmount = sinon.spy()
-      const s = Signal.of(0)
-      const t = new Signal(() => unmount)
-      const a = s.encode(t).subscribe(always())
-
-      a.unsubscribe()
-
-      assert.isTrue(unmount.calledOnce)
     })
   })
 })
