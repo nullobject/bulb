@@ -671,4 +671,31 @@ describe('Signal', () => {
       assert.isTrue(errorSpy.calledOnce)
     })
   })
+
+  describe('#switch', () => {
+    it('switches to the latest signal value', () => {
+      const s = Signal.of('foo')
+      const t = Signal.of('bar')
+      const u = Signal.sequentially(1000, [s, t])
+
+      u.switch().subscribe(nextSpy, errorSpy, completeSpy)
+
+      clock.tick(1000)
+      assert.isTrue(nextSpy.firstCall.calledWithExactly('foo'))
+
+      clock.tick(1000)
+      assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
+    })
+
+    it('unmounts the signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = new Signal(() => unmount)
+      const t = Signal.of(s)
+      const a = t.switch().subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
+  })
 })

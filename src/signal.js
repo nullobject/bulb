@@ -613,4 +613,28 @@ export default class Signal {
       return b
     })
   }
+
+  /**
+   * A higher-order signal function (operates on a signal that emits other
+   * signals) that emits events from the most recent signal value.
+   *
+   * @returns A new signal.
+   */
+  switch () {
+    let subscription
+
+    return new Signal(emit => {
+      const next = a => {
+        if (subscription) { subscription.unsubscribe() }
+        if (!(a instanceof Signal)) { throw new Error('Signal value must be a signal') }
+        subscription = a.subscribe(emit)
+      }
+
+      this.subscribe({...emit, next})
+
+      return () => {
+        if (subscription) { subscription.unsubscribe() }
+      }
+    })
+  }
 }
