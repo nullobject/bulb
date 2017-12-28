@@ -1,4 +1,4 @@
-import {always, apply, compose, empty, equal, get, head, id, pair, tail} from 'fkit'
+import {always, apply, compose, empty, equal, get, head, pair, tail} from 'fkit'
 import Subscription from './subscription'
 
 /**
@@ -537,36 +537,25 @@ export default class Signal {
   }
 
   /**
-   * Emits the most recent value when there is an event on the sampler signal
-   * `s`.
+   * Emits the most recent value from the given signal `s` whenever there is an
+   * event on the sampler signal.
    *
    * @param s A signal.
    * @returns A new signal.
    */
   sample (s) {
-    return this.sampleWith(id, s)
-  }
-
-  /**
-   * Generalises the `sample` function to sample the most recent value when
-   * there is an event on the sampler signal `s`. The most recent value, and the
-   * sampler value are combined using the binary function `f`.
-   *
-   * @param f A binary function.
-   * @param s A signal.
-   * @returns A new signal.
-   */
-  sampleWith (f, s) {
     let lastValue
 
     return new Signal(emit => {
-      // Buffer the value.
-      const next = a => { lastValue = a }
+      const next = () => {
+        // Emit the buffered value.
+        if (lastValue !== undefined) { emit.next(lastValue) }
+      }
 
       const subscription1 = this.subscribe({...emit, next})
 
-      // Emit the buffered value.
-      const subscription2 = s.subscribe(a => emit.next(f(lastValue, a)), emit.error)
+      // Store the last value.
+      const subscription2 = s.subscribe(a => { lastValue = a }, emit.error, emit.complete)
 
       // Unsubscribe the sampler.
       return () => {
@@ -577,34 +566,26 @@ export default class Signal {
   }
 
   /**
-   * Pauses emitting values when the most recent value on the sampler signal `s`
-   * is truthy. It will resume emitting events after there is a falsey value.
+   * Pauses emitting values from the given signal `s` if the most recent value
+   * from the sampler signal is truthy. It will resume emitting events after
+   * there is a falsey value.
    *
    * @param s A signal.
    * @returns A new signal.
    */
   hold (s) {
-    return this.holdWith(id, s)
-  }
-
-  /**
-   * Generalises the `hold` function to pause emitting values when the predicate
-   * function `f` is true for the most recent sampler signal value.
-   *
-   * @param p A predicate function.
-   * @param s A signal.
-   * @returns A new signal.
-   */
-  holdWith (p, s) {
     let lastValue
 
     return new Signal(emit => {
-      const next = a => { if (!lastValue) { emit.next(a) } }
+      const next = a => {
+        // Emit the value if the gate is open.
+        if (!lastValue) { emit.next(a) }
+      }
 
-      const subscription1 = this.subscribe({...emit, next})
+      const subscription1 = s.subscribe({...emit, next})
 
-      // Store the hold value.
-      const subscription2 = s.subscribe(a => { lastValue = p(a) }, emit.error)
+      // Store the last value.
+      const subscription2 = this.subscribe(a => { lastValue = a }, emit.error, emit.complete)
 
       // Unsubscribe the sampler.
       return () => {

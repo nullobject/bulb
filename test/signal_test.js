@@ -602,8 +602,8 @@ describe('Signal', () => {
 
   describe('#sample', () => {
     it('emits the most recent value when there is an event on the sampler signal', () => {
-      const s = Signal.sequentially(500, range(1, 6))
-      const t = Signal.periodic(1000).always(1)
+      const s = Signal.periodic(1000)
+      const t = Signal.sequentially(500, range(1, 6))
 
       s.sample(t).subscribe(nextSpy, errorSpy, completeSpy)
 
@@ -613,29 +613,7 @@ describe('Signal', () => {
 
       assert.strictEqual(nextSpy.callCount, 3);
 
-      [2, 4, 6].forEach((ns, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(ns))
-      }, this)
-
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
-    })
-  })
-
-  describe('#sampleWith', () => {
-    it('emits the most recent value when there is an event on the sampler signal', () => {
-      const s = Signal.sequentially(500, range(1, 6))
-      const t = Signal.periodic(1000).always(1)
-
-      s.sampleWith(add, t).subscribe(nextSpy, errorSpy, completeSpy)
-
-      clock.tick(1000)
-      clock.tick(1000)
-      clock.tick(1000)
-
-      assert.strictEqual(nextSpy.callCount, 3);
-
-      [3, 5, 7].forEach((ns, index) => {
+      [1, 3, 5].forEach((ns, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(ns))
       }, this)
@@ -652,7 +630,52 @@ describe('Signal', () => {
         b = e => { callback(e) }
       })
 
-      s.sampleWith(always(), t).subscribe({error: errorSpy})
+      s.sample(t).subscribe({error: errorSpy})
+
+      a('foo')
+      b('foo')
+
+      assert.isTrue(errorSpy.calledTwice)
+    })
+  })
+
+  describe('#hold', () => {
+    it('emits the most recent value when there is an event on the sampler signal', () => {
+      let a
+      const s = Signal.fromCallback(callback => {
+        a = a => { callback(null, a) }
+      })
+      const t = Signal.sequentially(500, range(1, 6))
+
+      s.hold(t).subscribe(nextSpy, errorSpy, completeSpy)
+
+      a(false)
+      clock.tick(1000)
+      a(true)
+      clock.tick(1000)
+      a(false)
+      clock.tick(1000)
+
+      assert.strictEqual(nextSpy.callCount, 4);
+
+      [1, 2, 5, 6].forEach((ns, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly(ns))
+      }, this)
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if either signal emits an error', () => {
+      let a, b
+      const s = Signal.fromCallback(callback => {
+        a = e => { callback(e) }
+      })
+      const t = Signal.fromCallback(callback => {
+        b = e => { callback(e) }
+      })
+
+      s.hold(t).subscribe({error: errorSpy})
 
       a('foo')
       b('foo')
@@ -660,11 +683,22 @@ describe('Signal', () => {
       assert.isTrue(errorSpy.calledTwice)
     })
 
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = sinon.spy()
+      const s = new Signal(() => unmount)
+      const t = Signal.never()
+      const a = s.hold(t).subscribe(always())
+
+      a.unsubscribe()
+
+      assert.isTrue(unmount.calledOnce)
+    })
+
     it('unmounts the sampler when it is unsubscribed', () => {
       const unmount = sinon.spy()
       const s = Signal.never()
       const t = new Signal(() => unmount)
-      const a = s.sampleWith(always(), t).subscribe(always())
+      const a = s.hold(t).subscribe(always())
 
       a.unsubscribe()
 
