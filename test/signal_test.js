@@ -518,11 +518,12 @@ describe('Signal', () => {
   })
 
   describe('#zip', () => {
-    it('emits a value if both signals emit a value', () => {
-      const s = Signal.sequentially(1000, range(1, 3))
-      const t = Signal.sequentially(1000, range(4, 3))
+    it('zips the corresponding signal values into tuples', () => {
+      const s = Signal.fromArray(range(1, 3))
+      const t = Signal.fromArray(range(4, 3))
+      const u = Signal.fromArray(range(7, 3))
 
-      s.zip(t).subscribe(nextSpy, errorSpy, completeSpy)
+      s.zip(t, u).subscribe(nextSpy, errorSpy, completeSpy)
 
       clock.tick(1000)
       clock.tick(1000)
@@ -530,7 +531,7 @@ describe('Signal', () => {
 
       assert.strictEqual(nextSpy.callCount, 3);
 
-      [[1, 4], [2, 5], [3, 6]].forEach((ns, index) => {
+      [[1, 4, 7], [2, 5, 8], [3, 6, 9]].forEach((ns, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(ns))
       }, this)
@@ -540,19 +541,17 @@ describe('Signal', () => {
   })
 
   describe('#zipWith', () => {
-    it('emits a value if both signals emit a value', () => {
-      const s = Signal.sequentially(1000, range(1, 3))
-      const t = Signal.sequentially(1000, range(4, 3))
+    it('zip the corresponding signal values with a function', () => {
+      const s = Signal.fromArray(range(1, 3))
+      const t = Signal.fromArray(range(4, 3))
+      const u = Signal.fromArray(range(7, 3))
+      const f = (a, b, c) => a + b + c
 
-      s.zipWith(add, t).subscribe(nextSpy, errorSpy, completeSpy)
-
-      clock.tick(1000)
-      clock.tick(1000)
-      clock.tick(1000)
+      s.zipWith(f, t, u).subscribe(nextSpy, errorSpy, completeSpy)
 
       assert.strictEqual(nextSpy.callCount, 3);
 
-      [5, 7, 9].forEach((ns, index) => {
+      [12, 15, 18].forEach((ns, index) => {
         const call = nextSpy.getCall(index)
         assert.isTrue(call.calledWithExactly(ns))
       }, this)

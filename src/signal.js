@@ -1,4 +1,4 @@
-import {always, apply, compose, empty, equal, get, head, pair, tail} from 'fkit'
+import {all, always, apply, compose, empty, equal, get, head, replicate, tail} from 'fkit'
 import Subscription from './subscription'
 
 /**
@@ -458,80 +458,87 @@ export default class Signal {
   /**
    * Returns a new signal that merges the signal with one or more signals.
    *
+   * The signal completes when *all* of the input signals have completed.
+   *
    * @param ss A list of signals.
    * @returns A new signal.
    */
   merge (...ss) {
-    let count = 0
-
     // Allow the signals to be given as an array.
     if (ss.length === 1 && Array.isArray(ss[0])) {
       ss = ss[0]
     }
 
+    let numComplete = 0
+
     return new Signal(emit => {
       const complete = () => {
-        if (++count > ss.length) { emit.complete() }
+        if (++numComplete > ss.length) { emit.complete() }
       }
 
-      const subscription = this.subscribe({...emit, complete})
-
       // Emit values from any signal.
-      const subscriptions = ss.map(s => s.subscribe({...emit, complete}))
+      const subscriptions = [this].concat(ss).map(s => s.subscribe({...emit, complete}))
 
       return () => {
-        subscription.unsubscribe()
         subscriptions.forEach(s => s.unsubscribe())
       }
     })
   }
 
   /**
-   * Zips the signal with another signal to produce a signal that emits pairs of
-   * values.
+   * Combines corresponding signal values into tuples.
+   *
+   * The signal completes when *any* of the input signals have completed.
    *
    * @param s A signal.
    * @returns A new signal.
    */
-  zip (s) {
-    return this.zipWith(pair, s)
+  zip (...ss) {
+    return this.zipWith((...as) => as, ss)
   }
 
   /**
-   * Generalises the `zip` function to zip the signals using a binary function
-   * `f`.
+   * Generalises the `zip` function to combine corresponding signal values
+   * using the function `f`.
    *
-   * @param f A binary function that returns a new signal value for the two
-   * given signal values.
-   * @param s A signal.
+   * The signal completes when *any* of the input signals have completed.
+   *
+   * @param f A function.
+   * @param ss A list of signals.
    * @returns A new signal.
    */
-  zipWith (f, s) {
-    let as = null
-    let count = 0
+  zipWith (f, ...ss) {
+    // Allow the signals to be given as an array.
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
+    }
+
+    const buffers = replicate(ss.length + 1, [])
 
     return new Signal(emit => {
       const next = (a, index) => {
-        if (!as) { as = [] }
+        // Buffer the value.
+        buffers[index].push(a)
 
-        as[index] = a
+        // Check if each of the signals have at least one buffered value.
+        if (all(buffer => buffer.length > 0, buffers)) {
+          // Get the next buffered value for each of the signals.
+          const as = buffers.reduce((as, buffer) => {
+            as.push(buffer.shift())
+            return as
+          }, [])
 
-        if (as.length >= 2) {
-          emit.next(f(as[0], as[1]))
-          as = null
+          // Emit the value.
+          emit.next(f(...as))
         }
       }
 
-      const complete = () => {
-        if (++count >= 2) { emit.complete() }
-      }
-
-      const subscription1 = this.subscribe(a => next(a, 0), emit.error, complete)
-      const subscription2 = s.subscribe(a => next(a, 1), emit.error, complete)
+      const subscriptions = [this].concat(ss).map((s, i) =>
+        s.subscribe(a => next(a, i), emit.error, emit.complete)
+      )
 
       return () => {
-        subscription1.unsubscribe()
-        subscription2.unsubscribe()
+        subscriptions.forEach(s => s.unsubscribe())
       }
     })
   }
