@@ -29,7 +29,7 @@
       const s = bulb.mouse.position(document)
       const t = bulb.mouse.button(document)
 
-      s.hold(t).subscribe(function (value) {
+      t.hold(s).subscribe(function (value) {
         document.getElementById('results').textContent = JSON.stringify(value)
       })
     </script>

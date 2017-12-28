@@ -1,5 +1,6 @@
-import {all, always, apply, compose, empty, equal, get, head, replicate, tail} from 'fkit'
 import Subscription from './subscription'
+import {always, apply, compose, empty, get, head, tail} from 'fkit'
+import {concatMap, dedupe, dedupeWith, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, zip, zipWith} from './combinator'
 
 /**
  * Creates a new signal.
@@ -254,7 +255,7 @@ export default class Signal {
    * @param as A list.
    * @returns A new signal.
    */
-  static sequentially (n, as) {
+  static sequential (n, as) {
     let id
 
     return new Signal(emit => {
@@ -307,21 +308,7 @@ export default class Signal {
    * @returns A new signal.
    */
   delay (n) {
-    let id
-
-    return new Signal(emit => {
-      const next = a => {
-        id = setTimeout(() => emit.next(a), n)
-      }
-
-      const complete = () => {
-        setTimeout(() => emit.complete(), n)
-      }
-
-      this.subscribe({...emit, next, complete})
-
-      return () => clearTimeout(id)
-    })
+    return delay(n, this)
   }
 
   /**
@@ -332,21 +319,7 @@ export default class Signal {
    * @returns A new signal.
    */
   concatMap (f) {
-    let subscription2
-
-    return new Signal(emit => {
-      const next = a => {
-        if (subscription2) { subscription2.unsubscribe() }
-        subscription2 = f(a).subscribe(emit)
-      }
-
-      const subscription1 = this.subscribe({...emit, next})
-
-      return () => {
-        subscription1.unsubscribe()
-        if (subscription2) { subscription2.unsubscribe() }
-      }
-    })
+    return concatMap(f, this)
   }
 
   /**
@@ -356,10 +329,7 @@ export default class Signal {
    * @returns A new signal.
    */
   map (f) {
-    return new Signal(emit => {
-      const next = compose(emit.next, f)
-      this.subscribe({...emit, next})
-    })
+    return map(f, this)
   }
 
   /**
@@ -370,10 +340,7 @@ export default class Signal {
    * @returns A new signal.
    */
   filter (p) {
-    return new Signal(emit => {
-      const next = a => { if (p(a)) { emit.next(a) } }
-      return this.subscribe({...emit, next})
-    })
+    return filter(p, this)
   }
 
   /**
@@ -386,18 +353,7 @@ export default class Signal {
    * @returns A new signal.
    */
   fold (f, a) {
-    return new Signal(emit => {
-      // Fold the next value with the previous value.
-      const next = b => { a = f(a, b) }
-
-      const complete = () => {
-        // Emit the final value.
-        emit.next(a)
-        emit.complete()
-      }
-
-      return this.subscribe({...emit, next, complete})
-    })
+    return fold(f, a, this)
   }
 
   /**
@@ -412,18 +368,7 @@ export default class Signal {
    * @returns A new signal.
    */
   scan (f, a) {
-    return new Signal(emit => {
-      // Emit the starting value.
-      emit.next(a)
-
-      // Fold the current value with the previous value and emit the next value
-      const next = b => {
-        a = f(a, b)
-        emit.next(a)
-      }
-
-      return this.subscribe({...emit, next})
-    })
+    return scan(f, a, this)
   }
 
   /**
@@ -445,18 +390,11 @@ export default class Signal {
    *
    */
   stateMachine (f, a) {
-    return new Signal(emit => {
-      const next = b => {
-        // Fold the next value with the previous value.
-        a = f(a, b, emit)
-      }
-
-      return this.subscribe({...emit, next})
-    })
+    return stateMachine(f, a, this)
   }
 
   /**
-   * Returns a new signal that merges the signal with one or more signals.
+   * Merges the signal with the given signals.
    *
    * The signal completes when *all* of the input signals have completed.
    *
@@ -469,24 +407,11 @@ export default class Signal {
       ss = ss[0]
     }
 
-    let numComplete = 0
-
-    return new Signal(emit => {
-      const complete = () => {
-        if (++numComplete > ss.length) { emit.complete() }
-      }
-
-      // Emit values from any signal.
-      const subscriptions = [this].concat(ss).map(s => s.subscribe({...emit, complete}))
-
-      return () => {
-        subscriptions.forEach(s => s.unsubscribe())
-      }
-    })
+    return merge([this].concat(ss))
   }
 
   /**
-   * Combines corresponding signal values into tuples.
+   * Combines corresponding values from the given signals into tuples.
    *
    * The signal completes when *any* of the input signals have completed.
    *
@@ -494,12 +419,17 @@ export default class Signal {
    * @returns A new signal.
    */
   zip (...ss) {
-    return this.zipWith((...as) => as, ss)
+    // Allow the signals to be given as an array.
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
+    }
+
+    return zip([this].concat(ss))
   }
 
   /**
-   * Generalises the `zip` function to combine corresponding signal values
-   * using the function `f`.
+   * Generalises the `zip` function to combine corresponding values from the
+   * given signals using the function `f`.
    *
    * The signal completes when *any* of the input signals have completed.
    *
@@ -513,34 +443,7 @@ export default class Signal {
       ss = ss[0]
     }
 
-    const buffers = replicate(ss.length + 1, [])
-
-    return new Signal(emit => {
-      const next = (a, index) => {
-        // Buffer the value.
-        buffers[index].push(a)
-
-        // Check if each of the signals have at least one buffered value.
-        if (all(buffer => buffer.length > 0, buffers)) {
-          // Get the next buffered value for each of the signals.
-          const as = buffers.reduce((as, buffer) => {
-            as.push(buffer.shift())
-            return as
-          }, [])
-
-          // Emit the value.
-          emit.next(f(...as))
-        }
-      }
-
-      const subscriptions = [this].concat(ss).map((s, i) =>
-        s.subscribe(a => next(a, i), emit.error, emit.complete)
-      )
-
-      return () => {
-        subscriptions.forEach(s => s.unsubscribe())
-      }
-    })
+    return zipWith(f, [this].concat(ss))
   }
 
   /**
@@ -551,25 +454,7 @@ export default class Signal {
    * @returns A new signal.
    */
   sample (s) {
-    let lastValue
-
-    return new Signal(emit => {
-      const next = () => {
-        // Emit the buffered value.
-        if (lastValue !== undefined) { emit.next(lastValue) }
-      }
-
-      const subscription1 = this.subscribe({...emit, next})
-
-      // Store the last value.
-      const subscription2 = s.subscribe(a => { lastValue = a }, emit.error, emit.complete)
-
-      // Unsubscribe the sampler.
-      return () => {
-        subscription1.unsubscribe()
-        subscription2.unsubscribe()
-      }
-    })
+    return sample(this, s)
   }
 
   /**
@@ -581,25 +466,7 @@ export default class Signal {
    * @returns A new signal.
    */
   hold (s) {
-    let lastValue
-
-    return new Signal(emit => {
-      const next = a => {
-        // Emit the value if the gate is open.
-        if (!lastValue) { emit.next(a) }
-      }
-
-      const subscription1 = s.subscribe({...emit, next})
-
-      // Store the last value.
-      const subscription2 = this.subscribe(a => { lastValue = a }, emit.error, emit.complete)
-
-      // Unsubscribe the sampler.
-      return () => {
-        subscription1.unsubscribe()
-        subscription2.unsubscribe()
-      }
-    })
+    return hold(this, s)
   }
 
   /**
@@ -608,7 +475,7 @@ export default class Signal {
    * @returns A new signal.
    */
   dedupe () {
-    return this.dedupeWith(equal)
+    return dedupe(this)
   }
 
   /**
@@ -618,10 +485,7 @@ export default class Signal {
    * @returns A new signal.
    */
   dedupeWith (f) {
-    return this.stateMachine((a, b, emit) => {
-      if (!f(a, b)) { emit.next(b) }
-      return b
-    })
+    return dedupeWith(f, this)
   }
 
   /**
@@ -630,23 +494,8 @@ export default class Signal {
    *
    * @returns A new signal.
    */
-  switch () {
-    let subscription2
-
-    return new Signal(emit => {
-      const next = a => {
-        if (subscription2) { subscription2.unsubscribe() }
-        if (!(a instanceof Signal)) { throw new Error('Signal value must be a signal') }
-        subscription2 = a.subscribe(emit)
-      }
-
-      const subscription1 = this.subscribe({...emit, next})
-
-      return () => {
-        subscription1.unsubscribe()
-        if (subscription2) { subscription2.unsubscribe() }
-      }
-    })
+  switchLatest () {
+    return switchLatest(this)
   }
 
   /**
@@ -657,6 +506,6 @@ export default class Signal {
    * @returns A new signal.
    */
   encode (...ss) {
-    return this.map(a => ss[a]).switch()
+    return encode(this, ss)
   }
 }

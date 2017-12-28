@@ -9,3 +9,5 @@ import Signal from './signal'
  * @summary The bulb FRP library.
  */
 export {Signal, keyboard, mouse}
+
+export * from './combinator'

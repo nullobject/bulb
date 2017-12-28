@@ -65,7 +65,7 @@
       const buttons = Array.from(document.getElementById('pinpad').querySelectorAll('button'))
       const buttonSignal = button => bulb.Signal.fromEvent('click', button).map(() => button.dataset.value)
       const buttonSignals = buttons.map(buttonSignal)
-      const valueSignal = buttonSignals.reduce((a, b) => a.merge(b), bulb.Signal.empty())
+      const valueSignal = bulb.merge(buttonSignals)
       const attemptSignal = valueSignal.scan(prependNumber, '')
       const pinSignal = attemptSignal.filter(lengthEqualTo(PIN_LENGTH))
 
