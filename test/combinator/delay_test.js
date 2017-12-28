@@ -22,7 +22,7 @@ describe('delay', () => {
     it('delays the signal values', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      delay(1000, s).subscribe(nextSpy, errorSpy, completeSpy)
+      delay(1000)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       assert.isFalse(nextSpy.called)
 
@@ -40,7 +40,7 @@ describe('delay', () => {
       const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
-      delay(1000, s).subscribe({error: errorSpy})
+      delay(1000)(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })

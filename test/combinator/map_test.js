@@ -18,7 +18,7 @@ describe('map', () => {
       const s = Signal.fromArray(range(1, 3))
       const f = a => Signal.of(a)
 
-      concatMap(f, s).subscribe(nextSpy, errorSpy, completeSpy)
+      concatMap(f)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       range(1, 3).forEach((n, index) => {
         const call = nextSpy.getCall(index)
@@ -32,7 +32,7 @@ describe('map', () => {
       const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
-      concatMap(always(), s).subscribe({error: errorSpy})
+      concatMap(always())(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
 
@@ -40,7 +40,7 @@ describe('map', () => {
       const unmount = sinon.spy()
       const s = new Signal(() => unmount)
       const f = a => Signal.of(a)
-      const a = concatMap(f, s).subscribe(always())
+      const a = concatMap(f)(s).subscribe(always())
 
       a.unsubscribe()
 
@@ -51,7 +51,7 @@ describe('map', () => {
       const unmount = sinon.spy()
       const s = Signal.of(0)
       const f = a => new Signal(() => unmount)
-      const a = concatMap(f, s).subscribe(always())
+      const a = concatMap(f)(s).subscribe(always())
 
       a.unsubscribe()
 
@@ -63,7 +63,7 @@ describe('map', () => {
     it('maps a function over the signal values', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      map(inc, s).subscribe(nextSpy, errorSpy, completeSpy)
+      map(inc)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       range(2, 3).forEach((n, index) => {
         const call = nextSpy.getCall(index)
@@ -77,7 +77,7 @@ describe('map', () => {
       const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
-      map(always(), s).subscribe({error: errorSpy})
+      map(always())(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })

@@ -17,7 +17,7 @@ describe('fold', () => {
     it('folds a function over the signal values', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      fold(add, 0, s).subscribe(nextSpy, errorSpy, completeSpy)
+      fold(add)(0)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       assert.isTrue(nextSpy.calledWithExactly(6))
       assert.isTrue(completeSpy.calledAfter(nextSpy))
@@ -27,7 +27,7 @@ describe('fold', () => {
       const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
-      fold(always(), 0, s).subscribe({error: errorSpy})
+      fold(always())(0)(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })
@@ -36,7 +36,7 @@ describe('fold', () => {
     it('scans a function over the signal values', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      scan(add, 0, s).subscribe(nextSpy, errorSpy, completeSpy);
+      scan(add)(0)(s).subscribe(nextSpy, errorSpy, completeSpy);
 
       [0, 1, 3, 6].forEach((n, index) => {
         const call = nextSpy.getCall(index)
@@ -50,7 +50,7 @@ describe('fold', () => {
       const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
-      scan(always(), 0, s).subscribe({error: errorSpy})
+      scan(always())(0)(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })
@@ -62,7 +62,7 @@ describe('fold', () => {
       stateMachine((a, b, emit) => {
         emit.next(a * b)
         return a + b
-      }, 0, s).subscribe(nextSpy, errorSpy, completeSpy);
+      })(0)(s).subscribe(nextSpy, errorSpy, completeSpy);
 
       [0, 2, 9].forEach((n, index) => {
         const call = nextSpy.getCall(index)
@@ -74,7 +74,7 @@ describe('fold', () => {
       const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
-      stateMachine(always(), 0, s).subscribe({error: errorSpy})
+      stateMachine(always())(0)(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })

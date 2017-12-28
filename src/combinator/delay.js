@@ -1,4 +1,5 @@
 import Signal from '../signal'
+import {curry} from 'fkit'
 
 /**
  * This module defines delay combinators for signals.
@@ -11,11 +12,12 @@ import Signal from '../signal'
 /**
  * Delays the signal `s` by `n` milliseconds.
  *
+ * @function
  * @param n A number.
  * @param s A signal.
  * @returns A new signal.
  */
-export function delay (n, s) {
+export const delay = curry((n, s) => {
   let id
 
   return new Signal(emit => {
@@ -31,4 +33,4 @@ export function delay (n, s) {
 
     return () => clearTimeout(id)
   })
-}
+})

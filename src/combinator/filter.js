@@ -1,5 +1,5 @@
 import Signal from '../signal'
-import {equal} from 'fkit'
+import {curry, equal} from 'fkit'
 
 /**
  * This module defines filter combinators for signals.
@@ -12,16 +12,17 @@ import {equal} from 'fkit'
 /**
  * Filters the signal `s` to only emit values that satisfy the predicate `p`.
  *
+ * @function
  * @param p A predicate function.
  * @param s A signal.
  * @returns A new signal.
  */
-export function filter (p, s) {
+export const filter = curry((p, s) => {
   return new Signal(emit => {
     const next = a => { if (p(a)) { emit.next(a) } }
     return s.subscribe({...emit, next})
   })
-}
+})
 
 /**
  * Removes duplicate values from the signal `s`.
@@ -37,13 +38,14 @@ export function dedupe (s) {
  * Removes duplicate values from the signal `s` using the comparator function
  * `f`.
  *
+ * @function
  * @param f A comparator function.
  * @param s A signal.
  * @returns A new signal.
  */
-export function dedupeWith (f, s) {
+export const dedupeWith = curry((f, s) => {
   return s.stateMachine((a, b, emit) => {
     if (!f(a, b)) { emit.next(b) }
     return b
   })
-}
+})

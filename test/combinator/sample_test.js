@@ -23,7 +23,7 @@ describe('sample', () => {
       const s = Signal.periodic(1000)
       const t = Signal.sequential(500, range(1, 6))
 
-      sample(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+      sample(s)(t).subscribe(nextSpy, errorSpy, completeSpy)
 
       clock.tick(1000)
       clock.tick(1000)
@@ -48,7 +48,7 @@ describe('sample', () => {
         b = e => { callback(e) }
       })
 
-      sample(s, t).subscribe({error: errorSpy})
+      sample(s)(t).subscribe({error: errorSpy})
 
       a('foo')
       b('foo')
@@ -65,7 +65,7 @@ describe('sample', () => {
       })
       const t = Signal.sequential(500, range(1, 6))
 
-      hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+      hold(s)(t).subscribe(nextSpy, errorSpy, completeSpy)
 
       a(false)
       clock.tick(1000)
@@ -93,7 +93,7 @@ describe('sample', () => {
         b = e => { callback(e) }
       })
 
-      hold(s, t).subscribe({error: errorSpy})
+      hold(s)(t).subscribe({error: errorSpy})
 
       a('foo')
       b('foo')
@@ -105,7 +105,7 @@ describe('sample', () => {
       const unmount = sinon.spy()
       const s = new Signal(() => unmount)
       const t = Signal.never()
-      const a = hold(s, t).subscribe(always())
+      const a = hold(s)(t).subscribe(always())
 
       a.unsubscribe()
 
@@ -116,7 +116,7 @@ describe('sample', () => {
       const unmount = sinon.spy()
       const s = Signal.never()
       const t = new Signal(() => unmount)
-      const a = hold(s, t).subscribe(always())
+      const a = hold(s)(t).subscribe(always())
 
       a.unsubscribe()
 

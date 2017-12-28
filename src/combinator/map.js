@@ -1,5 +1,5 @@
 import Signal from '../signal'
-import {compose} from 'fkit'
+import {compose, curry} from 'fkit'
 
 /**
  * This module defines map combinators for signals.
@@ -13,11 +13,12 @@ import {compose} from 'fkit'
  * Applies the function `f` to the signal `s`. The function `f` must also
  * return a `Signal`.
  *
+ * @function
  * @param f A unary function.
  * @param s A signal.
  * @returns A new signal.
  */
-export function concatMap (f, s) {
+export const concatMap = curry((f, s) => {
   let subscription2
 
   return new Signal(emit => {
@@ -33,19 +34,20 @@ export function concatMap (f, s) {
       if (subscription2) { subscription2.unsubscribe() }
     }
   })
-}
+})
 
 /**
  * Applies the function `f` to the signal `s`. The function must return a
  * signal value.
  *
+ * @function
  * @param f A unary function.
  * @param s A signal.
  * @returns A new signal.
  */
-export function map (f, s) {
+export const map = curry((f, s) => {
   return new Signal(emit => {
     const next = compose(emit.next, f)
     s.subscribe({...emit, next})
   })
-}
+})

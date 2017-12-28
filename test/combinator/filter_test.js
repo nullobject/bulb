@@ -17,7 +17,7 @@ describe('filter', () => {
     it('filters the signal values with a predicate', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      filter(equal(2), s).subscribe(nextSpy, errorSpy, completeSpy)
+      filter(equal(2))(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       assert.isTrue(nextSpy.alwaysCalledWithExactly(2))
       assert.isTrue(completeSpy.calledAfter(nextSpy))
@@ -27,7 +27,7 @@ describe('filter', () => {
       const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
-      filter(always(), s).subscribe({error: errorSpy})
+      filter(always())(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })
@@ -57,7 +57,7 @@ describe('filter', () => {
         a = a => { callback(null, a) }
       })
 
-      dedupeWith(equal, s).subscribe(nextSpy, errorSpy, completeSpy)
+      dedupeWith(equal)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       a('foo')
       a('foo')
@@ -71,7 +71,7 @@ describe('filter', () => {
       const mount = sinon.stub().callsFake(emit => emit.error())
       const s = new Signal(mount)
 
-      dedupeWith(equal, s).subscribe({error: errorSpy})
+      dedupeWith(equal)(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })

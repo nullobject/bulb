@@ -1,4 +1,5 @@
 import Signal from '../signal'
+import {curry} from 'fkit'
 
 /**
  * This module defines sample combinators for signals.
@@ -12,11 +13,12 @@ import Signal from '../signal'
  * Emits the most recent value from signal `t` whenever there is an event on
  * the sampler signal `s`.
  *
+ * @function
  * @param s A signal.
  * @param t A signal.
  * @returns A new signal.
  */
-export function sample (s, t) {
+export const sample = curry((s, t) => {
   let buffer
 
   return new Signal(emit => {
@@ -34,7 +36,7 @@ export function sample (s, t) {
 
     return () => subscriptions.forEach(s => s.unsubscribe())
   })
-}
+})
 
 /**
  * Pauses emitting events from signal `t` if the most recent value from the
@@ -42,10 +44,11 @@ export function sample (s, t) {
  *
  * It will resume emitting events after there is a falsey value.
  *
+ * @function
  * @param s A signal.
  * @returns A new signal.
  */
-export function hold (s, t) {
+export const hold = curry((s, t) => {
   let hold
 
   return new Signal(emit => {
@@ -63,4 +66,4 @@ export function hold (s, t) {
 
     return () => subscriptions.forEach(s => s.unsubscribe())
   })
-}
+})

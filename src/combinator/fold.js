@@ -1,4 +1,5 @@
 import Signal from '../signal'
+import {curry} from 'fkit'
 
 /**
  * This module defines fold combinators for signals.
@@ -12,12 +13,13 @@ import Signal from '../signal'
  * Folds the binary function `f` over the signal `s` with the starting value
  * `a`. The final value is emitted when the signal completes.
  *
+ * @function
  * @param f A binary function.
  * @param a A starting value.
  * @param a A signal.
  * @returns A new signal.
  */
-export function fold (f, a, s) {
+export const fold = curry((f, a, s) => {
   return new Signal(emit => {
     // Fold the next value with the previous value.
     const next = b => { a = f(a, b) }
@@ -30,19 +32,20 @@ export function fold (f, a, s) {
 
     return s.subscribe({...emit, next, complete})
   })
-}
+})
 
 /**
  * Scans the binary function `f` over the signal `s` with the starting value
  * `a`. Unlike the `fold` function, the signal values are emitted
  * incrementally.
  *
+ * @function
  * @param f A binary function.
  * @param a A starting value.
  * @param a A signal.
  * @returns A new signal.
  */
-export function scan (f, a, s) {
+export const scan = curry((f, a, s) => {
   return new Signal(emit => {
     // Emit the starting value.
     emit.next(a)
@@ -55,7 +58,7 @@ export function scan (f, a, s) {
 
     return s.subscribe({...emit, next})
   })
-}
+})
 
 /**
  * Folds the transform function `f` over the signal `s` with the starting value
@@ -71,12 +74,13 @@ export function scan (f, a, s) {
  *   return a + b
  * }, 0, s)
  *
+ * @function
  * @param f A ternary function.
  * @param a A starting value.
  * @param a A signal.
  * @returns A new signal.
  */
-export function stateMachine (f, a, s) {
+export const stateMachine = curry((f, a, s) => {
   return new Signal(emit => {
     const next = b => {
       // Fold the next value with the previous value.
@@ -85,4 +89,4 @@ export function stateMachine (f, a, s) {
 
     return s.subscribe({...emit, next})
   })
-}
+})
