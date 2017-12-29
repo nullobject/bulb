@@ -1,6 +1,6 @@
 import Subscription from './subscription'
 import {always, apply, compose, empty, get, head, tail} from 'fkit'
-import {concatMap, dedupe, dedupeWith, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, zip, zipWith} from './combinator'
+import {concatMap, dedupe, dedupeWith, debounce, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, throttle, zip, zipWith} from './combinator'
 
 /**
  * Creates a new signal.
@@ -302,13 +302,35 @@ export default class Signal {
   }
 
   /**
-   * Returns a signal that delays the signal values by `n` milliseconds.
+   * Delays events emitted by the signal for `n` milliseconds.
    *
-   * @param n The number of milliseconds between each clock tick.
+   * @param n A number.
    * @returns A new signal.
    */
   delay (n) {
     return delay(n, this)
+  }
+
+  /**
+   * Debounces the signal to only emit an event `n` milliseconds after the last
+   * burst of events.
+   *
+   * @param n A number.
+   * @returns A new signal.
+   */
+  debounce (n) {
+    return debounce(n, this)
+  }
+
+  /**
+   * Limits the rate of events emitted by the signal to allow at most one event
+   * every `n` milliseconds.
+   *
+   * @param n A number.
+   * @returns A new signal.
+   */
+  throttle (n) {
+    return throttle(n, this)
   }
 
   /**
