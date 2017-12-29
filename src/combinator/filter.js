@@ -12,6 +12,7 @@ import {curry, equal} from 'fkit'
 /**
  * Filters the signal `s` to only emit values that satisfy the predicate `p`.
  *
+ * @curried
  * @function
  * @param p A predicate function.
  * @param s A signal.
@@ -38,6 +39,7 @@ export function dedupe (s) {
  * Removes duplicate values from the signal `s` using the comparator function
  * `f`.
  *
+ * @curried
  * @function
  * @param f A comparator function.
  * @param s A signal.

@@ -13,6 +13,7 @@ import {curry} from 'fkit'
  * Folds the binary function `f` over the signal `s` with the starting value
  * `a`. The final value is emitted when the signal completes.
  *
+ * @curried
  * @function
  * @param f A binary function.
  * @param a A starting value.
@@ -39,6 +40,7 @@ export const fold = curry((f, a, s) => {
  * `a`. Unlike the `fold` function, the signal values are emitted
  * incrementally.
  *
+ * @curried
  * @function
  * @param f A binary function.
  * @param a A starting value.
@@ -74,6 +76,7 @@ export const scan = curry((f, a, s) => {
  *   return a + b
  * }, 0, s)
  *
+ * @curried
  * @function
  * @param f A ternary function.
  * @param a A starting value.

@@ -13,6 +13,7 @@ import {curry} from 'fkit'
  * Emits the most recent value from signal `t` whenever there is an event on
  * the sampler signal `s`.
  *
+ * @curried
  * @function
  * @param s A signal.
  * @param t A signal.
@@ -44,6 +45,7 @@ export const sample = curry((s, t) => {
  *
  * It will resume emitting events after there is a falsey value.
  *
+ * @curried
  * @function
  * @param s A signal.
  * @returns A new signal.

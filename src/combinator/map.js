@@ -13,6 +13,7 @@ import {compose, curry} from 'fkit'
  * Applies the function `f` to the signal `s`. The function `f` must also
  * return a `Signal`.
  *
+ * @curried
  * @function
  * @param f A unary function.
  * @param s A signal.
@@ -40,6 +41,7 @@ export const concatMap = curry((f, s) => {
  * Applies the function `f` to the signal `s`. The function must return a
  * signal value.
  *
+ * @curried
  * @function
  * @param f A unary function.
  * @param s A signal.

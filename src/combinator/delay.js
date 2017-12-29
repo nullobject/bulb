@@ -12,6 +12,7 @@ import {curry} from 'fkit'
 /**
  * Delays events emitted by the signal `s` for `n` milliseconds.
  *
+ * @curried
  * @function
  * @param n A number.
  * @param s A signal.
@@ -39,6 +40,7 @@ export const delay = curry((n, s) => {
  * Debounces the signal `s` to only emit an event `n` milliseconds after the
  * last burst of events.
  *
+ * @curried
  * @function
  * @param n A number.
  * @param s A signal.
@@ -76,6 +78,7 @@ export const debounce = curry((n, s) => {
  * Limits the rate of events emitted by the signal `s` to allow at most one
  * event every `n` milliseconds.
  *
+ * @curried
  * @function
  * @param n A number.
  * @param s A signal.
