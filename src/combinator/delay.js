@@ -34,3 +34,41 @@ export const delay = curry((n, s) => {
     return () => clearTimeout(id)
   })
 })
+
+/**
+ * Debounces the signal `s` by `n` milliseconds.
+ *
+ * The last event in a burst of events will be emitted `n` milliseconds later.
+ *
+ * @function
+ * @param n A number.
+ * @param s A signal.
+ * @returns A new signal.
+ */
+export const debounce = curry((n, s) => {
+  let value
+  let id
+
+  const emitLastValue = (emit) => {
+    if (value) { emit.next(value) }
+    value = null
+  }
+
+  return new Signal(emit => {
+    const next = a => {
+      clearTimeout(id)
+      value = a
+      id = setTimeout(() => emitLastValue(emit), n)
+    }
+
+    const complete = () => {
+      clearTimeout(id)
+      emitLastValue(emit)
+      emit.complete()
+    }
+
+    s.subscribe({...emit, next, complete})
+
+    return () => clearTimeout(id)
+  })
+})

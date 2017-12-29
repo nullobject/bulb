@@ -2,7 +2,7 @@ import Signal from '../../src/signal'
 import sinon from 'sinon'
 import {range} from 'fkit'
 import {assert} from 'chai'
-import {delay} from '../../src/combinator/delay'
+import {debounce, delay} from '../../src/combinator/delay'
 
 let nextSpy, errorSpy, completeSpy, clock
 
@@ -41,6 +41,31 @@ describe('delay', () => {
       const s = new Signal(mount)
 
       delay(1000)(s).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
+  })
+
+  describe('#debounce', () => {
+    it('debounces the signal values', () => {
+      const s = Signal.sequential(100, range(1, 3))
+
+      debounce(1000)(s).subscribe(nextSpy, errorSpy, completeSpy)
+
+      assert.isFalse(nextSpy.called)
+
+      clock.tick(1000)
+
+      assert.isTrue(nextSpy.calledOnce)
+      assert.isTrue(nextSpy.calledWithExactly(3))
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(emit => emit.error())
+      const s = new Signal(mount)
+
+      debounce(1000)(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })
