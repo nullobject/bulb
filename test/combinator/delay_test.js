@@ -2,7 +2,7 @@ import Signal from '../../src/signal'
 import sinon from 'sinon'
 import {range} from 'fkit'
 import {assert} from 'chai'
-import {debounce, delay} from '../../src/combinator/delay'
+import {debounce, delay, throttle} from '../../src/combinator/delay'
 
 let nextSpy, errorSpy, completeSpy, clock
 
@@ -27,6 +27,8 @@ describe('delay', () => {
       assert.isFalse(nextSpy.called)
 
       clock.tick(1000)
+
+      assert.isTrue(nextSpy.calledThrice)
 
       range(1, 3).forEach((n, index) => {
         const call = nextSpy.getCall(index)
@@ -66,6 +68,37 @@ describe('delay', () => {
       const s = new Signal(mount)
 
       debounce(1000)(s).subscribe({error: errorSpy})
+      assert.isTrue(errorSpy.calledOnce)
+    })
+  })
+
+  describe('#throttle', () => {
+    it('throttle the signal values', () => {
+      const s = Signal.sequential(500, range(1, 3))
+
+      throttle(1000)(s).subscribe(nextSpy, errorSpy, completeSpy)
+
+      assert.isFalse(nextSpy.called)
+
+      clock.tick(500)
+      clock.tick(500)
+      clock.tick(500)
+
+      assert.isTrue(nextSpy.calledTwice);
+
+      [1, 3].forEach((n, index) => {
+        const call = nextSpy.getCall(index)
+        assert.isTrue(call.calledWithExactly(n))
+      }, this)
+
+      assert.isTrue(completeSpy.calledAfter(nextSpy))
+    })
+
+    it('emits an error if the parent signal emits an error', () => {
+      const mount = sinon.stub().callsFake(emit => emit.error())
+      const s = new Signal(mount)
+
+      throttle(1000)(s).subscribe({error: errorSpy})
       assert.isTrue(errorSpy.calledOnce)
     })
   })

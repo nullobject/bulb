@@ -72,3 +72,28 @@ export const debounce = curry((n, s) => {
     return () => clearTimeout(id)
   })
 })
+
+/**
+ * Limits the rate of events from the signal `s` to allow at most one every
+ * `n` milliseconds.
+ *
+ * @function
+ * @param n A number.
+ * @param s A signal.
+ * @returns A new signal.
+ */
+export const throttle = curry((n, s) => {
+  let lastTime
+
+  return new Signal(emit => {
+    const next = a => {
+      const t = Date.now()
+      if (!lastTime || t - lastTime >= n) {
+        emit.next(a)
+        lastTime = t
+      }
+    }
+
+    s.subscribe({...emit, next})
+  })
+})
