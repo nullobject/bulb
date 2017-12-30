@@ -3,16 +3,22 @@
   <head>
     <meta charset="utf-8">
     <title>Timer Example</title>
-    <script src="https://cdn.rawgit.com/nullobject/fkit/v1.0.1/dist/fkit.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
+    <script src="https://unpkg.com/fkit/dist/fkit.min.js"></script>
     <script src="../dist/bulb.js"></script>
   </head>
-  <body>
-    <pre><code id="results"></code></pre>
+  <body class="sans-serif pa3">
+    <article class="mw7 center ph3 ph5-ns tc br2 pv5 ba b--light-blue bg-lightest-blue black-70 mb5">
+      <h1 class="fw6 f3 f2-ns lh-title mt0 mb3 blue">Timer Example ⏰</h1>
+      <p class="fw2 f4 lh-copy mt0 mb3">This example illustrates how to use a
+        clock signal to periodically generate random numbers.</p>
+      <pre><code id="results"></code></pre>
+    </article>
 
     <script>
       const s = bulb.Signal.periodic(1000).map(() => F.randomFloat(0, 1))
 
-      s.subscribe(function (value) {
+      s.subscribe(value => {
         document.getElementById('results').textContent = value
       })
     </script>
