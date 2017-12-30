@@ -21,4 +21,18 @@ describe('keyboard', () => {
       assert.deepEqual(Array.from(spy.secondCall.args[0]), [])
     })
   })
+
+  describe('.keydown', () => {
+    it('emits keydown events', () => {
+      const spy = sinon.spy()
+      const emitter = event.emitter()
+      const s = keyboard.keydown(emitter)
+
+      s.subscribe(spy)
+
+      emitter.emit('keydown', {keyCode: '1'})
+      assert.isTrue(spy.calledOnce)
+      assert.equal(spy.firstCall.args[0], 1)
+    })
+  })
 })

@@ -43,3 +43,23 @@ export function state (target) {
     }
   })
 }
+
+/**
+ * Creates a signal that emits an event for every keydown event on the `target` object.
+ *
+ * @summary Creates a keyboard state signal.
+ * @param target The event target that the signal listens on.
+ * @returns A new signal.
+ */
+export function keydown (target) {
+  return new Signal(emit => {
+    const downHandler = e => {
+      const key = parseInt(e.keyCode)
+      emit.next(key)
+    }
+
+    target.addEventListener('keydown', downHandler, true)
+
+    return () => target.removeEventListener('keydown', downHandler, true)
+  })
+}
