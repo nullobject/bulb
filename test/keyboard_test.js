@@ -4,11 +4,11 @@ import sinon from 'sinon'
 import {assert} from 'chai'
 
 describe('keyboard', () => {
-  describe('.keys', () => {
-    it('returns a signal that emits the keyboard state', () => {
+  describe('.state', () => {
+    it('emits the keyboard state', () => {
       const spy = sinon.spy()
       const emitter = event.emitter()
-      const s = keyboard.keys(emitter)
+      const s = keyboard.state(emitter)
 
       s.subscribe(spy)
 

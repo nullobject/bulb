@@ -10,14 +10,14 @@
     <article class="mw7 center ph3 ph5-ns tc br2 pv5 ba b--light-blue bg-lightest-blue black-70 mb5">
       <h1 class="fw6 f3 f2-ns lh-title mt0 mb3 blue">Keyboard Example ⌨️</h1>
       <p class="fw2 f4 lh-copy mt0 mb3">This example illustrates how the
-        keyboard signal emits values containing the current state of the
-        keyboard.</p>
+        <code>keyboard.state</code> signal emits values containing the current
+        state of the keyboard.</p>
       <p class="fw1 f5 mt0 mb3">Press some keys to see how it works.</p>
       <pre><code id="results"></code></pre>
     </article>
 
     <script>
-      const s = bulb.keyboard.keys(document).startWith([])
+      const s = bulb.keyboard.state(document).startWith([])
 
       s.subscribe(value => {
         document.getElementById('results').textContent = JSON.stringify(Array.from(value))

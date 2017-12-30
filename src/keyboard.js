@@ -8,14 +8,13 @@ import Signal from './signal'
  */
 
 /**
- * Returns a new signal that emits a value every time the keyboard state
- * changes.
+ * Creates a signal that emits a value every time the keyboard state changes.
  *
  * @summary Creates a keyboard state signal.
  * @param target The event target that the signal listens on.
  * @returns A new signal.
  */
-export function keys (target) {
+export function state (target) {
   let state = new Set()
 
   return new Signal(emit => {
