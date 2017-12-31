@@ -5,8 +5,7 @@ import {all, replicate} from 'fkit'
  * This module defines zip combinators for signals.
  *
  * @private
- * @module bulb/combinator/zip
- * @author Josh Bassett
+ * @module combinator/zip
  */
 
 /**

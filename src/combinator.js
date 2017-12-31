@@ -8,18 +8,17 @@ export * from './combinator/switch'
 export * from './combinator/zip'
 
 /**
- * Bulb provides many combinators for working with signals.
+ * Bulb provides many combinator functions for working with signals.
  *
  * @summary Working with Signals
  *
- * @module bulb/combinator
- * @mixes module:bulb/combinator/delay
- * @mixes module:bulb/combinator/filter
- * @mixes module:bulb/combinator/fold
- * @mixes module:bulb/combinator/map
- * @mixes module:bulb/combinator/merge
- * @mixes module:bulb/combinator/sample
- * @mixes module:bulb/combinator/switch
- * @mixes module:bulb/combinator/zip
- * @author Josh Bassett
+ * @module combinator
+ * @mixes module:combinator/delay
+ * @mixes module:combinator/filter
+ * @mixes module:combinator/fold
+ * @mixes module:combinator/map
+ * @mixes module:combinator/merge
+ * @mixes module:combinator/sample
+ * @mixes module:combinator/switch
+ * @mixes module:combinator/zip
  */

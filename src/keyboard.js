@@ -3,7 +3,7 @@ import Signal from './signal'
 /**
  * This module defines keyboard signals.
  *
- * @module bulb/keyboard
+ * @module keyboard
  * @summary Keyboard Signals
  */
 

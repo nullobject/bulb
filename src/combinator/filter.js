@@ -5,8 +5,7 @@ import {curry, equal} from 'fkit'
  * This module defines filter combinators for signals.
  *
  * @private
- * @module bulb/combinator/filter
- * @author Josh Bassett
+ * @module combinator/filter
  */
 
 /**

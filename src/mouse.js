@@ -3,7 +3,7 @@ import Signal from './signal'
 /**
  * This module defines mouse signals.
  *
- * @module bulb/mouse
+ * @module mouse
  * @summary Mouse Signals
  */
 

@@ -4,8 +4,7 @@ import Signal from '../signal'
  * This module defines switch combinators for signals.
  *
  * @private
- * @module bulb/combinator/switch
- * @author Josh Bassett
+ * @module combinator/switch
  */
 
 /**

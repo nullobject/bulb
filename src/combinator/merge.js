@@ -4,8 +4,7 @@ import Signal from '../signal'
  * This module defines merge combinators for signals.
  *
  * @private
- * @module bulb/combinator/merge
- * @author Josh Bassett
+ * @module combinator/merge
  */
 
 /**

@@ -5,8 +5,7 @@ import {compose, curry} from 'fkit'
  * This module defines map combinators for signals.
  *
  * @private
- * @module bulb/combinator/map
- * @author Josh Bassett
+ * @module combinator/map
  */
 
 /**

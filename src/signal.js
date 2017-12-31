@@ -3,17 +3,20 @@ import {always, apply, compose, empty, get, head, tail} from 'fkit'
 import {concatMap, dedupe, dedupeWith, debounce, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, throttle, zip, zipWith} from './combinator'
 
 /**
- * Creates a new signal.
+ * The `Signal` class represents a value which changes over time.
  *
- * The `mount` function is called when an emit subscribes to the signal. The
- * `mount` function can optionally return another function, which is called
- * when the signal is unmounted.
- *
- * @class Signal
- * @summary The `Signal` class represents a value which changes over time.
- * @param mount A mount function.
+ * @summary The Signal class
  */
-export default class Signal {
+class Signal {
+  /**
+   * Creates a new signal.
+   *
+   * The `mount` function is called when an emit subscribes to the signal. The
+   * `mount` function can optionally return another function, which is called
+   * when the signal is unmounted.
+   *
+   * @param mount A mount function.
+   */
   constructor (mount) {
     if (typeof mount !== 'function') {
       throw new TypeError('Signal mount must be a function')
@@ -60,11 +63,11 @@ export default class Signal {
    * @param next A callback function.
    * @param error A callback function.
    * @param complete A callback function.
-   * @returns A subscription object.
+   * @returns A new subscription.
    */
   subscribe (emit, ...args) {
     if (typeof emit === 'function') {
-      emit = { next: emit, error: args[0], complete: args[1] }
+      emit = {next: emit, error: args[0], complete: args[1]}
     } else if (typeof emit !== 'object') {
       emit = {}
     }
@@ -531,3 +534,5 @@ export default class Signal {
     return encode(this, ss)
   }
 }
+
+export default Signal
