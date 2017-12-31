@@ -8,14 +8,16 @@ import Signal from './signal'
  */
 
 /**
- * Returns a new signal that emits a value every time the keyboard state
- * changes.
+ * Creates a signal that emits a value if the keyboard state changes.
+ *
+ * When a key is pressed or released, then the signal will emit an array
+ * containing the key codes of all the currently pressed keys.
  *
  * @summary Creates a keyboard state signal.
- * @param target The event target that the signal listens on.
+ * @param target A DOM element.
  * @returns A new signal.
  */
-export function keys (target) {
+export function state (target) {
   let state = new Set()
 
   return new Signal(emit => {
@@ -23,7 +25,7 @@ export function keys (target) {
       const key = parseInt(e.keyCode)
       if (!state.has(key)) {
         state.add(key)
-        emit.next(state)
+        emit.next(Array.from(state))
       }
     }
 
@@ -31,7 +33,7 @@ export function keys (target) {
       const key = parseInt(e.keyCode)
       if (state.has(key)) {
         state.delete(key)
-        emit.next(state)
+        emit.next(Array.from(state))
       }
     }
 
@@ -42,5 +44,36 @@ export function keys (target) {
       target.removeEventListener('keydown', downHandler, true)
       target.removeEventListener('keyup', upHandler, true)
     }
+  })
+}
+
+/**
+ * Creates a signal that emits a value if a key is pressed on the `target`
+ * DOM element.
+ *
+ * If a key is held down continuously, then the signal will repeatedly emit
+ * values at a rate determined by your OS key repeat setting.
+ *
+ * @summary Creates a keyboard keydown signal.
+ * @param target A DOM element.
+ * @returns A new signal.
+ */
+export function key (target) {
+  return new Signal(emit => {
+    const handler = e => {
+      emit.next({
+        key: e.key,
+        code: parseInt(e.keyCode),
+        repeat: e.repeat,
+        ctrlKey: e.ctrlKey,
+        shiftKey: e.shiftKey,
+        altKey: e.altKey,
+        metaKey: e.metaKey
+      })
+    }
+
+    target.addEventListener('keydown', handler, true)
+
+    return () => target.removeEventListener('keydown', handler, true)
   })
 }

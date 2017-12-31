@@ -9,19 +9,17 @@
   <body class="sans-serif pa3">
     <article class="mw7 center ph3 ph5-ns tc br2 pv5 ba b--light-blue bg-lightest-blue black-70 mb5">
       <h1 class="fw6 f3 f2-ns lh-title mt0 mb3 blue">Mouse Example 🐭</h1>
-      <p class="fw2 f4 lh-copy mt0 mb3">This example illustrates how the mouse
-        signals emits values containing the current state of the mouse.</p>
-      <p class="fw1 f5 mt0 mb3">Move your mouse see how it works. If you hold
-        your mouse button then
-        it will pause the mouse position from updating.</p>
+      <p class="fw2 f4 lh-copy mt0 mb3">This example illustrates how the
+        <code>mouse.state</code> signal emits values with the current state of
+        the mouse.</p>
+      <p class="fw1 f5 mt0 mb3">Move your mouse see how it works.</p>
       <pre><code id="results"></code></pre>
     </article>
 
     <script>
-      const s = bulb.mouse.position(document)
-      const t = bulb.mouse.button(document)
+      const s = bulb.mouse.state(document)
 
-      t.hold(s).subscribe(value => {
+      s.subscribe(value => {
         document.getElementById('results').textContent = JSON.stringify(value)
       })
     </script>
