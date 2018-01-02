@@ -1,3 +1,29 @@
+v1.0.0 / 2018-01-02
+===================
+
+  * Update rollup to 0.53.2
+  * Update jsdoc-react to 1.0.0
+  * Update fkit to 1.1.0
+  * Update mocha to 4.1.0
+  * Update documentation
+  * Refactor keyboard and mouse modules
+  * Add Signal#throttle and Signal#debounce
+  * Add throttle function
+  * Add debounce function
+  * Curry the combinator functions
+  * Extract combinators into modules
+  * Update zipWith function to buffer values
+  * Rename license to licence
+  * Remove sampleWith and holdWith functions
+  * Ensure signal combinators are unsubscribed
+  * Add Signal#encode
+  * Add Signal#switch
+  * Allow Signal#merge to receieve signals as an array
+  * Update copyright in license
+  * Don't export default from main module
+  * Rename observer -> emit
+  * Refactor subscribe calls to use object reset spread
+
 v0.4.0 / 2017-12-18
 ===================
 
