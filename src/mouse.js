@@ -15,11 +15,14 @@ import Signal from './signal'
  *
  * @summary Creates a mouse state signal.
  * @param target A DOM element.
+ * @param options An options object.
  * @returns A new signal.
  */
-export function state (target) {
+export function state (target, options = {}) {
   return new Signal(emit => {
     const handler = e => {
+      if (options.preventDefault) { e.preventDefault() }
+
       emit.next({
         buttons: e.buttons,
         x: e.clientX,
@@ -50,13 +53,19 @@ export function state (target) {
  * mouse position.
  *
  * @summary Creates a mouse position signal.
- * @param target The event target that the signal listens on.
+ * @param target A DOM element.
+ * @param options An options object.
  * @returns A new signal.
  */
-export function position (target) {
+export function position (target, options = {}) {
   return new Signal(emit => {
-    const handler = e => emit.next([e.clientX, e.clientY])
+    const handler = e => {
+      if (options.preventDefault) { e.preventDefault() }
+      emit.next([e.clientX, e.clientY])
+    }
+
     target.addEventListener('mousemove', handler, true)
+
     return () => target.removeEventListener('mousemove', handler, true)
   })
 }
@@ -70,12 +79,18 @@ export function position (target) {
  *
  * @summary Creates a mouse button signal.
  * @param target A DOM element.
+ * @param options An options object.
  * @returns A new signal.
  */
-export function button (target) {
+export function buttons (target, options = {}) {
   return new Signal(emit => {
-    const handler = e => emit.next(e.buttons)
+    const handler = e => {
+      if (options.preventDefault) { e.preventDefault() }
+      emit.next(e.buttons)
+    }
+
     target.addEventListener('mousedown', handler, true)
+
     return () => target.removeEventListener('mousedown', handler, true)
   })
 }

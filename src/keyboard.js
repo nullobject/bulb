@@ -15,14 +15,18 @@ import Signal from './signal'
  *
  * @summary Creates a keyboard state signal.
  * @param target A DOM element.
+ * @param options An options object.
  * @returns A new signal.
  */
-export function state (target) {
+export function state (target, options = {}) {
   let state = new Set()
 
   return new Signal(emit => {
     const downHandler = e => {
+      if (options.preventDefault) { e.preventDefault() }
+
       const key = parseInt(e.keyCode)
+
       if (!state.has(key)) {
         state.add(key)
         emit.next(Array.from(state))
@@ -30,7 +34,10 @@ export function state (target) {
     }
 
     const upHandler = e => {
+      if (options.preventDefault) { e.preventDefault() }
+
       const key = parseInt(e.keyCode)
+
       if (state.has(key)) {
         state.delete(key)
         emit.next(Array.from(state))
@@ -56,20 +63,14 @@ export function state (target) {
  *
  * @summary Creates a keyboard keydown signal.
  * @param target A DOM element.
+ * @param options An options object.
  * @returns A new signal.
  */
-export function key (target) {
+export function keys (target, options = {}) {
   return new Signal(emit => {
     const handler = e => {
-      emit.next({
-        key: e.key,
-        code: parseInt(e.keyCode),
-        repeat: e.repeat,
-        ctrlKey: e.ctrlKey,
-        shiftKey: e.shiftKey,
-        altKey: e.altKey,
-        metaKey: e.metaKey
-      })
+      if (options.preventDefault) { e.preventDefault() }
+      emit.next(parseInt(e.keyCode))
     }
 
     target.addEventListener('keydown', handler, true)

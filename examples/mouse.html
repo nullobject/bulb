@@ -17,7 +17,7 @@
     </article>
 
     <script>
-      const s = bulb.mouse.state(document)
+      const s = bulb.mouse.state(document, {preventDefault: true})
 
       s.subscribe(value => {
         document.getElementById('results').textContent = JSON.stringify(value)
