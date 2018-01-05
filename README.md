@@ -1,8 +1,32 @@
-# Bulb
+<h1 align="center"><img alt="Bulb" src="https://raw.githubusercontent.com/nullobject/bulb/master/logo.png" width="200px" /></h1>
 
 [![Build Status](https://travis-ci.org/nullobject/bulb.svg?branch=master)](https://travis-ci.org/nullobject/bulb)
 
-Bulb is a functional reactive programming (FRP) library for JavaScript.
+Bulb is a [reactive
+programming](https://en.wikipedia.org/wiki/Reactive_programming) library for
+JavaScript. It provides a simple API for writing event-based programs in a
+declarative style.
+
+The main data type introduced by Bulb is called a *signal*. A signal can
+represent any time-varying source of values &mdash; for example, the value of a
+text input, a periodic timer, or even the position of the mouse pointer in the
+browser.
+
+The Bulb API provides many functions for creating signals from existing sources
+(e.g. AJAX requests, DOM events, timers, etc.) and for performing operations on
+signals.
+
+A number of libraries already exist for reactive programming in JavaScript
+(e.g. RxJS, Bacon.js, Most.js), but Bulb differs in that it tries to avoid
+providing a "kitchen sink". Instead, Bulb defines a very focussed API which
+provides only the key building blocks for reactive programming in the
+JavaScript language.
+
+Features:
+
+* Simple, focused API. Bigger isn't always better.
+
+* It's small, roughly 4 KB when minified and gzipped!
 
 ## Table of Contents
 
@@ -10,10 +34,7 @@ Bulb is a functional reactive programming (FRP) library for JavaScript.
   * [CDN](#cdn)
   * [Node](#node)
 * [Documentation](#documentation)
-* [Contribute](#contribute)
-  * [Build](#build)
-  * [Test](#test)
-  * [Release](#release)
+* [Examples](#examples)
 * [Licence](#licence)
 
 ## Getting Started
@@ -63,31 +84,13 @@ const s = Signal.of(1)
 
 * [API documentation](http://nullobject.github.io/bulb/api.html)
 
-## Contribute
+## Examples
 
-### Build
-
-Build the library:
-
-```sh
-> make dist
-```
-
-### Test
-
-Run the tests:
-
-```sh
-> make test
-```
-
-### Release
-
-Ship a new release x.y.z:
-
-```sh
-> make release version=x.y.z
-```
+* [Timer](https://codepen.io/nullobject/pen/wpjQoM)
+* [Mouse Position](https://codepen.io/nullobject/pen/eyGQdY)
+* [Keyboard State](https://codepen.io/nullobject/pen/qpYoMw)
+* [Random Numbers](https://codepen.io/nullobject/pen/rpvaeg)
+* [PIN Pad](https://codepen.io/nullobject/pen/jYxzda)
 
 ## Licence
 
