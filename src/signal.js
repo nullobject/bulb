@@ -1,5 +1,5 @@
 import Subscription from './subscription'
-import {always, apply, compose, empty, get, head, tail} from 'fkit'
+import {always, apply, empty, head, tail} from 'fkit'
 import {concatMap, dedupe, dedupeWith, debounce, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, throttle, zip, zipWith} from './combinators'
 
 /**
@@ -200,19 +200,17 @@ class Signal {
    */
   static fromEvent (type, target, useCapture = true) {
     return new Signal(emit => {
-      const handler = compose(emit.next, get('detail'))
-
       if (target.addListener) {
         target.addListener(type, emit.next)
       } else if (target.addEventListener) {
-        target.addEventListener(type, handler, useCapture)
+        target.addEventListener(type, emit.next, useCapture)
       }
 
       return () => {
         if (target.addListener) {
           target.removeListener(type, emit.next)
         } else {
-          target.removeEventListener('type', handler, useCapture)
+          target.removeEventListener('type', emit.next, useCapture)
         }
       }
     })
