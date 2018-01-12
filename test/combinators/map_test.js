@@ -2,7 +2,7 @@ import Signal from '../../src/signal'
 import sinon from 'sinon'
 import {always, inc, range} from 'fkit'
 import {assert} from 'chai'
-import {concatMap, map} from '../../src/combinator/map'
+import {concatMap, map} from '../../src/combinators/map'
 
 let nextSpy, errorSpy, completeSpy
 

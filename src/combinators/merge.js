@@ -4,7 +4,7 @@ import Signal from '../signal'
  * This module defines merge combinators for signals.
  *
  * @private
- * @module combinator/merge
+ * @module combinators/merge
  */
 
 /**

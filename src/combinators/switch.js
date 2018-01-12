@@ -4,7 +4,7 @@ import Signal from '../signal'
  * This module defines switch combinators for signals.
  *
  * @private
- * @module combinator/switch
+ * @module combinators/switch
  */
 
 /**

@@ -2,7 +2,7 @@ import Signal from '../../src/signal'
 import sinon from 'sinon'
 import {always, range} from 'fkit'
 import {assert} from 'chai'
-import {sample, hold} from '../../src/combinator/sample'
+import {sample, hold} from '../../src/combinators/sample'
 
 let nextSpy, errorSpy, completeSpy, clock
 

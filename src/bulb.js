@@ -3,4 +3,4 @@ import * as mouse from './mouse'
 import Signal from './signal'
 
 export {Signal, keyboard, mouse}
-export * from './combinator'
+export * from './combinators'

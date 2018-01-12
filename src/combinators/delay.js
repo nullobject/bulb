@@ -5,7 +5,7 @@ import {curry} from 'fkit'
  * This module defines delay combinators for signals.
  *
  * @private
- * @module combinator/delay
+ * @module combinators/delay
  */
 
 /**

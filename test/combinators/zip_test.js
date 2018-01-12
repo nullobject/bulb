@@ -2,7 +2,7 @@ import Signal from '../../src/signal'
 import sinon from 'sinon'
 import {always, range} from 'fkit'
 import {assert} from 'chai'
-import {zip, zipWith} from '../../src/combinator/zip'
+import {zip, zipWith} from '../../src/combinators/zip'
 
 let nextSpy, errorSpy, completeSpy
 

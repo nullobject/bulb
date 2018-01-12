@@ -5,7 +5,7 @@ import {all, replicate} from 'fkit'
  * This module defines zip combinators for signals.
  *
  * @private
- * @module combinator/zip
+ * @module combinators/zip
  */
 
 /**

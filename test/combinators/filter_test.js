@@ -2,7 +2,7 @@ import Signal from '../../src/signal'
 import sinon from 'sinon'
 import {always, equal, range} from 'fkit'
 import {assert} from 'chai'
-import {dedupe, dedupeWith, filter} from '../../src/combinator/filter'
+import {dedupe, dedupeWith, filter} from '../../src/combinators/filter'
 
 let nextSpy, errorSpy, completeSpy
 

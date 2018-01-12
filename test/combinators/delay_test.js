@@ -2,7 +2,7 @@ import Signal from '../../src/signal'
 import sinon from 'sinon'
 import {range} from 'fkit'
 import {assert} from 'chai'
-import {debounce, delay, throttle} from '../../src/combinator/delay'
+import {debounce, delay, throttle} from '../../src/combinators/delay'
 
 let nextSpy, errorSpy, completeSpy, clock
 

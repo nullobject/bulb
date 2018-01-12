@@ -5,7 +5,7 @@ import {curry} from 'fkit'
  * This module defines sample combinators for signals.
  *
  * @private
- * @module combinator/sample
+ * @module combinators/sample
  */
 
 /**

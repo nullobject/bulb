@@ -5,7 +5,7 @@ import {curry, equal} from 'fkit'
  * This module defines filter combinators for signals.
  *
  * @private
- * @module combinator/filter
+ * @module combinators/filter
  */
 
 /**

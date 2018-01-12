@@ -1,6 +1,6 @@
 import Subscription from './subscription'
 import {always, apply, compose, empty, get, head, tail} from 'fkit'
-import {concatMap, dedupe, dedupeWith, debounce, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, throttle, zip, zipWith} from './combinator'
+import {concatMap, dedupe, dedupeWith, debounce, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, throttle, zip, zipWith} from './combinators'
 
 /**
  * The `Signal` class represents a value which changes over time.

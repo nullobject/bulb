@@ -5,7 +5,7 @@ import {curry} from 'fkit'
  * This module defines fold combinators for signals.
  *
  * @private
- * @module combinator/fold
+ * @module combinators/fold
  */
 
 /**
