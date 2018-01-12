@@ -13,7 +13,7 @@ const plugins = [
 export default [
   // UMD and ES versions.
   {
-    input: 'src/bulb.js',
+    input: 'src/index.js',
     output: [
       {file: pkg.main, format: 'umd', name: 'bulb'},
       {file: pkg.module, format: 'es'}
@@ -23,7 +23,7 @@ export default [
 
   // Browser minified version.
   {
-    input: 'src/bulb.js',
+    input: 'src/index.js',
     output: [
       {file: pkg.unpkg, format: 'umd', name: 'bulb'}
     ],
