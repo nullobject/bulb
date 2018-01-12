@@ -1,3 +1,11 @@
+v1.1.0 / 2018-01-12
+===================
+
+  * Fix an issue with Signal.fromEvent
+  * Update documentation
+  * Rename bulb.js -> index.js
+  * Rename combinator -> combinators
+
 v1.0.0 / 2018-01-02
 ===================
 
