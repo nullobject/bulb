@@ -83,6 +83,7 @@ const s = Signal.of(1)
 ## Documentation
 
 * [API documentation](http://nullobject.github.io/bulb/api.html)
+* Article by Josh Bassett: [Bulb: A Reactive Programming Library for JavaScript](https://joshbassett.info/2018/bulb/)
 
 ## Examples
 
