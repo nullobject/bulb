@@ -47,6 +47,7 @@ export const sample = curry((s, t) => {
  * @curried
  * @function
  * @param s A signal.
+ * @param t A signal.
  * @returns A new signal.
  */
 export const hold = curry((s, t) => {

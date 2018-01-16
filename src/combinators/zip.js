@@ -13,7 +13,7 @@ import {all, replicate} from 'fkit'
  *
  * The signal completes when *any* of the input signals have completed.
  *
- * @param s A signal.
+ * @param ss A list of signals.
  * @returns A new signal.
  */
 export function zip (...ss) {

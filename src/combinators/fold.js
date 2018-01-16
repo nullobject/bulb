@@ -16,7 +16,7 @@ import {curry} from 'fkit'
  * @function
  * @param f A binary function.
  * @param a A starting value.
- * @param a A signal.
+ * @param s A signal.
  * @returns A new signal.
  */
 export const fold = curry((f, a, s) => {
@@ -43,7 +43,7 @@ export const fold = curry((f, a, s) => {
  * @function
  * @param f A binary function.
  * @param a A starting value.
- * @param a A signal.
+ * @param s A signal.
  * @returns A new signal.
  */
 export const scan = curry((f, a, s) => {
@@ -79,7 +79,7 @@ export const scan = curry((f, a, s) => {
  * @function
  * @param f A ternary function.
  * @param a A starting value.
- * @param a A signal.
+ * @param s A signal.
  * @returns A new signal.
  */
 export const stateMachine = curry((f, a, s) => {
