@@ -14,13 +14,16 @@ describe('fold', () => {
   })
 
   describe('#fold', () => {
-    it('folds a function over the signal values', () => {
+    it('folds a function over the signal values', done => {
       const s = Signal.fromArray(range(1, 3))
 
       fold(add)(0)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      assert.isTrue(nextSpy.calledWithExactly(6))
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+      setTimeout(() => {
+        assert.isTrue(nextSpy.calledWithExactly(6))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
@@ -33,17 +36,20 @@ describe('fold', () => {
   })
 
   describe('#scan', () => {
-    it('scans a function over the signal values', () => {
+    it('scans a function over the signal values', done => {
       const s = Signal.fromArray(range(1, 3))
 
-      scan(add)(0)(s).subscribe(nextSpy, errorSpy, completeSpy);
+      scan(add)(0)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      [0, 1, 3, 6].forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
-      }, this)
+      setTimeout(() => {
+        [0, 1, 3, 6].forEach((n, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly(n))
+        }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
@@ -56,18 +62,22 @@ describe('fold', () => {
   })
 
   describe('#stateMachine', () => {
-    it('iterates a function over the signal values', () => {
+    it('iterates a function over the signal values', done => {
       const s = Signal.fromArray(range(1, 3))
 
       stateMachine((a, b, emit) => {
         emit.next(a * b)
         return a + b
-      })(0)(s).subscribe(nextSpy, errorSpy, completeSpy);
+      })(0)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      [0, 2, 9].forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
-      }, this)
+      setTimeout(() => {
+        [0, 2, 9].forEach((n, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly(n))
+        }, this)
+
+        done()
+      }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {

@@ -49,7 +49,7 @@ export const fold = curry((f, a, s) => {
 export const scan = curry((f, a, s) => {
   return new Signal(emit => {
     // Emit the starting value.
-    emit.next(a)
+    setTimeout(() => emit.next(a), 0)
 
     // Fold the current value with the previous value and emit the next value
     const next = b => {
