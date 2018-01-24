@@ -14,18 +14,21 @@ describe('map', () => {
   })
 
   describe('#concatMap', () => {
-    it('maps a function over the signal values', () => {
+    it('maps a function over the signal values', done => {
       const s = Signal.fromArray(range(1, 3))
       const f = a => Signal.of(a)
 
       concatMap(f)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
-      }, this)
+      setTimeout(() => {
+        range(1, 3).forEach((n, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly(n))
+        }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
@@ -60,17 +63,20 @@ describe('map', () => {
   })
 
   describe('#map', () => {
-    it('maps a function over the signal values', () => {
+    it('maps a function over the signal values', done => {
       const s = Signal.fromArray(range(1, 3))
 
       map(inc)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(2, 3).forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
-      }, this)
+      setTimeout(() => {
+        range(2, 3).forEach((n, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly(n))
+        }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {

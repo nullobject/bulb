@@ -167,8 +167,10 @@ class Signal {
    */
   static fromArray (as) {
     return new Signal(emit => {
-      as.map(apply(emit.next))
-      emit.complete()
+      setTimeout(() => {
+        as.map(apply(emit.next))
+        emit.complete()
+      }, 0)
     })
   }
 

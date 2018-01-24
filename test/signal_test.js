@@ -11,11 +11,6 @@ describe('Signal', () => {
     nextSpy = sinon.spy()
     errorSpy = sinon.spy()
     completeSpy = sinon.spy()
-    clock = sinon.useFakeTimers()
-  })
-
-  afterEach(() => {
-    clock.restore()
   })
 
   describe('.empty', () => {
@@ -54,17 +49,20 @@ describe('Signal', () => {
   })
 
   describe('.fromArray', () => {
-    it('returns a signal of values from an array', () => {
+    it('returns a signal of values from an array', done => {
       const s = Signal.fromArray(range(1, 3))
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
-      }, this)
+      setTimeout(() => {
+        range(1, 3).forEach((n, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly(n))
+        }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
   })
 
@@ -132,6 +130,14 @@ describe('Signal', () => {
   })
 
   describe('.periodic', () => {
+    beforeEach(() => {
+      clock = sinon.useFakeTimers()
+    })
+
+    afterEach(() => {
+      clock.restore()
+    })
+
     it('delays the signal values', () => {
       const spy = sinon.spy()
       const s = Signal.periodic(1000)
@@ -148,6 +154,14 @@ describe('Signal', () => {
   })
 
   describe('.sequential', () => {
+    beforeEach(() => {
+      clock = sinon.useFakeTimers()
+    })
+
+    afterEach(() => {
+      clock.restore()
+    })
+
     it('delays the signal values', () => {
       const s = Signal.sequential(1000, range(1, 3))
 
@@ -229,17 +243,20 @@ describe('Signal', () => {
   })
 
   describe('#always', () => {
-    it('replaces signal values with a constant', () => {
+    it('replaces signal values with a constant', done => {
       const s = Signal.fromArray(range(1, 3)).always('x')
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly('x'))
-      }, this)
+      setTimeout(() => {
+        range(1, 3).forEach((n, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly('x'))
+        }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
@@ -252,17 +269,20 @@ describe('Signal', () => {
   })
 
   describe('#startWith', () => {
-    it('emits the given value before all other values', () => {
+    it('emits the given value before all other values', done => {
       const s = Signal.fromArray(range(1, 3)).startWith('x')
 
-      s.subscribe(nextSpy, errorSpy, completeSpy);
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      ['x', 1, 2, 3].forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
-      }, this)
+      setTimeout(() => {
+        ['x', 1, 2, 3].forEach((n, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly(n))
+        }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {

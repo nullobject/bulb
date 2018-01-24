@@ -14,13 +14,16 @@ describe('filter', () => {
   })
 
   describe('#filter', () => {
-    it('filters the signal values with a predicate', () => {
+    it('filters the signal values with a predicate', done => {
       const s = Signal.fromArray(range(1, 3))
 
       filter(equal(2))(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      assert.isTrue(nextSpy.alwaysCalledWithExactly(2))
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+      setTimeout(() => {
+        assert.isTrue(nextSpy.alwaysCalledWithExactly(2))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {

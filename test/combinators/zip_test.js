@@ -14,26 +14,29 @@ describe('zip', () => {
   })
 
   describe('#zip', () => {
-    it('zips the corresponding signal values into tuples', () => {
+    it('zips the corresponding signal values into tuples', done => {
       const s = Signal.fromArray(range(1, 3))
       const t = Signal.fromArray(range(4, 3))
       const u = Signal.fromArray(range(7, 3))
 
       zip(s, t, u).subscribe(nextSpy, errorSpy, completeSpy)
 
-      assert.strictEqual(nextSpy.callCount, 3);
+      setTimeout(() => {
+        assert.strictEqual(nextSpy.callCount, 3);
 
-      [[1, 4, 7], [2, 5, 8], [3, 6, 9]].forEach((ns, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(ns))
-      }, this)
+        [[1, 4, 7], [2, 5, 8], [3, 6, 9]].forEach((ns, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly(ns))
+        }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
   })
 
   describe('#zipWith', () => {
-    it('zip the corresponding signal values with a function', () => {
+    it('zip the corresponding signal values with a function', done => {
       const s = Signal.fromArray(range(1, 3))
       const t = Signal.fromArray(range(4, 3))
       const u = Signal.fromArray(range(7, 3))
@@ -41,14 +44,17 @@ describe('zip', () => {
 
       zipWith(f, s, t, u).subscribe(nextSpy, errorSpy, completeSpy)
 
-      assert.strictEqual(nextSpy.callCount, 3);
+      setTimeout(() => {
+        assert.strictEqual(nextSpy.callCount, 3);
 
-      [12, 15, 18].forEach((ns, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(ns))
-      }, this)
+        [12, 15, 18].forEach((ns, index) => {
+          const call = nextSpy.getCall(index)
+          assert.isTrue(call.calledWithExactly(ns))
+        }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        done()
+      }, 0)
     })
 
     it('emits an error if either signal emits an error', () => {
