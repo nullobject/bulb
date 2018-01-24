@@ -1,3 +1,13 @@
+v1.1.1 / 2018-01-24
+===================
+
+  * Fix issue with initial value scheduling
+  * Update deps
+  * Add watch task
+  * Fix param documentation for curried functions
+  * Update readme
+  * Add book search example
+
 v1.1.0 / 2018-01-12
 ===================
 
