@@ -40,15 +40,15 @@
     "jsdoc-react": "^1.0.0",
     "mocha": "^5.0.0",
     "react": "^16.2.0",
-    "rollup": "^0.54.1",
+    "rollup": "^0.55.5",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-uglify": "^3.0.0",
     "rollup-plugin-filesize": "^1.5.0",
-    "sinon": "^4.1.6",
+    "sinon": "^4.3.0",
     "standard": "^10.0.3"
   },
   "dependencies": {
-    "fkit": "^1.1.0"
+    "fkit": "^1.4.0"
   }
 }
