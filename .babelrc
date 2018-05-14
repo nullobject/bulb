@@ -1,12 +1,13 @@
 {
   "plugins": ["transform-object-rest-spread"],
   "env": {
-    "mocha": {
+    "test": {
+      "plugins": ["transform-es2015-modules-commonjs"],
       "presets": ["es2015"]
     },
     "rollup": {
-      "presets": [["es2015", {"modules": false}]],
-      "plugins": ["external-helpers"]
+      "plugins": ["external-helpers"],
+      "presets": [["es2015", {"modules": false}]]
     }
   }
 }

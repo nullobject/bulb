@@ -1,16 +1,14 @@
 import Signal from '../../src/signal'
-import sinon from 'sinon'
 import {add, always, range} from 'fkit'
-import {assert} from 'chai'
 import {fold, scan, stateMachine} from '../../src/combinators/fold'
 
 let nextSpy, errorSpy, completeSpy
 
 describe('fold', () => {
   beforeEach(() => {
-    nextSpy = sinon.spy()
-    errorSpy = sinon.spy()
-    completeSpy = sinon.spy()
+    nextSpy = jest.fn()
+    errorSpy = jest.fn()
+    completeSpy = jest.fn()
   })
 
   describe('#fold', () => {
@@ -20,18 +18,18 @@ describe('fold', () => {
       fold(add)(0)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       setTimeout(() => {
-        assert.isTrue(nextSpy.calledWithExactly(6))
-        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        expect(nextSpy).toBeCalledWith(6)
+        expect(completeSpy).toBeCalled()
         done()
       }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       fold(always())(0)(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -43,21 +41,20 @@ describe('fold', () => {
 
       setTimeout(() => {
         [0, 1, 3, 6].forEach((n, index) => {
-          const call = nextSpy.getCall(index)
-          assert.isTrue(call.calledWithExactly(n))
+          expect(nextSpy.mock.calls[index][0]).toBe(n)
         }, this)
 
-        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        expect(completeSpy).toHaveBeenCalled()
         done()
       }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       scan(always())(0)(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -72,8 +69,7 @@ describe('fold', () => {
 
       setTimeout(() => {
         [0, 2, 9].forEach((n, index) => {
-          const call = nextSpy.getCall(index)
-          assert.isTrue(call.calledWithExactly(n))
+          expect(nextSpy.mock.calls[index][0]).toBe(n)
         }, this)
 
         done()
@@ -81,11 +77,11 @@ describe('fold', () => {
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       stateMachine(always())(0)(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 })

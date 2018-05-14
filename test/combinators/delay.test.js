@@ -1,21 +1,19 @@
 import Signal from '../../src/signal'
-import sinon from 'sinon'
 import {range} from 'fkit'
-import {assert} from 'chai'
 import {debounce, delay, throttle} from '../../src/combinators/delay'
 
-let nextSpy, errorSpy, completeSpy, clock
+let nextSpy, errorSpy, completeSpy
 
 describe('delay', () => {
   beforeEach(() => {
-    nextSpy = sinon.spy()
-    errorSpy = sinon.spy()
-    completeSpy = sinon.spy()
-    clock = sinon.useFakeTimers()
+    nextSpy = jest.fn()
+    errorSpy = jest.fn()
+    completeSpy = jest.fn()
+    jest.useFakeTimers()
   })
 
   afterEach(() => {
-    clock.restore()
+    jest.useRealTimers()
   })
 
   describe('#delay', () => {
@@ -24,26 +22,25 @@ describe('delay', () => {
 
       delay(1000)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      assert.isFalse(nextSpy.called)
+      expect(nextSpy).not.toHaveBeenCalled()
 
-      clock.tick(1000)
+      jest.advanceTimersByTime(1000)
 
-      assert.isTrue(nextSpy.calledThrice)
+      expect(nextSpy).toHaveBeenCalledTimes(3)
 
       range(1, 3).forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
+        expect(nextSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+      expect(completeSpy).toHaveBeenCalled()
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       delay(1000)(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -53,22 +50,22 @@ describe('delay', () => {
 
       debounce(1000)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      assert.isFalse(nextSpy.called)
+      expect(nextSpy).not.toHaveBeenCalled()
 
-      clock.tick(1000)
+      jest.advanceTimersByTime(1000)
 
-      assert.isTrue(nextSpy.calledOnce)
-      assert.isTrue(nextSpy.calledWithExactly(3))
+      expect(nextSpy).toHaveBeenCalledTimes(1)
+      expect(nextSpy).toHaveBeenCalledWith(3)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+      expect(completeSpy).toHaveBeenCalled()
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       debounce(1000)(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -78,28 +75,31 @@ describe('delay', () => {
 
       throttle(1000)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
-      assert.isFalse(nextSpy.called)
+      expect(nextSpy).not.toHaveBeenCalled()
 
-      clock.tick(500)
-      clock.tick(500)
-      clock.tick(500)
+      Date.now = jest.fn(() => 0)
+      jest.advanceTimersByTime(500)
+      Date.now = jest.fn(() => 1000)
+      jest.advanceTimersByTime(500)
+      Date.now = jest.fn(() => 1500)
+      jest.advanceTimersByTime(500)
+      Date.now.mockRestore()
 
-      assert.isTrue(nextSpy.calledTwice);
+      expect(nextSpy).toHaveBeenCalledTimes(2)
 
-      [1, 3].forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
+      range(1, 2).forEach((n, index) => {
+        expect(nextSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+      expect(completeSpy).toHaveBeenCalled()
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       throttle(1000)(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 })

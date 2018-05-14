@@ -1,21 +1,19 @@
 import Signal from '../../src/signal'
-import sinon from 'sinon'
 import {always} from 'fkit'
-import {assert} from 'chai'
 import {encode, switchLatest} from '../../src/combinators/switch'
 
-let nextSpy, errorSpy, completeSpy, clock
+let nextSpy, errorSpy, completeSpy
 
 describe('switch', () => {
   beforeEach(() => {
-    nextSpy = sinon.spy()
-    errorSpy = sinon.spy()
-    completeSpy = sinon.spy()
-    clock = sinon.useFakeTimers()
+    nextSpy = jest.fn()
+    errorSpy = jest.fn()
+    completeSpy = jest.fn()
+    jest.useFakeTimers()
   })
 
   afterEach(() => {
-    clock.restore()
+    jest.useRealTimers()
   })
 
   describe('#switchLatest', () => {
@@ -26,32 +24,32 @@ describe('switch', () => {
 
       switchLatest(u).subscribe(nextSpy, errorSpy, completeSpy)
 
-      clock.tick(1000)
-      assert.isTrue(nextSpy.firstCall.calledWithExactly('foo'))
+      jest.advanceTimersByTime(1000)
+      expect(nextSpy).toHaveBeenLastCalledWith('foo')
 
-      clock.tick(1000)
-      assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
+      jest.advanceTimersByTime(1000)
+      expect(nextSpy).toHaveBeenLastCalledWith('bar')
     })
 
     it('unmounts the original signal when it is unsubscribed', () => {
-      const unmount = sinon.spy()
+      const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const a = switchLatest(s).subscribe(always())
 
       a.unsubscribe()
 
-      assert.isTrue(unmount.calledOnce)
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
 
     it('unmounts the returned signal when it is unsubscribed', () => {
-      const unmount = sinon.spy()
+      const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const t = Signal.of(s)
       const a = switchLatest(t).subscribe(always())
 
       a.unsubscribe()
 
-      assert.isTrue(unmount.calledOnce)
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -67,12 +65,12 @@ describe('switch', () => {
       encode(s, t, u).subscribe(nextSpy, errorSpy, completeSpy)
 
       a(0)
-      clock.tick(1000)
-      assert.isTrue(nextSpy.firstCall.calledWithExactly('foo'))
+      jest.advanceTimersByTime(1000)
+      expect(nextSpy).toHaveBeenLastCalledWith('foo')
 
       a(1)
-      clock.tick(1000)
-      assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
+      jest.advanceTimersByTime(1000)
+      expect(nextSpy).toHaveBeenLastCalledWith('bar')
     })
   })
 })
