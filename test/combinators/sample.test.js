@@ -1,21 +1,19 @@
 import Signal from '../../src/signal'
-import sinon from 'sinon'
 import {always, range} from 'fkit'
-import {assert} from 'chai'
 import {sample, hold} from '../../src/combinators/sample'
 
-let nextSpy, errorSpy, completeSpy, clock
+let nextSpy, errorSpy, completeSpy
 
 describe('sample', () => {
   beforeEach(() => {
-    nextSpy = sinon.spy()
-    errorSpy = sinon.spy()
-    completeSpy = sinon.spy()
-    clock = sinon.useFakeTimers()
+    nextSpy = jest.fn()
+    errorSpy = jest.fn()
+    completeSpy = jest.fn()
+    jest.useFakeTimers()
   })
 
   afterEach(() => {
-    clock.restore()
+    jest.useRealTimers()
   })
 
   describe('#sample', () => {
@@ -25,18 +23,17 @@ describe('sample', () => {
 
       sample(s)(t).subscribe(nextSpy, errorSpy, completeSpy)
 
-      clock.tick(1000)
-      clock.tick(1000)
-      clock.tick(1000)
+      jest.advanceTimersByTime(1000)
+      jest.advanceTimersByTime(1000)
+      jest.advanceTimersByTime(1000)
 
-      assert.strictEqual(nextSpy.callCount, 3);
+      expect(nextSpy).toHaveBeenCalledTimes(3);
 
       [1, 3, 5].forEach((ns, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(ns))
+        expect(nextSpy.mock.calls[index][0]).toEqual(ns)
       }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+      expect(completeSpy).toHaveBeenCalled()
     })
 
     it('emits an error if either signal emits an error', () => {
@@ -53,7 +50,7 @@ describe('sample', () => {
       a('foo')
       b('foo')
 
-      assert.isTrue(errorSpy.calledTwice)
+      expect(errorSpy).toHaveBeenCalledTimes(2)
     })
   })
 
@@ -68,20 +65,19 @@ describe('sample', () => {
       hold(s)(t).subscribe(nextSpy, errorSpy, completeSpy)
 
       a(false)
-      clock.tick(1000)
+      jest.advanceTimersByTime(1000)
       a(true)
-      clock.tick(1000)
+      jest.advanceTimersByTime(1000)
       a(false)
-      clock.tick(1000)
+      jest.advanceTimersByTime(1000)
 
-      assert.strictEqual(nextSpy.callCount, 4);
+      expect(nextSpy).toHaveBeenCalledTimes(4);
 
       [1, 2, 5, 6].forEach((ns, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(ns))
+        expect(nextSpy.mock.calls[index][0]).toEqual(ns)
       }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+      expect(completeSpy).toHaveBeenCalled()
     })
 
     it('emits an error if either signal emits an error', () => {
@@ -98,29 +94,29 @@ describe('sample', () => {
       a('foo')
       b('foo')
 
-      assert.isTrue(errorSpy.calledTwice)
+      expect(errorSpy).toHaveBeenCalledTimes(2)
     })
 
     it('unmounts the original signal when it is unsubscribed', () => {
-      const unmount = sinon.spy()
+      const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const t = Signal.never()
       const a = hold(s)(t).subscribe(always())
 
       a.unsubscribe()
 
-      assert.isTrue(unmount.calledOnce)
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
 
     it('unmounts the sampler when it is unsubscribed', () => {
-      const unmount = sinon.spy()
+      const unmount = jest.fn()
       const s = Signal.never()
       const t = new Signal(() => unmount)
       const a = hold(s)(t).subscribe(always())
 
       a.unsubscribe()
 
-      assert.isTrue(unmount.calledOnce)
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
   })
 })

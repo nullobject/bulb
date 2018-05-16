@@ -1,16 +1,14 @@
 import Signal from '../../src/signal'
-import sinon from 'sinon'
 import {always, inc, range} from 'fkit'
-import {assert} from 'chai'
 import {concatMap, map} from '../../src/combinators/map'
 
 let nextSpy, errorSpy, completeSpy
 
 describe('map', () => {
   beforeEach(() => {
-    nextSpy = sinon.spy()
-    errorSpy = sinon.spy()
-    completeSpy = sinon.spy()
+    nextSpy = jest.fn()
+    errorSpy = jest.fn()
+    completeSpy = jest.fn()
   })
 
   describe('#concatMap', () => {
@@ -22,43 +20,42 @@ describe('map', () => {
 
       setTimeout(() => {
         range(1, 3).forEach((n, index) => {
-          const call = nextSpy.getCall(index)
-          assert.isTrue(call.calledWithExactly(n))
+          expect(nextSpy.mock.calls[index][0]).toBe(n)
         }, this)
 
-        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        expect(completeSpy).toHaveBeenCalled()
         done()
       }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       concatMap(always())(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
 
     it('unmounts the original signal when it is unsubscribed', () => {
-      const unmount = sinon.spy()
+      const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const f = a => Signal.of(a)
       const a = concatMap(f)(s).subscribe(always())
 
       a.unsubscribe()
 
-      assert.isTrue(unmount.calledOnce)
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
 
     it('unmounts the returned signal when it is unsubscribed', () => {
-      const unmount = sinon.spy()
+      const unmount = jest.fn()
       const s = Signal.of(0)
       const f = a => new Signal(() => unmount)
       const a = concatMap(f)(s).subscribe(always())
 
       a.unsubscribe()
 
-      assert.isTrue(unmount.calledOnce)
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -70,21 +67,20 @@ describe('map', () => {
 
       setTimeout(() => {
         range(2, 3).forEach((n, index) => {
-          const call = nextSpy.getCall(index)
-          assert.isTrue(call.calledWithExactly(n))
+          expect(nextSpy.mock.calls[index][0]).toBe(n)
         }, this)
 
-        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        expect(completeSpy).toHaveBeenCalled()
         done()
       }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       map(always())(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 })

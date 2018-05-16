@@ -1,13 +1,11 @@
 import * as event from './support/event'
 import * as mouse from '../src/mouse'
-import sinon from 'sinon'
 import {always} from 'fkit'
-import {assert} from 'chai'
 
 describe('mouse', () => {
   describe('.state', () => {
     it('returns a new mouse position signal', () => {
-      const spy = sinon.spy()
+      const spy = jest.fn()
       const emitter = event.emitter()
       const s = mouse.state(emitter)
 
@@ -23,7 +21,7 @@ describe('mouse', () => {
         metaKey: 6
       })
 
-      assert.deepEqual(spy.firstCall.args[0], {
+      expect(spy).toHaveBeenCalledWith({
         buttons: 0,
         x: 1,
         y: 2,
@@ -36,66 +34,66 @@ describe('mouse', () => {
 
     describe('with the preventDefault option set', () => {
       it('calls preventDefault on the event', () => {
-        const spy = sinon.spy()
+        const spy = jest.fn()
         const emitter = event.emitter()
         const s = mouse.state(emitter, {preventDefault: true})
 
         s.subscribe(always())
 
         emitter.emit('mousedown', {preventDefault: spy})
-        assert.isTrue(spy.called)
+        expect(spy).toHaveBeenCalled()
       })
     })
   })
 
   describe('.position', () => {
     it('returns a new mouse position signal', () => {
-      const spy = sinon.spy()
+      const spy = jest.fn()
       const emitter = event.emitter()
       const s = mouse.position(emitter)
 
       s.subscribe(spy)
 
       emitter.emit('mousemove', {clientX: 1, clientY: 2})
-      assert.isTrue(spy.calledWithExactly([1, 2]))
+      expect(spy).toHaveBeenCalledWith([1, 2])
     })
 
     describe('with the preventDefault option set', () => {
       it('calls preventDefault on the event', () => {
-        const spy = sinon.spy()
+        const spy = jest.fn()
         const emitter = event.emitter()
         const s = mouse.position(emitter, {preventDefault: true})
 
         s.subscribe(always())
 
         emitter.emit('mousemove', {preventDefault: spy})
-        assert.isTrue(spy.called)
+        expect(spy).toHaveBeenCalled()
       })
     })
   })
 
   describe('.buttons', () => {
     it('returns a new mouse buttons signal', () => {
-      const spy = sinon.spy()
+      const spy = jest.fn()
       const emitter = event.emitter()
       const s = mouse.buttons(emitter)
 
       s.subscribe(spy)
 
       emitter.emit('mousedown', {buttons: 1})
-      assert.isTrue(spy.calledWithExactly(1))
+      expect(spy).toHaveBeenCalledWith(1)
     })
 
     describe('with the preventDefault option set', () => {
       it('calls preventDefault on the event', () => {
-        const spy = sinon.spy()
+        const spy = jest.fn()
         const emitter = event.emitter()
         const s = mouse.buttons(emitter, {preventDefault: true})
 
         s.subscribe(always())
 
         emitter.emit('mousedown', {preventDefault: spy})
-        assert.isTrue(spy.called)
+        expect(spy).toHaveBeenCalled()
       })
     })
   })

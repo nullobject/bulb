@@ -1,16 +1,14 @@
 import Signal from '../../src/signal'
-import sinon from 'sinon'
 import {always, equal, range} from 'fkit'
-import {assert} from 'chai'
 import {dedupe, dedupeWith, filter} from '../../src/combinators/filter'
 
 let nextSpy, errorSpy, completeSpy
 
 describe('filter', () => {
   beforeEach(() => {
-    nextSpy = sinon.spy()
-    errorSpy = sinon.spy()
-    completeSpy = sinon.spy()
+    nextSpy = jest.fn()
+    errorSpy = jest.fn()
+    completeSpy = jest.fn()
   })
 
   describe('#filter', () => {
@@ -20,18 +18,18 @@ describe('filter', () => {
       filter(equal(2))(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       setTimeout(() => {
-        assert.isTrue(nextSpy.alwaysCalledWithExactly(2))
-        assert.isTrue(completeSpy.calledAfter(nextSpy))
+        expect(nextSpy).toBeCalledWith(2)
+        expect(completeSpy).toBeCalled()
         done()
       }, 0)
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       filter(always())(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -46,10 +44,11 @@ describe('filter', () => {
 
       a('foo')
       a('foo')
-      assert.isTrue(nextSpy.firstCall.calledWithExactly('foo'))
+      expect(nextSpy).toHaveBeenCalledTimes(1)
+      expect(nextSpy).toHaveBeenLastCalledWith('foo')
 
       a('bar')
-      assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
+      expect(nextSpy).toHaveBeenLastCalledWith('bar')
     })
   })
 
@@ -64,18 +63,19 @@ describe('filter', () => {
 
       a('foo')
       a('foo')
-      assert.isTrue(nextSpy.firstCall.calledWithExactly('foo'))
+      expect(nextSpy).toHaveBeenCalledTimes(1)
+      expect(nextSpy).toHaveBeenLastCalledWith('foo')
 
       a('bar')
-      assert.isTrue(nextSpy.secondCall.calledWithExactly('bar'))
+      expect(nextSpy).toHaveBeenLastCalledWith('bar')
     })
 
     it('emits an error if the parent signal emits an error', () => {
-      const mount = sinon.stub().callsFake(emit => emit.error())
+      const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
       dedupeWith(equal)(s).subscribe({error: errorSpy})
-      assert.isTrue(errorSpy.calledOnce)
+      expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
 })

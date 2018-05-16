@@ -1,21 +1,19 @@
 import Signal from '../../src/signal'
-import sinon from 'sinon'
 import {always, range} from 'fkit'
-import {assert} from 'chai'
 import {merge} from '../../src/combinators/merge'
 
-let nextSpy, errorSpy, completeSpy, clock
+let nextSpy, errorSpy, completeSpy
 
 describe('merge', () => {
   beforeEach(() => {
-    nextSpy = sinon.spy()
-    errorSpy = sinon.spy()
-    completeSpy = sinon.spy()
-    clock = sinon.useFakeTimers()
+    nextSpy = jest.fn()
+    errorSpy = jest.fn()
+    completeSpy = jest.fn()
+    jest.useFakeTimers()
   })
 
   afterEach(() => {
-    clock.restore()
+    jest.useRealTimers()
   })
 
   describe('#merge', () => {
@@ -26,18 +24,17 @@ describe('merge', () => {
 
       merge(s, t, u).subscribe(nextSpy, errorSpy, completeSpy)
 
-      clock.tick(1000)
-      clock.tick(1000)
-      clock.tick(1000)
+      jest.advanceTimersByTime(1000)
+      jest.advanceTimersByTime(1000)
+      jest.advanceTimersByTime(1000)
 
-      assert.strictEqual(nextSpy.callCount, 9);
+      expect(nextSpy).toHaveBeenCalledTimes(9);
 
       [1, 4, 7, 2, 5, 8, 3, 6, 9].forEach((n, index) => {
-        const call = nextSpy.getCall(index)
-        assert.isTrue(call.calledWithExactly(n))
+        expect(nextSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
-      assert.isTrue(completeSpy.calledAfter(nextSpy))
+      expect(completeSpy).toHaveBeenCalled()
     })
 
     it('emits an error if either signal emits an error', () => {
@@ -54,29 +51,29 @@ describe('merge', () => {
       a('foo')
       b('foo')
 
-      assert.isTrue(errorSpy.calledTwice)
+      expect(errorSpy).toHaveBeenCalledTimes(2)
     })
 
     it('unmounts the original signal when it is unsubscribed', () => {
-      const unmount = sinon.spy()
+      const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const t = Signal.never()
       const a = merge(s, t).subscribe(always())
 
       a.unsubscribe()
 
-      assert.isTrue(unmount.calledOnce)
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
 
     it('unmounts the merged signal when it is unsubscribed', () => {
-      const unmount = sinon.spy()
+      const unmount = jest.fn()
       const s = Signal.never()
       const t = new Signal(() => unmount)
       const a = merge(s, t).subscribe(always())
 
       a.unsubscribe()
 
-      assert.isTrue(unmount.calledOnce)
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
   })
 })
