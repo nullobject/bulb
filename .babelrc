@@ -1,12 +1,3 @@
 {
-  "plugins": ["transform-object-rest-spread"],
-  "env": {
-    "test": {
-      "presets": ["env"]
-    },
-    "rollup": {
-      "plugins": ["external-helpers"],
-      "presets": [["env", {"modules": false}]]
-    }
-  }
+  "presets": ["@babel/preset-env"]
 }
