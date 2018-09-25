@@ -1,6 +1,6 @@
 import * as event from './support/event'
 import * as mouse from '../src/mouse'
-import {always} from 'fkit'
+import { always } from 'fkit'
 
 describe('mouse', () => {
   describe('.state', () => {
@@ -36,11 +36,11 @@ describe('mouse', () => {
       it('calls preventDefault on the event', () => {
         const spy = jest.fn()
         const emitter = event.emitter()
-        const s = mouse.state(emitter, {preventDefault: true})
+        const s = mouse.state(emitter, { preventDefault: true })
 
         s.subscribe(always())
 
-        emitter.emit('mousedown', {preventDefault: spy})
+        emitter.emit('mousedown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
       })
     })
@@ -54,7 +54,7 @@ describe('mouse', () => {
 
       s.subscribe(spy)
 
-      emitter.emit('mousemove', {clientX: 1, clientY: 2})
+      emitter.emit('mousemove', { clientX: 1, clientY: 2 })
       expect(spy).toHaveBeenCalledWith([1, 2])
     })
 
@@ -62,11 +62,11 @@ describe('mouse', () => {
       it('calls preventDefault on the event', () => {
         const spy = jest.fn()
         const emitter = event.emitter()
-        const s = mouse.position(emitter, {preventDefault: true})
+        const s = mouse.position(emitter, { preventDefault: true })
 
         s.subscribe(always())
 
-        emitter.emit('mousemove', {preventDefault: spy})
+        emitter.emit('mousemove', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
       })
     })
@@ -80,7 +80,7 @@ describe('mouse', () => {
 
       s.subscribe(spy)
 
-      emitter.emit('mousedown', {buttons: 1})
+      emitter.emit('mousedown', { buttons: 1 })
       expect(spy).toHaveBeenCalledWith(1)
     })
 
@@ -88,11 +88,11 @@ describe('mouse', () => {
       it('calls preventDefault on the event', () => {
         const spy = jest.fn()
         const emitter = event.emitter()
-        const s = mouse.buttons(emitter, {preventDefault: true})
+        const s = mouse.buttons(emitter, { preventDefault: true })
 
         s.subscribe(always())
 
-        emitter.emit('mousedown', {preventDefault: spy})
+        emitter.emit('mousedown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
       })
     })

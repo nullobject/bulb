@@ -1,6 +1,6 @@
 import Signal from '../../src/signal'
-import {always, range} from 'fkit'
-import {zip, zipWith} from '../../src/combinators/zip'
+import { always, range } from 'fkit'
+import { zip, zipWith } from '../../src/combinators/zip'
 
 let nextSpy, errorSpy, completeSpy
 
@@ -62,7 +62,7 @@ describe('zip', () => {
         b = e => { callback(e) }
       })
 
-      zipWith(always(), s, t).subscribe({error: errorSpy})
+      zipWith(always(), s, t).subscribe({ error: errorSpy })
 
       a('foo')
       b('foo')

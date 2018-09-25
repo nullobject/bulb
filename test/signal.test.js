@@ -1,6 +1,6 @@
 import Signal from '../src/signal'
 import events from 'events'
-import {always, range} from 'fkit'
+import { always, range } from 'fkit'
 
 let nextSpy, errorSpy, completeSpy
 
@@ -206,7 +206,7 @@ describe('Signal', () => {
       const mount = jest.fn(emit => emit.error('foo'))
       const s = new Signal(mount)
 
-      s.subscribe({error: errorSpy})
+      s.subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledWith('foo')
     })
 
@@ -217,7 +217,7 @@ describe('Signal', () => {
       })
       const s = new Signal(mount)
 
-      s.subscribe({error: errorSpy})
+      s.subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledWith(error)
     })
 
@@ -225,7 +225,7 @@ describe('Signal', () => {
       const mount = jest.fn(emit => emit.complete())
       const s = new Signal(mount)
 
-      s.subscribe({complete: completeSpy})
+      s.subscribe({ complete: completeSpy })
       expect(completeSpy).toHaveBeenCalled()
     })
   })
@@ -250,7 +250,7 @@ describe('Signal', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      s.always('x').subscribe({error: errorSpy})
+      s.always('x').subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
@@ -275,7 +275,7 @@ describe('Signal', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      s.startWith('x').subscribe({error: errorSpy})
+      s.startWith('x').subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })

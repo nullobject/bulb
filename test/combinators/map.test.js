@@ -1,6 +1,6 @@
 import Signal from '../../src/signal'
-import {always, inc, range} from 'fkit'
-import {concatMap, map} from '../../src/combinators/map'
+import { always, inc, range } from 'fkit'
+import { concatMap, map } from '../../src/combinators/map'
 
 let nextSpy, errorSpy, completeSpy
 
@@ -32,7 +32,7 @@ describe('map', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      concatMap(always())(s).subscribe({error: errorSpy})
+      concatMap(always())(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
 
@@ -79,7 +79,7 @@ describe('map', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      map(always())(s).subscribe({error: errorSpy})
+      map(always())(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })

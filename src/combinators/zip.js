@@ -1,5 +1,5 @@
 import Signal from '../signal'
-import {all, replicate} from 'fkit'
+import { all, replicate } from 'fkit'
 
 /**
  * This module defines zip combinators for signals.

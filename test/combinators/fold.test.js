@@ -1,6 +1,6 @@
 import Signal from '../../src/signal'
-import {add, always, range} from 'fkit'
-import {fold, scan, stateMachine} from '../../src/combinators/fold'
+import { add, always, range } from 'fkit'
+import { fold, scan, stateMachine } from '../../src/combinators/fold'
 
 let nextSpy, errorSpy, completeSpy
 
@@ -28,7 +28,7 @@ describe('fold', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      fold(always())(0)(s).subscribe({error: errorSpy})
+      fold(always())(0)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
@@ -53,7 +53,7 @@ describe('fold', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      scan(always())(0)(s).subscribe({error: errorSpy})
+      scan(always())(0)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
@@ -80,7 +80,7 @@ describe('fold', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      stateMachine(always())(0)(s).subscribe({error: errorSpy})
+      stateMachine(always())(0)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })

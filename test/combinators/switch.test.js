@@ -1,6 +1,6 @@
 import Signal from '../../src/signal'
-import {always} from 'fkit'
-import {encode, switchLatest} from '../../src/combinators/switch'
+import { always } from 'fkit'
+import { encode, switchLatest } from '../../src/combinators/switch'
 
 let nextSpy, errorSpy, completeSpy
 

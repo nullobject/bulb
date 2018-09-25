@@ -1,5 +1,5 @@
 import Signal from '../signal'
-import {curry} from 'fkit'
+import { curry } from 'fkit'
 
 /**
  * This module defines delay combinators for signals.
@@ -29,7 +29,7 @@ export const delay = curry((n, s) => {
       setTimeout(() => emit.complete(), n)
     }
 
-    s.subscribe({...emit, next, complete})
+    s.subscribe({ ...emit, next, complete })
 
     return () => clearTimeout(id)
   })
@@ -67,7 +67,7 @@ export const debounce = curry((n, s) => {
       emit.complete()
     }
 
-    s.subscribe({...emit, next, complete})
+    s.subscribe({ ...emit, next, complete })
 
     return () => clearTimeout(id)
   })
@@ -95,6 +95,6 @@ export const throttle = curry((n, s) => {
       }
     }
 
-    s.subscribe({...emit, next})
+    s.subscribe({ ...emit, next })
   })
 })

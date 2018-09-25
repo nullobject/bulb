@@ -1,6 +1,6 @@
 import Signal from '../../src/signal'
-import {always, equal, range} from 'fkit'
-import {dedupe, dedupeWith, filter} from '../../src/combinators/filter'
+import { always, equal, range } from 'fkit'
+import { dedupe, dedupeWith, filter } from '../../src/combinators/filter'
 
 let nextSpy, errorSpy, completeSpy
 
@@ -28,7 +28,7 @@ describe('filter', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      filter(always())(s).subscribe({error: errorSpy})
+      filter(always())(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
@@ -74,7 +74,7 @@ describe('filter', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      dedupeWith(equal)(s).subscribe({error: errorSpy})
+      dedupeWith(equal)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })

@@ -1,5 +1,5 @@
 import Signal from '../signal'
-import {compose, curry} from 'fkit'
+import { compose, curry } from 'fkit'
 
 /**
  * This module defines map combinators for signals.
@@ -27,7 +27,7 @@ export const concatMap = curry((f, s) => {
       subscription2 = f(a).subscribe(emit)
     }
 
-    const subscription1 = s.subscribe({...emit, next})
+    const subscription1 = s.subscribe({ ...emit, next })
 
     return () => {
       subscription1.unsubscribe()
@@ -49,6 +49,6 @@ export const concatMap = curry((f, s) => {
 export const map = curry((f, s) => {
   return new Signal(emit => {
     const next = compose(emit.next, f)
-    s.subscribe({...emit, next})
+    s.subscribe({ ...emit, next })
   })
 })

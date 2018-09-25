@@ -1,6 +1,6 @@
 import Subscription from './subscription'
-import {always, apply, empty, head, tail} from 'fkit'
-import {concatMap, dedupe, dedupeWith, debounce, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, throttle, zip, zipWith} from './combinators'
+import { always, apply, empty, head, tail } from 'fkit'
+import { concatMap, dedupe, dedupeWith, debounce, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, throttle, zip, zipWith } from './combinators'
 
 /**
  * The `Signal` class represents a value which changes over time.
@@ -67,7 +67,7 @@ class Signal {
    */
   subscribe (emit, ...args) {
     if (typeof emit === 'function') {
-      emit = {next: emit, error: args[0], complete: args[1]}
+      emit = { next: emit, error: args[0], complete: args[1] }
     } else if (typeof emit !== 'object') {
       emit = {}
     }
@@ -112,7 +112,7 @@ class Signal {
 
     // Call the mount function if we added the first subscription.
     if (this._subscriptions.size === 1) {
-      this.mount({next, error, complete})
+      this.mount({ next, error, complete })
     }
 
     return subscription
@@ -286,7 +286,7 @@ class Signal {
   always (c) {
     return new Signal(emit => {
       const next = () => emit.next(c)
-      return this.subscribe({...emit, next})
+      return this.subscribe({ ...emit, next })
     })
   }
 

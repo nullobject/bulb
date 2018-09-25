@@ -1,5 +1,5 @@
 import Signal from '../signal'
-import {curry, equal} from 'fkit'
+import { curry, equal } from 'fkit'
 
 /**
  * This module defines filter combinators for signals.
@@ -20,7 +20,7 @@ import {curry, equal} from 'fkit'
 export const filter = curry((p, s) => {
   return new Signal(emit => {
     const next = a => { if (p(a)) { emit.next(a) } }
-    return s.subscribe({...emit, next})
+    return s.subscribe({ ...emit, next })
   })
 })
 

@@ -1,5 +1,5 @@
 import Signal from '../signal'
-import {curry} from 'fkit'
+import { curry } from 'fkit'
 
 /**
  * This module defines fold combinators for signals.
@@ -30,7 +30,7 @@ export const fold = curry((f, a, s) => {
       emit.complete()
     }
 
-    return s.subscribe({...emit, next, complete})
+    return s.subscribe({ ...emit, next, complete })
   })
 })
 
@@ -57,7 +57,7 @@ export const scan = curry((f, a, s) => {
       emit.next(a)
     }
 
-    return s.subscribe({...emit, next})
+    return s.subscribe({ ...emit, next })
   })
 })
 
@@ -89,6 +89,6 @@ export const stateMachine = curry((f, a, s) => {
       a = f(a, b, emit)
     }
 
-    return s.subscribe({...emit, next})
+    return s.subscribe({ ...emit, next })
   })
 })

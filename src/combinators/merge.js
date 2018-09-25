@@ -29,7 +29,7 @@ export function merge (...ss) {
     }
 
     // Emit values from any signal.
-    const subscriptions = ss.map(s => s.subscribe({...emit, complete}))
+    const subscriptions = ss.map(s => s.subscribe({ ...emit, complete }))
 
     return () => subscriptions.forEach(s => s.unsubscribe())
   })

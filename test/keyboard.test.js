@@ -1,6 +1,6 @@
 import * as event from './support/event'
 import * as keyboard from '../src/keyboard'
-import {always} from 'fkit'
+import { always } from 'fkit'
 
 describe('keyboard', () => {
   describe('.state', () => {
@@ -11,11 +11,11 @@ describe('keyboard', () => {
 
       s.subscribe(spy)
 
-      emitter.emit('keydown', {keyCode: '1'})
+      emitter.emit('keydown', { keyCode: '1' })
       expect(spy).toHaveBeenCalledTimes(1)
       expect(spy).toHaveBeenLastCalledWith([1])
 
-      emitter.emit('keyup', {keyCode: '1'})
+      emitter.emit('keyup', { keyCode: '1' })
       expect(spy).toHaveBeenCalledTimes(2)
       expect(spy).toHaveBeenLastCalledWith([])
     })
@@ -24,11 +24,11 @@ describe('keyboard', () => {
       it('calls preventDefault on the event', () => {
         const spy = jest.fn()
         const emitter = event.emitter()
-        const s = keyboard.state(emitter, {preventDefault: true})
+        const s = keyboard.state(emitter, { preventDefault: true })
 
         s.subscribe(always())
 
-        emitter.emit('keydown', {preventDefault: spy})
+        emitter.emit('keydown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
       })
     })
@@ -42,7 +42,7 @@ describe('keyboard', () => {
 
       s.subscribe(spy)
 
-      emitter.emit('keydown', {keyCode: '1'})
+      emitter.emit('keydown', { keyCode: '1' })
       expect(spy).toHaveBeenCalledWith(1)
     })
 
@@ -50,11 +50,11 @@ describe('keyboard', () => {
       it('calls preventDefault on the event', () => {
         const spy = jest.fn()
         const emitter = event.emitter()
-        const s = keyboard.keys(emitter, {preventDefault: true})
+        const s = keyboard.keys(emitter, { preventDefault: true })
 
         s.subscribe(always())
 
-        emitter.emit('keydown', {preventDefault: spy})
+        emitter.emit('keydown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
       })
     })

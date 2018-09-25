@@ -1,6 +1,6 @@
 import Signal from '../../src/signal'
-import {range} from 'fkit'
-import {debounce, delay, throttle} from '../../src/combinators/delay'
+import { range } from 'fkit'
+import { debounce, delay, throttle } from '../../src/combinators/delay'
 
 let nextSpy, errorSpy, completeSpy
 
@@ -39,7 +39,7 @@ describe('delay', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      delay(1000)(s).subscribe({error: errorSpy})
+      delay(1000)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
@@ -64,7 +64,7 @@ describe('delay', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      debounce(1000)(s).subscribe({error: errorSpy})
+      debounce(1000)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
@@ -98,7 +98,7 @@ describe('delay', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      throttle(1000)(s).subscribe({error: errorSpy})
+      throttle(1000)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })

@@ -1,6 +1,6 @@
 import Signal from '../../src/signal'
-import {always, range} from 'fkit'
-import {merge} from '../../src/combinators/merge'
+import { always, range } from 'fkit'
+import { merge } from '../../src/combinators/merge'
 
 let nextSpy, errorSpy, completeSpy
 
@@ -46,7 +46,7 @@ describe('merge', () => {
         b = e => { callback(e) }
       })
 
-      merge(s, t).subscribe({error: errorSpy})
+      merge(s, t).subscribe({ error: errorSpy })
 
       a('foo')
       b('foo')

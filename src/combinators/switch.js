@@ -24,7 +24,7 @@ export function switchLatest (s) {
       subscription2 = a.subscribe(emit)
     }
 
-    const subscription1 = s.subscribe({...emit, next})
+    const subscription1 = s.subscribe({ ...emit, next })
 
     return () => {
       subscription1.unsubscribe()

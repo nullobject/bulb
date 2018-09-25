@@ -1,5 +1,5 @@
 import Signal from '../signal'
-import {curry} from 'fkit'
+import { curry } from 'fkit'
 
 /**
  * This module defines sample combinators for signals.
@@ -28,7 +28,7 @@ export const sample = curry((s, t) => {
     }
 
     const subscriptions = [
-      s.subscribe({...emit, next}),
+      s.subscribe({ ...emit, next }),
 
       // Buffer the last value.
       t.subscribe(a => { buffer = a }, emit.error, emit.complete)
@@ -60,7 +60,7 @@ export const hold = curry((s, t) => {
     }
 
     const subscriptions = [
-      t.subscribe({...emit, next}),
+      t.subscribe({ ...emit, next }),
 
       // Set the hold value.
       s.subscribe(a => { hold = a }, emit.error, emit.complete)

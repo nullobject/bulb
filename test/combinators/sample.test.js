@@ -1,6 +1,6 @@
 import Signal from '../../src/signal'
-import {always, range} from 'fkit'
-import {sample, hold} from '../../src/combinators/sample'
+import { always, range } from 'fkit'
+import { sample, hold } from '../../src/combinators/sample'
 
 let nextSpy, errorSpy, completeSpy
 
@@ -45,7 +45,7 @@ describe('sample', () => {
         b = e => { callback(e) }
       })
 
-      sample(s)(t).subscribe({error: errorSpy})
+      sample(s)(t).subscribe({ error: errorSpy })
 
       a('foo')
       b('foo')
@@ -89,7 +89,7 @@ describe('sample', () => {
         b = e => { callback(e) }
       })
 
-      hold(s)(t).subscribe({error: errorSpy})
+      hold(s)(t).subscribe({ error: errorSpy })
 
       a('foo')
       b('foo')
