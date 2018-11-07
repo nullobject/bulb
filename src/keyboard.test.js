@@ -1,4 +1,4 @@
-import * as event from './support/event'
+import * as event from '../test/support/event'
 import * as keyboard from '../src/keyboard'
 import { always } from 'fkit'
 

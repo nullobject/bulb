@@ -1,4 +1,4 @@
-import * as event from './support/event'
+import * as event from '../test/support/event'
 import * as mouse from '../src/mouse'
 import { always } from 'fkit'
 
