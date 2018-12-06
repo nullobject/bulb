@@ -76,7 +76,7 @@ modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/State
 you can import just the bits you want:
 
 ```js
-import {Signal} from 'bulb'
+import { Signal } from 'bulb'
 const s = Signal.of(1)
 ```
 
