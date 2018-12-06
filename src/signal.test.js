@@ -124,8 +124,6 @@ describe('Signal', () => {
   })
 
   describe('.periodic', () => {
-    beforeEach(() => {
-    })
     it('delays the signal values', () => {
       jest.useFakeTimers()
 
