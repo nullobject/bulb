@@ -1,6 +1,7 @@
+import { always } from 'fkit'
+
 import * as event from '../test/support/event'
 import * as keyboard from '../src/keyboard'
-import { always } from 'fkit'
 
 describe('keyboard', () => {
   describe('.state', () => {

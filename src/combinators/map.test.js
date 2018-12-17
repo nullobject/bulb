@@ -1,5 +1,6 @@
-import Signal from '../../src/signal'
 import { always, inc, range } from 'fkit'
+
+import Signal from '../../src/signal'
 import { concatMap, map } from '../../src/combinators/map'
 
 let nextSpy, errorSpy, completeSpy

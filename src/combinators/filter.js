@@ -1,5 +1,6 @@
-import Signal from '../signal'
 import { curry, equal } from 'fkit'
+
+import Signal from '../signal'
 
 /**
  * This module defines filter combinators for signals.

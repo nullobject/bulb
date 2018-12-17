@@ -1,5 +1,6 @@
-import Signal from '../../src/signal'
 import { always, range } from 'fkit'
+
+import Signal from '../../src/signal'
 import { zip, zipWith } from '../../src/combinators/zip'
 
 let nextSpy, errorSpy, completeSpy

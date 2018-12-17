@@ -1,5 +1,6 @@
-import Signal from '../../src/signal'
 import { always, equal, range } from 'fkit'
+
+import Signal from '../../src/signal'
 import { dedupe, dedupeWith, filter } from '../../src/combinators/filter'
 
 let nextSpy, errorSpy, completeSpy

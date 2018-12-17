@@ -1,5 +1,6 @@
-import Subscription from './subscription'
 import { always, apply, empty, head, tail } from 'fkit'
+
+import Subscription from './subscription'
 import { concatMap, dedupe, dedupeWith, debounce, delay, encode, filter, fold, hold, map, merge, sample, scan, stateMachine, switchLatest, throttle, zip, zipWith } from './combinators'
 
 /**

@@ -1,5 +1,6 @@
-import Signal from '../../src/signal'
 import { add, always, range } from 'fkit'
+
+import Signal from '../../src/signal'
 import { fold, scan, stateMachine } from '../../src/combinators/fold'
 
 let nextSpy, errorSpy, completeSpy

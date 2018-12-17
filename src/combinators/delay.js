@@ -1,5 +1,6 @@
-import Signal from '../signal'
 import { curry } from 'fkit'
+
+import Signal from '../signal'
 
 /**
  * This module defines delay combinators for signals.

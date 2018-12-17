@@ -1,6 +1,7 @@
-import Signal from '../src/signal'
 import events from 'events'
 import { always, range } from 'fkit'
+
+import Signal from '../src/signal'
 
 let nextSpy, errorSpy, completeSpy
 
