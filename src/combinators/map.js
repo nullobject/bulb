@@ -1,6 +1,6 @@
 import { compose, curry } from 'fkit'
 
-import Signal from '../signal'
+import Signal from '../Signal'
 
 /**
  * This module defines map combinators for signals.

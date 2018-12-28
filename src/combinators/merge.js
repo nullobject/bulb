@@ -1,4 +1,4 @@
-import Signal from '../signal'
+import Signal from '../Signal'
 
 /**
  * This module defines merge combinators for signals.

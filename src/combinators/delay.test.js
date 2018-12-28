@@ -1,6 +1,6 @@
 import { range } from 'fkit'
 
-import Signal from '../../src/signal'
+import Signal from '../../src/Signal'
 import { debounce, delay, throttle } from '../../src/combinators/delay'
 
 let nextSpy, errorSpy, completeSpy
