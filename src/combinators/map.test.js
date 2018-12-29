@@ -41,7 +41,7 @@ describe('map', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const f = a => Signal.of(a)
-      const a = concatMap(f)(s).subscribe(always())
+      const a = concatMap(f)(s).subscribe()
 
       a.unsubscribe()
 
@@ -52,7 +52,7 @@ describe('map', () => {
       const unmount = jest.fn()
       const s = Signal.of(0)
       const f = a => new Signal(() => unmount)
-      const a = concatMap(f)(s).subscribe(always())
+      const a = concatMap(f)(s).subscribe()
 
       a.unsubscribe()
 
@@ -82,6 +82,16 @@ describe('map', () => {
 
       map(always())(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = jest.fn()
+      const s = new Signal(() => unmount)
+      const a = map(always())(s).subscribe()
+
+      a.unsubscribe()
+
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
   })
 })

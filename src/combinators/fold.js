@@ -31,7 +31,9 @@ export const fold = curry((f, a, s) => {
       emit.complete()
     }
 
-    return s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
+
+    return () => subscription.unsubscribe()
   })
 })
 
@@ -58,7 +60,9 @@ export const scan = curry((f, a, s) => {
       emit.next(a)
     }
 
-    return s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit, next })
+
+    return () => subscription.unsubscribe()
   })
 })
 
@@ -90,6 +94,8 @@ export const stateMachine = curry((f, a, s) => {
       a = f(a, b, emit)
     }
 
-    return s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit, next })
+
+    return () => subscription.unsubscribe()
   })
 })

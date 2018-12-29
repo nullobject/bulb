@@ -32,6 +32,16 @@ describe('fold', () => {
       fold(always())(0)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
+
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = jest.fn()
+      const s = new Signal(() => unmount)
+      const a = fold(always())(0)(s).subscribe()
+
+      a.unsubscribe()
+
+      expect(unmount).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('#scan', () => {
@@ -56,6 +66,16 @@ describe('fold', () => {
 
       scan(always())(0)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = jest.fn()
+      const s = new Signal(() => unmount)
+      const a = scan(always())(0)(s).subscribe()
+
+      a.unsubscribe()
+
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -83,6 +103,16 @@ describe('fold', () => {
 
       stateMachine(always())(0)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = jest.fn()
+      const s = new Signal(() => unmount)
+      const a = stateMachine(always())(0)(s).subscribe()
+
+      a.unsubscribe()
+
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
   })
 })

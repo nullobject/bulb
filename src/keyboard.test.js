@@ -1,5 +1,3 @@
-import { always } from 'fkit'
-
 import * as event from '../test/support/event'
 import * as keyboard from '../src/keyboard'
 
@@ -27,7 +25,7 @@ describe('keyboard', () => {
         const emitter = event.emitter()
         const s = keyboard.state(emitter, { preventDefault: true })
 
-        s.subscribe(always())
+        s.subscribe()
 
         emitter.emit('keydown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
@@ -53,7 +51,7 @@ describe('keyboard', () => {
         const emitter = event.emitter()
         const s = keyboard.keys(emitter, { preventDefault: true })
 
-        s.subscribe(always())
+        s.subscribe()
 
         emitter.emit('keydown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()

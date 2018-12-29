@@ -30,9 +30,12 @@ export const delay = curry((n, s) => {
       setTimeout(() => emit.complete(), n)
     }
 
-    s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
 
-    return () => clearTimeout(id)
+    return () => {
+      clearTimeout(id)
+      subscription.unsubscribe()
+    }
   })
 })
 
@@ -68,9 +71,12 @@ export const debounce = curry((n, s) => {
       emit.complete()
     }
 
-    s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
 
-    return () => clearTimeout(id)
+    return () => {
+      clearTimeout(id)
+      subscription.unsubscribe()
+    }
   })
 })
 
@@ -96,6 +102,8 @@ export const throttle = curry((n, s) => {
       }
     }
 
-    s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit, next })
+
+    return () => subscription.unsubscribe()
   })
 })

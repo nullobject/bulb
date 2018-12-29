@@ -1,5 +1,3 @@
-import { always } from 'fkit'
-
 import Signal from '../../src/Signal'
 import { encode, switchLatest } from '../../src/combinators/switch'
 
@@ -35,7 +33,7 @@ describe('switch', () => {
     it('unmounts the original signal when it is unsubscribed', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
-      const a = switchLatest(s).subscribe(always())
+      const a = switchLatest(s).subscribe()
 
       a.unsubscribe()
 
@@ -46,7 +44,7 @@ describe('switch', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const t = Signal.of(s)
-      const a = switchLatest(t).subscribe(always())
+      const a = switchLatest(t).subscribe()
 
       a.unsubscribe()
 
@@ -72,6 +70,30 @@ describe('switch', () => {
       a(1)
       jest.advanceTimersByTime(1000)
       expect(nextSpy).toHaveBeenLastCalledWith('bar')
+    })
+
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = jest.fn()
+      const s = new Signal(() => unmount)
+      const t = Signal.never()
+      const u = Signal.never()
+      const a = encode(s, t, u).subscribe()
+
+      a.unsubscribe()
+
+      expect(unmount).toHaveBeenCalledTimes(1)
+    })
+
+    it('unmounts the encoded signal when it is unsubscribed', () => {
+      const unmount = jest.fn()
+      const s = Signal.of(0)
+      const t = new Signal(() => unmount)
+      const u = Signal.never()
+      const a = encode(s, t, u).subscribe()
+
+      a.unsubscribe()
+
+      expect(unmount).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -1,4 +1,4 @@
-import { always, range } from 'fkit'
+import { range } from 'fkit'
 
 import Signal from '../../src/Signal'
 import { merge } from '../../src/combinators/merge'
@@ -59,22 +59,23 @@ describe('merge', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const t = Signal.never()
-      const a = merge(s, t).subscribe(always())
+      const a = merge(s, t).subscribe()
 
       a.unsubscribe()
 
       expect(unmount).toHaveBeenCalledTimes(1)
     })
 
-    it('unmounts the merged signal when it is unsubscribed', () => {
+    it('unmounts the merged signals when it is unsubscribed', () => {
       const unmount = jest.fn()
       const s = Signal.never()
       const t = new Signal(() => unmount)
-      const a = merge(s, t).subscribe(always())
+      const u = new Signal(() => unmount)
+      const a = merge(s, t, u).subscribe()
 
       a.unsubscribe()
 
-      expect(unmount).toHaveBeenCalledTimes(1)
+      expect(unmount).toHaveBeenCalledTimes(2)
     })
   })
 })

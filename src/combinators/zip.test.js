@@ -75,22 +75,23 @@ describe('zip', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const t = Signal.never()
-      const a = zipWith(always(), s, t).subscribe(always())
+      const a = zipWith(always(), s, t).subscribe()
 
       a.unsubscribe()
 
       expect(unmount).toHaveBeenCalledTimes(1)
     })
 
-    it('unmounts the zipped signal when it is unsubscribed', () => {
+    it('unmounts the zipped signals when it is unsubscribed', () => {
       const unmount = jest.fn()
       const s = Signal.never()
       const t = new Signal(() => unmount)
-      const a = zipWith(always(), s, t).subscribe(always())
+      const u = new Signal(() => unmount)
+      const a = zipWith(always(), s, t, u).subscribe()
 
       a.unsubscribe()
 
-      expect(unmount).toHaveBeenCalledTimes(1)
+      expect(unmount).toHaveBeenCalledTimes(2)
     })
   })
 })
