@@ -60,7 +60,9 @@ export const scan = curry((f, a, s) => {
       emit.next(a)
     }
 
-    return s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit, next })
+
+    return () => subscription.unsubscribe()
   })
 })
 
