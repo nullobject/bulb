@@ -1,3 +1,9 @@
+## Unreleased
+
+* Switch to jest for tests
+* Update readme
+* Fix issue where some signals weren't being unmounted properly
+
 ## 1.1.1 (2018-01-24)
 
 * Fix issue with initial value scheduling
