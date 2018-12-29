@@ -1,5 +1,3 @@
-import { always } from 'fkit'
-
 import * as event from '../test/support/event'
 import * as mouse from '../src/mouse'
 

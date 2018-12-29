@@ -1,5 +1,3 @@
-import { always } from 'fkit'
-
 import Signal from '../../src/Signal'
 import { encode, switchLatest } from '../../src/combinators/switch'
 

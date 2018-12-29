@@ -1,5 +1,5 @@
 import events from 'events'
-import { always, range } from 'fkit'
+import { range } from 'fkit'
 
 import Signal from './Signal'
 

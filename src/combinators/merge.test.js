@@ -1,4 +1,4 @@
-import { always, range } from 'fkit'
+import { range } from 'fkit'
 
 import Signal from '../../src/Signal'
 import { merge } from '../../src/combinators/merge'
