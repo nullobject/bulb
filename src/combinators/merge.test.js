@@ -66,15 +66,16 @@ describe('merge', () => {
       expect(unmount).toHaveBeenCalledTimes(1)
     })
 
-    it('unmounts the merged signal when it is unsubscribed', () => {
+    it('unmounts the merged signals when it is unsubscribed', () => {
       const unmount = jest.fn()
       const s = Signal.never()
       const t = new Signal(() => unmount)
-      const a = merge(s, t).subscribe()
+      const u = new Signal(() => unmount)
+      const a = merge(s, t, u).subscribe()
 
       a.unsubscribe()
 
-      expect(unmount).toHaveBeenCalledTimes(1)
+      expect(unmount).toHaveBeenCalledTimes(2)
     })
   })
 })
