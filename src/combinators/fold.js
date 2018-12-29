@@ -90,6 +90,8 @@ export const stateMachine = curry((f, a, s) => {
       a = f(a, b, emit)
     }
 
-    return s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit, next })
+
+    return () => subscription.unsubscribe()
   })
 })
