@@ -1,4 +1,4 @@
-## Unreleased
+## 1.2.0 (2018-12-30)
 
 * Switch to jest for tests
 * Update readme
