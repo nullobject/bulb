@@ -102,6 +102,8 @@ export const throttle = curry((n, s) => {
       }
     }
 
-    s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit, next })
+
+    return () => subscription.unsubscribe()
   })
 })

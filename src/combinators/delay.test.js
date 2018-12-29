@@ -122,5 +122,15 @@ describe('delay', () => {
       throttle(1000)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
+
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = jest.fn()
+      const s = new Signal(() => unmount)
+      const a = throttle(1000)(s).subscribe()
+
+      a.unsubscribe()
+
+      expect(unmount).toHaveBeenCalledTimes(1)
+    })
   })
 })
