@@ -50,6 +50,7 @@ export const concatMap = curry((f, s) => {
 export const map = curry((f, s) => {
   return new Signal(emit => {
     const next = compose(emit.next, f)
-    s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit, next })
+    return () => subscription.unsubscribe()
   })
 })
