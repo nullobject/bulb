@@ -71,9 +71,12 @@ export const debounce = curry((n, s) => {
       emit.complete()
     }
 
-    s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
 
-    return () => clearTimeout(id)
+    return () => {
+      clearTimeout(id)
+      subscription.unsubscribe()
+    }
   })
 })
 
