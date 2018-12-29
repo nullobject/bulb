@@ -32,6 +32,16 @@ describe('filter', () => {
       filter(always())(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
+
+    it('unmounts the original signal when it is unsubscribed', () => {
+      const unmount = jest.fn()
+      const s = new Signal(() => unmount)
+      const a = filter(always())(s).subscribe()
+
+      a.unsubscribe()
+
+      expect(unmount).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('#dedupe', () => {

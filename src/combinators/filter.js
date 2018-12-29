@@ -21,7 +21,8 @@ import Signal from '../Signal'
 export const filter = curry((p, s) => {
   return new Signal(emit => {
     const next = a => { if (p(a)) { emit.next(a) } }
-    return s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit, next })
+    return () => subscription.unsubscribe()
   })
 })
 
