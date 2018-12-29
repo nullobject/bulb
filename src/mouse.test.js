@@ -39,7 +39,7 @@ describe('mouse', () => {
         const emitter = event.emitter()
         const s = mouse.state(emitter, { preventDefault: true })
 
-        s.subscribe(always())
+        s.subscribe()
 
         emitter.emit('mousedown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
@@ -65,7 +65,7 @@ describe('mouse', () => {
         const emitter = event.emitter()
         const s = mouse.position(emitter, { preventDefault: true })
 
-        s.subscribe(always())
+        s.subscribe()
 
         emitter.emit('mousemove', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
@@ -91,7 +91,7 @@ describe('mouse', () => {
         const emitter = event.emitter()
         const s = mouse.buttons(emitter, { preventDefault: true })
 
-        s.subscribe(always())
+        s.subscribe()
 
         emitter.emit('mousedown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()

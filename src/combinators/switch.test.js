@@ -35,7 +35,7 @@ describe('switch', () => {
     it('unmounts the original signal when it is unsubscribed', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
-      const a = switchLatest(s).subscribe(always())
+      const a = switchLatest(s).subscribe()
 
       a.unsubscribe()
 
@@ -46,7 +46,7 @@ describe('switch', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const t = Signal.of(s)
-      const a = switchLatest(t).subscribe(always())
+      const a = switchLatest(t).subscribe()
 
       a.unsubscribe()
 

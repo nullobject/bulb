@@ -173,18 +173,18 @@ describe('Signal', () => {
       const mount = jest.fn()
       const s = new Signal(mount)
 
-      s.subscribe(always())
+      s.subscribe()
       expect(mount).toHaveBeenCalled()
 
-      s.subscribe(always())
+      s.subscribe()
       expect(mount).toHaveBeenCalledTimes(1)
     })
 
     it('calls the unmount function when the last emit unsubscribes', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
-      const a = s.subscribe(always())
-      const b = s.subscribe(always())
+      const a = s.subscribe()
+      const b = s.subscribe()
 
       a.unsubscribe()
       expect(unmount).not.toHaveBeenCalled()

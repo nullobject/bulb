@@ -75,7 +75,7 @@ describe('zip', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const t = Signal.never()
-      const a = zipWith(always(), s, t).subscribe(always())
+      const a = zipWith(always(), s, t).subscribe()
 
       a.unsubscribe()
 
@@ -86,7 +86,7 @@ describe('zip', () => {
       const unmount = jest.fn()
       const s = Signal.never()
       const t = new Signal(() => unmount)
-      const a = zipWith(always(), s, t).subscribe(always())
+      const a = zipWith(always(), s, t).subscribe()
 
       a.unsubscribe()
 
