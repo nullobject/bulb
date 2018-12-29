@@ -31,7 +31,9 @@ export const fold = curry((f, a, s) => {
       emit.complete()
     }
 
-    return s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
+
+    return () => subscription.unsubscribe()
   })
 })
 
