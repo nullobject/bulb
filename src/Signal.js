@@ -236,8 +236,9 @@ class Signal {
    * Returns a signal that periodically emits a value every `n` milliseconds.
    *
    * @example
-   *   // A signal that emits the value 'x' every second.
-   *   Signal.periodic(1000).always('x')
+   *
+   * // A signal that emits the value 'x' every second.
+   * Signal.periodic(1000).always('x')
    *
    * @param n The number of milliseconds between each emitted value.
    * @returns A new signal.
@@ -405,10 +406,11 @@ class Signal {
    * emit values or errors using the `emit` argument.
    *
    * @example
-   *   signal.stateMachine((a, b, emit) => {
-   *     emit.next(a * b)
-   *     return a + b
-   *   }, 0)
+   *
+   * signal.stateMachine((a, b, emit) => {
+   *   emit.next(a * b)
+   *   return a + b
+   * }, 0)
    *
    * @param f A ternary function.
    * @param a A starting value.
