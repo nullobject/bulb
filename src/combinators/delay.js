@@ -30,9 +30,12 @@ export const delay = curry((n, s) => {
       setTimeout(() => emit.complete(), n)
     }
 
-    s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
 
-    return () => clearTimeout(id)
+    return () => {
+      clearTimeout(id)
+      subscription.unsubscribe()
+    }
   })
 })
 
