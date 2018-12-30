@@ -31,6 +31,17 @@ describe('keyboard', () => {
         expect(spy).toHaveBeenCalled()
       })
     })
+
+    it('removes the event listeners when it is unsubscribed', () => {
+      const emitter = event.emitter()
+      const s = keyboard.state(emitter)
+      const a = s.subscribe()
+
+      a.unsubscribe()
+
+      expect(emitter.removeEventListener).toHaveBeenCalledWith('keydown', expect.any(Function), true)
+      expect(emitter.removeEventListener).toHaveBeenCalledWith('keyup', expect.any(Function), true)
+    })
   })
 
   describe('.keys', () => {
@@ -56,6 +67,16 @@ describe('keyboard', () => {
         emitter.emit('keydown', { preventDefault: spy })
         expect(spy).toHaveBeenCalled()
       })
+    })
+
+    it('removes the event listener when it is unsubscribed', () => {
+      const emitter = event.emitter()
+      const s = keyboard.keys(emitter)
+      const a = s.subscribe()
+
+      a.unsubscribe()
+
+      expect(emitter.removeEventListener).toHaveBeenCalledWith('keydown', expect.any(Function), true)
     })
   })
 })
