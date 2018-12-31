@@ -71,23 +71,11 @@ describe('zip', () => {
       expect(errorSpy).toHaveBeenCalledTimes(2)
     })
 
-    it('unmounts the original signal when it is unsubscribed', () => {
+    it('unmounts the original signals when it is unsubscribed', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
-      const t = Signal.never()
-      const a = zipWith(always(), s, t).subscribe()
-
-      a.unsubscribe()
-
-      expect(unmount).toHaveBeenCalledTimes(1)
-    })
-
-    it('unmounts the zipped signals when it is unsubscribed', () => {
-      const unmount = jest.fn()
-      const s = Signal.never()
       const t = new Signal(() => unmount)
-      const u = new Signal(() => unmount)
-      const a = zipWith(always(), s, t, u).subscribe()
+      const a = zipWith(always(), s, t).subscribe()
 
       a.unsubscribe()
 
