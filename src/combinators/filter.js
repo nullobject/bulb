@@ -1,4 +1,4 @@
-import { curry, equal } from 'fkit'
+import { curry, eq } from 'fkit'
 
 import Signal from '../Signal'
 
@@ -33,7 +33,7 @@ export const filter = curry((p, s) => {
  * @returns A new signal.
  */
 export function dedupe (s) {
-  return s.dedupeWith(equal)
+  return s.dedupeWith(eq)
 }
 
 /**

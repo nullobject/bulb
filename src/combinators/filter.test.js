@@ -1,4 +1,4 @@
-import { always, equal, range } from 'fkit'
+import { always, eq, range } from 'fkit'
 
 import Signal from '../../src/Signal'
 import { dedupe, dedupeWith, filter } from '../../src/combinators/filter'
@@ -16,7 +16,7 @@ describe('filter', () => {
     it('filters the signal values with a predicate', done => {
       const s = Signal.fromArray(range(1, 3))
 
-      filter(equal(2))(s).subscribe(nextSpy, errorSpy, completeSpy)
+      filter(eq(2))(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       setTimeout(() => {
         expect(nextSpy).toBeCalledWith(2)
@@ -70,7 +70,7 @@ describe('filter', () => {
         a = a => { callback(null, a) }
       })
 
-      dedupeWith(equal)(s).subscribe(nextSpy, errorSpy, completeSpy)
+      dedupeWith(eq)(s).subscribe(nextSpy, errorSpy, completeSpy)
 
       a('foo')
       a('foo')
@@ -85,14 +85,14 @@ describe('filter', () => {
       const mount = jest.fn(emit => emit.error())
       const s = new Signal(mount)
 
-      dedupeWith(equal)(s).subscribe({ error: errorSpy })
+      dedupeWith(eq)(s).subscribe({ error: errorSpy })
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
 
     it('unmounts the original signal when it is unsubscribed', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
-      const a = dedupeWith(equal)(s).subscribe()
+      const a = dedupeWith(eq)(s).subscribe()
 
       a.unsubscribe()
 
