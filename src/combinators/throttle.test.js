@@ -1,11 +1,11 @@
 import { range } from 'fkit'
 
 import Signal from '../Signal'
-import delay from './delay'
+import throttle from './throttle'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#delay', () => {
+describe('#throttle', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
@@ -17,18 +17,24 @@ describe('#delay', () => {
     jest.useRealTimers()
   })
 
-  it('delays the signal values', () => {
-    const s = Signal.fromArray(range(1, 3))
+  it('throttle the signal values', () => {
+    const s = Signal.sequential(500, range(1, 3))
 
-    delay(1000)(s).subscribe(valueSpy, errorSpy, completeSpy)
+    throttle(1000)(s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(valueSpy).not.toHaveBeenCalled()
 
-    jest.advanceTimersByTime(1000)
+    Date.now = jest.fn(() => 0)
+    jest.advanceTimersByTime(500)
+    Date.now = jest.fn(() => 1000)
+    jest.advanceTimersByTime(500)
+    Date.now = jest.fn(() => 1500)
+    jest.advanceTimersByTime(500)
+    Date.now.mockRestore()
 
-    expect(valueSpy).toHaveBeenCalledTimes(3)
+    expect(valueSpy).toHaveBeenCalledTimes(2)
 
-    range(1, 3).forEach((n, index) => {
+    range(1, 2).forEach((n, index) => {
       expect(valueSpy.mock.calls[index][0]).toBe(n)
     }, this)
 
@@ -39,14 +45,14 @@ describe('#delay', () => {
     const mount = jest.fn(emit => emit.error())
     const s = new Signal(mount)
 
-    delay(1000)(s).subscribe({ error: errorSpy })
+    throttle(1000)(s).subscribe({ error: errorSpy })
     expect(errorSpy).toHaveBeenCalledTimes(1)
   })
 
   it('unmounts the original signal when it is unsubscribed', () => {
     const unmount = jest.fn()
     const s = new Signal(() => unmount)
-    const a = delay(1000)(s).subscribe()
+    const a = throttle(1000)(s).subscribe()
 
     a.unsubscribe()
 

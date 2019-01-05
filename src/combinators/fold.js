@@ -3,99 +3,34 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * This module defines fold combinators for signals.
+ * Folds a function `f` over the signal `s`. The final value is emitted when
+ * the signal completes.
  *
- * @private
- * @module combinators/fold
- */
-
-/**
- * Folds the binary function `f` over the signal `s` with the starting value
- * `a`. The final value is emitted when the signal completes.
- *
- * @curried
- * @function
- * @param f A binary function.
+ * @param {Function} f A function.
  * @param a A starting value.
- * @param s A signal.
- * @returns A new signal.
+ * @param {Signal} s A signal.
+ * @returns {Signal} A new signal.
+ * @example
+ *
+ * // A signal that emits the total of the values emitted by the given signal.
+ * // The total is emitted only after the given signal is complete.
+ * fold((a, b) => a + b, 0, signal)
  */
-export const fold = curry((f, a, s) => {
+export function fold (f, a, s) {
   return new Signal(emit => {
     // Fold the next value with the previous value.
-    const next = b => { a = f(a, b) }
+    const value = b => { a = f(a, b) }
 
     const complete = () => {
       // Emit the final value.
-      emit.next(a)
+      emit.value(a)
       emit.complete()
     }
 
-    const subscription = s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit, value, complete })
 
     return () => subscription.unsubscribe()
   })
-})
+}
 
-/**
- * Scans the binary function `f` over the signal `s` with the starting value
- * `a`. Unlike the `fold` function, the signal values are emitted
- * incrementally.
- *
- * @curried
- * @function
- * @param f A binary function.
- * @param a A starting value.
- * @param s A signal.
- * @returns A new signal.
- */
-export const scan = curry((f, a, s) => {
-  return new Signal(emit => {
-    // Emit the starting value.
-    setTimeout(() => emit.next(a), 0)
-
-    // Fold the current value with the previous value and emit the next value
-    const next = b => {
-      a = f(a, b)
-      emit.next(a)
-    }
-
-    const subscription = s.subscribe({ ...emit, next })
-
-    return () => subscription.unsubscribe()
-  })
-})
-
-/**
- * Folds the transform function `f` over the signal `s` with the starting value
- * `a`.
- *
- * The transform function `f` should return the new state. It can also
- * optionally emit values or errors using the `emit` argument.
- *
- * @example
- *
- * stateMachine((a, b, emit) => {
- *   emit.next(a * b)
- *   return a + b
- * }, 0, s)
- *
- * @curried
- * @function
- * @param f A ternary function.
- * @param a A starting value.
- * @param s A signal.
- * @returns A new signal.
- */
-export const stateMachine = curry((f, a, s) => {
-  return new Signal(emit => {
-    const next = b => {
-      // Fold the next value with the previous value.
-      a = f(a, b, emit)
-    }
-
-    const subscription = s.subscribe({ ...emit, next })
-
-    return () => subscription.unsubscribe()
-  })
-})
+export default curry(fold)

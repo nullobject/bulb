@@ -1,66 +1,21 @@
-import { all, replicate } from 'fkit'
-
-import Signal from '../Signal'
+import zipWith from './zipWith'
 
 /**
- * This module defines zip combinators for signals.
+ * Combines corresponding values from the signals `ss`. The resulting signal
+ * emits tuples of corresponding values.
  *
- * @private
- * @module combinators/zip
+ * The signal completes when *any* of the zipped signals have completed.
+ *
+ * @param {Array} ss An array of signals.
+ * @returns {Signal} A new signal.
+ * @example
+ *
+ * const s = Signal.fromArray([1, 2, 3])
+ * const t = Signal.fromArray([4, 5, 6])
+ *
+ * // A signal that emits tuples of corresponding values.
+ * zip(s, t)
  */
-
-/**
- * Combines corresponding values from the given signals into tuples.
- *
- * The signal completes when *any* of the input signals have completed.
- *
- * @param ss A list of signals.
- * @returns A new signal.
- */
-export function zip (...ss) {
+export default function zip (...ss) {
   return zipWith((...as) => as, ss)
-}
-
-/**
- * Generalises the `zip` function to combine corresponding values from the
- * given signals using the function `f`.
- *
- * The signal completes when *any* of the input signals have completed.
- *
- * @param f A function.
- * @param ss A list of signals.
- * @returns A new signal.
- */
-export function zipWith (f, ...ss) {
-  // Allow the signals to be given as an array.
-  if (ss.length === 1 && Array.isArray(ss[0])) {
-    ss = ss[0]
-  }
-
-  const buffers = replicate(ss.length, [])
-
-  return new Signal(emit => {
-    const next = (a, index) => {
-      // Buffer the value.
-      buffers[index].push(a)
-
-      // Check if each of the signals have at least one buffered value.
-      if (all(buffer => buffer.length > 0, buffers)) {
-        // Get the next buffered value for each of the signals.
-        const as = buffers.reduce((as, buffer) => {
-          as.push(buffer.shift())
-          return as
-        }, [])
-
-        // Emit the value.
-        emit.next(f(...as))
-      }
-    }
-
-    const subscriptions = ss.map((s, i) =>
-      s.subscribe(a => next(a, i), emit.error, emit.complete)
-    )
-
-    return () => subscriptions.forEach(s => s.unsubscribe())
-  })
 }

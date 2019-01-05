@@ -1,29 +1,21 @@
 import Signal from './Signal'
 
 /**
- * This module defines mouse signals.
- *
- * @module mouse
- * @summary Mouse Signals
- */
-
-/**
  * Creates a signal that emits a value if the mouse state changes.
  *
  * When the mouse is moved or a button is pressed, then the signal will emit
  * an object representing the current state of the mouse.
  *
- * @summary Creates a mouse state signal.
- * @param target A DOM element.
- * @param options An options object.
- * @returns A new signal.
+ * @param {Element} target A DOM element.
+ * @param {Object} options An options object.
+ * @returns {Signal} A new signal.
  */
 export function state (target, options = {}) {
   return new Signal(emit => {
     const handler = e => {
       if (options.preventDefault) { e.preventDefault() }
 
-      emit.next({
+      emit.value({
         buttons: e.buttons,
         x: e.clientX,
         y: e.clientY,
@@ -52,16 +44,15 @@ export function state (target, options = {}) {
  * When the mouse is moved, then the signal will emit an array containing the
  * mouse position.
  *
- * @summary Creates a mouse position signal.
- * @param target A DOM element.
- * @param options An options object.
- * @returns A new signal.
+ * @param {Element} target A DOM element.
+ * @param {Object} options An options object.
+ * @returns {Signal} A new signal.
  */
 export function position (target, options = {}) {
   return new Signal(emit => {
     const handler = e => {
       if (options.preventDefault) { e.preventDefault() }
-      emit.next([e.clientX, e.clientY])
+      emit.value([e.clientX, e.clientY])
     }
 
     target.addEventListener('mousemove', handler, true)
@@ -78,15 +69,15 @@ export function position (target, options = {}) {
  * right=2, middle=4).
  *
  * @summary Creates a mouse button signal.
- * @param target A DOM element.
- * @param options An options object.
- * @returns A new signal.
+ * @param {Element} target A DOM element.
+ * @param {Object} options An options object.
+ * @returns {Signal} A new signal.
  */
 export function buttons (target, options = {}) {
   return new Signal(emit => {
     const handler = e => {
       if (options.preventDefault) { e.preventDefault() }
-      emit.next(e.buttons)
+      emit.value(e.buttons)
     }
 
     target.addEventListener('mousedown', handler, true)

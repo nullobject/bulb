@@ -1,28 +1,30 @@
-import { always, inc, range } from 'fkit'
+import { always, range } from 'fkit'
 
 import Signal from '../Signal'
-import map from './map'
+import stateMachine from './stateMachine'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#map', () => {
+describe('#stateMachine', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
-  it('maps a function over the signal values', done => {
+  it('iterates a function over the signal values', done => {
     const s = Signal.fromArray(range(1, 3))
 
-    map(inc)(s).subscribe(valueSpy, errorSpy, completeSpy)
+    stateMachine((a, b, emit) => {
+      emit.value(a * b)
+      return a + b
+    })(0)(s).subscribe(valueSpy, errorSpy, completeSpy)
 
     setTimeout(() => {
-      range(2, 3).forEach((n, index) => {
+      [0, 2, 9].forEach((n, index) => {
         expect(valueSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
-      expect(completeSpy).toHaveBeenCalled()
       done()
     }, 0)
   })
@@ -31,14 +33,14 @@ describe('#map', () => {
     const mount = jest.fn(emit => emit.error())
     const s = new Signal(mount)
 
-    map(always())(s).subscribe({ error: errorSpy })
+    stateMachine(always())(0)(s).subscribe({ error: errorSpy })
     expect(errorSpy).toHaveBeenCalledTimes(1)
   })
 
   it('unmounts the original signal when it is unsubscribed', () => {
     const unmount = jest.fn()
     const s = new Signal(() => unmount)
-    const a = map(always())(s).subscribe()
+    const a = stateMachine(always())(0)(s).subscribe()
 
     a.unsubscribe()
 

@@ -1,11 +1,11 @@
 import { range } from 'fkit'
 
 import Signal from '../Signal'
-import sample from './sample'
+import hold from './hold'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#sample', () => {
+describe('#hold', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
@@ -18,18 +18,24 @@ describe('#sample', () => {
   })
 
   it('emits the most recent value when there is an event on the sampler signal', () => {
-    const s = Signal.periodic(1000)
+    let a
+    const s = Signal.fromCallback(callback => {
+      a = a => { callback(null, a) }
+    })
     const t = Signal.sequential(500, range(1, 6))
 
-    sample(s)(t).subscribe(valueSpy, errorSpy, completeSpy)
+    hold(s)(t).subscribe(valueSpy, errorSpy, completeSpy)
 
+    a(false)
     jest.advanceTimersByTime(1000)
+    a(true)
     jest.advanceTimersByTime(1000)
+    a(false)
     jest.advanceTimersByTime(1000)
 
-    expect(valueSpy).toHaveBeenCalledTimes(3);
+    expect(valueSpy).toHaveBeenCalledTimes(4);
 
-    [1, 3, 5].forEach((ns, index) => {
+    [1, 2, 5, 6].forEach((ns, index) => {
       expect(valueSpy.mock.calls[index][0]).toEqual(ns)
     }, this)
 
@@ -45,7 +51,7 @@ describe('#sample', () => {
       b = e => { callback(e) }
     })
 
-    sample(s)(t).subscribe({ error: errorSpy })
+    hold(s)(t).subscribe({ error: errorSpy })
 
     a('foo')
     b('foo')
@@ -57,18 +63,18 @@ describe('#sample', () => {
     const unmount = jest.fn()
     const s = new Signal(() => unmount)
     const t = Signal.never()
-    const a = sample(s)(t).subscribe()
+    const a = hold(s)(t).subscribe()
 
     a.unsubscribe()
 
     expect(unmount).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the sample signal when it is unsubscribed', () => {
+  it('unmounts the held signal when it is unsubscribed', () => {
     const unmount = jest.fn()
     const s = Signal.never()
     const t = new Signal(() => unmount)
-    const a = sample(s)(t).subscribe()
+    const a = hold(s)(t).subscribe()
 
     a.unsubscribe()
 

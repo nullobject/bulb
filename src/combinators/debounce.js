@@ -3,22 +3,33 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Delays the values emitted by the signal by `n` milliseconds.
+ * Debounces a signal to only emit a value `n` milliseconds after the last
+ * burst of events.
  *
  * @param {Number} n The number of milliseconds to delay.
  * @param {Signal} s A signal.
  * @returns {Signal} A new signal.
  */
-export function delay (n, s) {
+export function debounce (n, s) {
   return new Signal(emit => {
+    let buffer
     let id
 
+    const emitLastValue = (emit) => {
+      if (buffer) { emit.value(buffer) }
+      buffer = null
+    }
+
     const value = a => {
-      id = setTimeout(() => emit.value(a), n)
+      clearTimeout(id)
+      buffer = a
+      id = setTimeout(() => emitLastValue(emit), n)
     }
 
     const complete = () => {
-      setTimeout(() => emit.complete(), n)
+      clearTimeout(id)
+      emitLastValue(emit)
+      emit.complete()
     }
 
     const subscription = s.subscribe({ ...emit, value, complete })
@@ -30,4 +41,4 @@ export function delay (n, s) {
   })
 }
 
-export default curry(delay)
+export default curry(debounce)

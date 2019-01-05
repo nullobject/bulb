@@ -1,24 +1,24 @@
-import { always, inc, range } from 'fkit'
+import { add, always, range } from 'fkit'
 
 import Signal from '../Signal'
-import map from './map'
+import scan from './scan'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#map', () => {
+describe('#scan', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
-  it('maps a function over the signal values', done => {
+  it('scans a function over the signal values', done => {
     const s = Signal.fromArray(range(1, 3))
 
-    map(inc)(s).subscribe(valueSpy, errorSpy, completeSpy)
+    scan(add)(0)(s).subscribe(valueSpy, errorSpy, completeSpy)
 
     setTimeout(() => {
-      range(2, 3).forEach((n, index) => {
+      [0, 1, 3, 6].forEach((n, index) => {
         expect(valueSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
@@ -31,14 +31,14 @@ describe('#map', () => {
     const mount = jest.fn(emit => emit.error())
     const s = new Signal(mount)
 
-    map(always())(s).subscribe({ error: errorSpy })
+    scan(always())(0)(s).subscribe({ error: errorSpy })
     expect(errorSpy).toHaveBeenCalledTimes(1)
   })
 
   it('unmounts the original signal when it is unsubscribed', () => {
     const unmount = jest.fn()
     const s = new Signal(() => unmount)
-    const a = map(always())(s).subscribe()
+    const a = scan(always())(0)(s).subscribe()
 
     a.unsubscribe()
 

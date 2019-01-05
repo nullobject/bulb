@@ -1,29 +1,29 @@
 import Signal from '../Signal'
 
 /**
- * This module defines merge combinators for signals.
+ * Merges the signals `ss`.
  *
- * @private
- * @module combinators/merge
+ * The signal completes when *all* of the merged signals have completed.
+ *
+ * @param {Array} ss An array of signals.
+ * @returns {Signal} A new signal.
+ * @example
+ *
+ * const s = Signal.fromArray([1, 2, 3])
+ * const t = Signal.fromArray([4, 5, 6])
+ *
+ * // A signal that emits the values from the merged signals.
+ * merge(s, t)
  */
-
-/**
- * Merges the given signals into a new signal.
- *
- * The signal completes when *all* of the input signals have completed.
- *
- * @param ss A list of signals.
- * @returns A new signal.
- */
-export function merge (...ss) {
+export default function merge (...ss) {
   // Allow the signals to be given as an array.
   if (ss.length === 1 && Array.isArray(ss[0])) {
     ss = ss[0]
   }
 
-  let numComplete = 0
-
   return new Signal(emit => {
+    let numComplete = 0
+
     const complete = () => {
       if (++numComplete >= ss.length) { emit.complete() }
     }

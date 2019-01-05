@@ -7,10 +7,10 @@ programming](https://en.wikipedia.org/wiki/Reactive_programming) library for
 JavaScript. It provides a simple API for writing event-based programs in a
 declarative style.
 
-The main data type introduced by Bulb is called a *signal*. A signal can
-represent any time-varying source of values &mdash; for example, the value of a
+The main data structure introduced by Bulb is called a *signal*. A signal
+represents a time-varying source of values &mdash; for example, the value of a
 text input, a periodic timer, or even the position of the mouse pointer in the
-browser.
+browser window.
 
 The Bulb API provides many functions for creating signals from existing sources
 (e.g. AJAX requests, DOM events, timers, etc.) and for performing operations on
@@ -19,8 +19,7 @@ signals.
 A number of libraries already exist for reactive programming in JavaScript
 (e.g. RxJS, Bacon.js, Most.js), but Bulb differs in that it tries to avoid
 providing a "kitchen sink". Instead, Bulb defines a very focussed API which
-provides only the key building blocks for reactive programming in the
-JavaScript language.
+provides only the key building blocks for reactive programming in JavaScript.
 
 Features:
 

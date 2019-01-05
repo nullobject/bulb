@@ -1,13 +1,13 @@
 import { range } from 'fkit'
 
-import Signal from '../../src/Signal'
-import { merge } from '../../src/combinators/merge'
+import Signal from '../Signal'
+import merge from './merge'
 
-let nextSpy, errorSpy, completeSpy
+let valueSpy, errorSpy, completeSpy
 
 describe('merge', () => {
   beforeEach(() => {
-    nextSpy = jest.fn()
+    valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
     jest.useFakeTimers()
@@ -23,16 +23,16 @@ describe('merge', () => {
       const t = Signal.sequential(1000, range(4, 3))
       const u = Signal.sequential(1000, range(7, 3))
 
-      merge(s, t, u).subscribe(nextSpy, errorSpy, completeSpy)
+      merge(s, t, u).subscribe(valueSpy, errorSpy, completeSpy)
 
       jest.advanceTimersByTime(1000)
       jest.advanceTimersByTime(1000)
       jest.advanceTimersByTime(1000)
 
-      expect(nextSpy).toHaveBeenCalledTimes(9);
+      expect(valueSpy).toHaveBeenCalledTimes(9);
 
       [1, 4, 7, 2, 5, 8, 3, 6, 9].forEach((n, index) => {
-        expect(nextSpy.mock.calls[index][0]).toBe(n)
+        expect(valueSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
       expect(completeSpy).toHaveBeenCalled()

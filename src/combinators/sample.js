@@ -3,33 +3,24 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * This module defines sample combinators for signals.
- *
- * @private
- * @module combinators/sample
- */
-
-/**
  * Emits the most recent value from signal `t` whenever there is an event on
  * the sampler signal `s`.
  *
- * @curried
- * @function
- * @param s A signal.
- * @param t A signal.
- * @returns A new signal.
+ * @param {Signal} s A signal.
+ * @param {Signal} t A signal.
+ * @returns {Signal} A new signal.
  */
-export const sample = curry((s, t) => {
-  let buffer
-
+export function sample (s, t) {
   return new Signal(emit => {
-    const next = () => {
+    let buffer
+
+    const value = () => {
       // Emit the buffered value.
-      if (buffer !== undefined) { emit.next(buffer) }
+      if (buffer !== undefined) { emit.value(buffer) }
     }
 
     const subscriptions = [
-      s.subscribe({ ...emit, next }),
+      s.subscribe({ ...emit, value }),
 
       // Buffer the last value.
       t.subscribe(a => { buffer = a }, emit.error, emit.complete)
@@ -37,36 +28,6 @@ export const sample = curry((s, t) => {
 
     return () => subscriptions.forEach(s => s.unsubscribe())
   })
-})
+}
 
-/**
- * Pauses emitting events from signal `t` if the most recent value from the
- * hold signal `s` is truthy.
- *
- * It will resume emitting events after there is a falsey value.
- *
- * @curried
- * @function
- * @param s A signal.
- * @param t A signal.
- * @returns A new signal.
- */
-export const hold = curry((s, t) => {
-  let hold
-
-  return new Signal(emit => {
-    const next = a => {
-      // Emit the value if the hold is open.
-      if (!hold) { emit.next(a) }
-    }
-
-    const subscriptions = [
-      t.subscribe({ ...emit, next }),
-
-      // Set the hold value.
-      s.subscribe(a => { hold = a }, emit.error, emit.complete)
-    ]
-
-    return () => subscriptions.forEach(s => s.unsubscribe())
-  })
-})
+export default curry(sample)

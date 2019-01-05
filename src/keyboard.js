@@ -1,22 +1,14 @@
 import Signal from './Signal'
 
 /**
- * This module defines keyboard signals.
- *
- * @module keyboard
- * @summary Keyboard Signals
- */
-
-/**
  * Creates a signal that emits a value if the keyboard state changes.
  *
  * When a key is pressed or released, then the signal will emit an array
  * containing the key codes of all the currently pressed keys.
  *
- * @summary Creates a keyboard state signal.
- * @param target A DOM element.
- * @param options An options object.
- * @returns A new signal.
+ * @param {Element} target A DOM element.
+ * @param {Object} options An options object.
+ * @returns {Signal} A new signal.
  */
 export function state (target, options = {}) {
   let state = new Set()
@@ -29,7 +21,7 @@ export function state (target, options = {}) {
 
       if (!state.has(key)) {
         state.add(key)
-        emit.next(Array.from(state))
+        emit.value(Array.from(state))
       }
     }
 
@@ -40,7 +32,7 @@ export function state (target, options = {}) {
 
       if (state.has(key)) {
         state.delete(key)
-        emit.next(Array.from(state))
+        emit.value(Array.from(state))
       }
     }
 
@@ -61,16 +53,15 @@ export function state (target, options = {}) {
  * If a key is held down continuously, then the signal will repeatedly emit
  * values at a rate determined by your OS key repeat setting.
  *
- * @summary Creates a keyboard keydown signal.
- * @param target A DOM element.
- * @param options An options object.
- * @returns A new signal.
+ * @param {Element} target A DOM element.
+ * @param {Object} options An options object.
+ * @returns {Signal} A new signal.
  */
 export function keys (target, options = {}) {
   return new Signal(emit => {
     const handler = e => {
       if (options.preventDefault) { e.preventDefault() }
-      emit.next(parseInt(e.keyCode))
+      emit.value(parseInt(e.keyCode))
     }
 
     target.addEventListener('keydown', handler, true)

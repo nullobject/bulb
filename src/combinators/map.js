@@ -3,54 +3,22 @@ import { compose, curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * This module defines map combinators for signals.
+ * Maps a function `f` over a signal.
  *
- * @private
- * @module combinator/map
- */
-
-/**
- * Applies the function `f` to the signal `s`. The function `f` must also
- * return a `Signal`.
+ * @param {Function} f A function that returns a value.
+ * @param {Signal} s A signal.
+ * @returns {Signal} A new signal.
+ * @example
  *
- * @curried
- * @function
- * @param f A unary function.
- * @param s A signal.
- * @returns A new signal.
+ * // A signal that increments the values emitted by the given signal.
+ * map(a => a + 1, signal)
  */
-export const concatMap = curry((f, s) => {
-  let subscription2
-
+export function map (f, s) {
   return new Signal(emit => {
-    const next = a => {
-      if (subscription2) { subscription2.unsubscribe() }
-      subscription2 = f(a).subscribe(emit)
-    }
-
-    const subscription1 = s.subscribe({ ...emit, next })
-
-    return () => {
-      subscription1.unsubscribe()
-      if (subscription2) { subscription2.unsubscribe() }
-    }
-  })
-})
-
-/**
- * Applies the function `f` to the signal `s`. The function must return a
- * signal value.
- *
- * @curried
- * @function
- * @param f A unary function.
- * @param s A signal.
- * @returns A new signal.
- */
-export const map = curry((f, s) => {
-  return new Signal(emit => {
-    const next = compose(emit.next, f)
-    const subscription = s.subscribe({ ...emit, next })
+    const value = compose(emit.value, f)
+    const subscription = s.subscribe({ ...emit, value })
     return () => subscription.unsubscribe()
   })
-})
+}
+
+export default curry(map)
