@@ -270,15 +270,18 @@ export default class Signal {
    *
    * @param {String} type A string representing the event type to listen for.
    * @param {EventTarget} target The event target (e.g. a DOM element).
-   * @param {Boolean} [useCapture] A boolean indicating that events of this
-   * type will be dispatched to the signal before being dispatched to any
+   * @param {Object} [options] An options object.
+   * @param {Boolean} [options.useCapture=true] A boolean indicating that events of
+   * this type will be dispatched to the signal before being dispatched to any
    * `EventTarget` beneath it in the DOM tree.
    * @returns {Signal} A new signal.
    * @example
    *
    * Signal.fromEvent('click', document)
    */
-  static fromEvent (type, target, useCapture = true) {
+  static fromEvent (type, target, options) {
+    options = options || { useCapture: true }
+
     return new Signal(emit => {
       if (target.addListener) {
         target.addListener(type, emit.value)

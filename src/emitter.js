@@ -5,7 +5,7 @@ import events from 'events'
  *
  * @private
  */
-export const emitter = () => {
+export default function emitter () {
   const emitter = new events.EventEmitter()
   emitter.addEventListener = emitter.on
   emitter.removeEventListener = jest.fn()
