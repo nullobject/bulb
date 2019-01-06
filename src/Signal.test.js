@@ -169,7 +169,7 @@ describe('Signal', () => {
   })
 
   describe('#subscribe', () => {
-    it('calls the mount function when the first emit subscribes', () => {
+    it('calls the mount function when the first observer subscribes', () => {
       const mount = jest.fn()
       const s = new Signal(mount)
 
@@ -180,7 +180,7 @@ describe('Signal', () => {
       expect(mount).toHaveBeenCalledTimes(1)
     })
 
-    it('calls the unmount function when the last emit unsubscribes', () => {
+    it('calls the unmount function when the last observer unsubscribes', () => {
       const unmount = jest.fn()
       const s = new Signal(() => unmount)
       const a = s.subscribe()
@@ -193,7 +193,7 @@ describe('Signal', () => {
       expect(unmount).toHaveBeenCalledTimes(1)
     })
 
-    it('calls the value callback when the mounted function emits a value', () => {
+    it('calls the value callback when the signal emits a value', () => {
       const mount = jest.fn(emit => emit.value('foo'))
       const s = new Signal(mount)
 
@@ -201,7 +201,7 @@ describe('Signal', () => {
       expect(valueSpy).toHaveBeenCalledWith('foo')
     })
 
-    it('calls the error callback when the mounted function emits an error', () => {
+    it('calls the error callback when the signal emits an error', () => {
       const mount = jest.fn(emit => emit.error('foo'))
       const s = new Signal(mount)
 
@@ -209,7 +209,7 @@ describe('Signal', () => {
       expect(errorSpy).toHaveBeenCalledWith('foo')
     })
 
-    it('calls the error callback when the mounted function raises an error', () => {
+    it('calls the error callback when the signal raises an error', () => {
       const error = new Error('foo')
       const mount = jest.fn(() => {
         throw error
@@ -220,7 +220,7 @@ describe('Signal', () => {
       expect(errorSpy).toHaveBeenCalledWith(error)
     })
 
-    it('calls the error callback when the mounted function is complete', () => {
+    it('calls the error callback when the signal is complete', () => {
       const mount = jest.fn(emit => emit.complete())
       const s = new Signal(mount)
 
