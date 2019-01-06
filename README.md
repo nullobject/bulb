@@ -30,15 +30,30 @@ Features:
 ## Table of Contents
 
 * [Getting Started](#getting-started)
-  * [CDN](#cdn)
   * [Node](#node)
+  * [Browser](#browser)
 * [Documentation](#documentation)
 * [Examples](#examples)
 * [Licence](#licence)
 
 ## Getting Started
 
-### CDN
+### Node
+
+Install the npm package:
+
+```sh
+> npm install bulb
+```
+
+Require it in your code:
+
+```js
+import { Signal } from 'bulb'
+const s = Signal.of(1)
+```
+
+### Browser
 
 The quickest and easiest way to start using Bulb is to include a reference to
 the minified file in the head of your HTML file.
@@ -55,33 +70,9 @@ You can also use a specific version with:
 <script src="https://unpkg.com/bulb@1.0.0/dist/bulb.min.js"></script>
 ```
 
-### Node
-
-Install the npm package:
-
-```sh
-> npm install bulb
-```
-
-Require it in your code:
-
-```js
-var bulb = require('bulb')
-var s = bulb.Signal.of(1)
-```
-
-Or, if you are using [ES6
-modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import),
-you can import just the bits you want:
-
-```js
-import { Signal } from 'bulb'
-const s = Signal.of(1)
-```
-
 ## Documentation
 
-* [API documentation](http://nullobject.github.io/bulb/api.html)
+* [API documentation](http://bulb.joshbassett.info)
 * Article by Josh Bassett: [Bulb: A Reactive Programming Library for JavaScript](https://joshbassett.info/2018/bulb/)
 
 ## Examples
