@@ -12,22 +12,19 @@ describe('#zip', () => {
     completeSpy = jest.fn()
   })
 
-  it('zips the corresponding signal values into tuples', done => {
+  it('zips the corresponding signal values into tuples', () => {
     const s = Signal.fromArray(range(1, 3))
     const t = Signal.fromArray(range(4, 3))
     const u = Signal.fromArray(range(7, 3))
 
     zip(s, t, u).subscribe(valueSpy, errorSpy, completeSpy)
 
-    setTimeout(() => {
-      expect(valueSpy).toHaveBeenCalledTimes(3);
+    expect(valueSpy).toHaveBeenCalledTimes(3);
 
-      [[1, 4, 7], [2, 5, 8], [3, 6, 9]].forEach((ns, index) => {
-        expect(valueSpy.mock.calls[index][0]).toEqual(ns)
-      }, this)
+    [[1, 4, 7], [2, 5, 8], [3, 6, 9]].forEach((ns, index) => {
+      expect(valueSpy.mock.calls[index][0]).toEqual(ns)
+    }, this)
 
-      expect(completeSpy).toHaveBeenCalled()
-      done()
-    }, 0)
+    expect(completeSpy).toHaveBeenCalled()
   })
 })

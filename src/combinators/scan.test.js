@@ -12,19 +12,16 @@ describe('#scan', () => {
     completeSpy = jest.fn()
   })
 
-  it('scans a function over the signal values', done => {
+  it('scans a function over the signal values', () => {
     const s = Signal.fromArray(range(1, 3))
 
-    scan(add)(0)(s).subscribe(valueSpy, errorSpy, completeSpy)
+    scan(add)(0)(s).subscribe(valueSpy, errorSpy, completeSpy);
 
-    setTimeout(() => {
-      [0, 1, 3, 6].forEach((n, index) => {
-        expect(valueSpy.mock.calls[index][0]).toBe(n)
-      }, this)
+    [0, 1, 3, 6].forEach((n, index) => {
+      expect(valueSpy.mock.calls[index][0]).toBe(n)
+    }, this)
 
-      expect(completeSpy).toHaveBeenCalled()
-      done()
-    }, 0)
+    expect(completeSpy).toHaveBeenCalled()
   })
 
   it('emits an error if the parent signal emits an error', () => {

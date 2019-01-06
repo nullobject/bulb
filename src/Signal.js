@@ -234,10 +234,8 @@ export default class Signal {
    */
   static fromArray (as) {
     return new Signal(emit => {
-      setTimeout(() => {
-        as.map(apply(emit.value))
-        emit.complete()
-      }, 0)
+      as.map(apply(emit.value))
+      emit.complete()
     })
   }
 

@@ -21,7 +21,7 @@ import Signal from '../Signal'
 export function scan (f, a, s) {
   return new Signal(emit => {
     // Emit the starting value.
-    setTimeout(() => emit.value(a), 0)
+    emit.value(a)
 
     // Fold the current value with the previous value and emit the next value
     const value = b => {

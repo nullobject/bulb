@@ -12,20 +12,17 @@ describe('#concatMap', () => {
     completeSpy = jest.fn()
   })
 
-  it('maps a function over the signal values', done => {
+  it('maps a function over the signal values', () => {
     const s = Signal.fromArray(range(1, 3))
     const f = a => Signal.of(a)
 
     concatMap(f)(s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    setTimeout(() => {
-      range(1, 3).forEach((n, index) => {
-        expect(valueSpy.mock.calls[index][0]).toBe(n)
-      }, this)
+    range(1, 3).forEach((n, index) => {
+      expect(valueSpy.mock.calls[index][0]).toBe(n)
+    }, this)
 
-      expect(completeSpy).toHaveBeenCalled()
-      done()
-    }, 0)
+    expect(completeSpy).toHaveBeenCalled()
   })
 
   it('emits an error if the parent signal emits an error', () => {

@@ -12,16 +12,13 @@ describe('#filter', () => {
     completeSpy = jest.fn()
   })
 
-  it('filters the signal values with a predicate', done => {
+  it('filters the signal values with a predicate', () => {
     const s = Signal.fromArray(range(1, 3))
 
     filter(eq(2))(s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    setTimeout(() => {
-      expect(valueSpy).toBeCalledWith(2)
-      expect(completeSpy).toBeCalled()
-      done()
-    }, 0)
+    expect(valueSpy).toBeCalledWith(2)
+    expect(completeSpy).toBeCalled()
   })
 
   it('emits an error if the parent signal emits an error', () => {
