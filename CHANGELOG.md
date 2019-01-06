@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add `Signal#cycle` method
+
 ## 1.3.0 (2019-01-06)
 
 * Rename `emit.next` -> `emit.value`

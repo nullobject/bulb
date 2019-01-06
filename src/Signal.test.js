@@ -278,4 +278,23 @@ describe('Signal', () => {
       expect(errorSpy).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('#cycle', () => {
+    it('cycles through the values of an array', () => {
+      jest.useFakeTimers()
+
+      const s = Signal.periodic(1000).cycle(range(1, 3))
+
+      s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      range(0, 6).forEach(n => {
+        jest.advanceTimersByTime(1000)
+        expect(valueSpy).toHaveBeenNthCalledWith(n + 1, (n % 3) + 1)
+      })
+
+      expect(completeSpy).not.toHaveBeenCalled()
+
+      jest.useRealTimers()
+    })
+  })
 })
