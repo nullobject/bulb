@@ -354,6 +354,7 @@ export default class Signal {
    * every `n` milliseconds. The signal completes immediately after the last
    * value has been emitted.
    *
+   * @deprecated
    * @param {Number} n The number of milliseconds between each clock tick.
    * @param {Array} as An array of values.
    * @returns {Signal} A new signal.

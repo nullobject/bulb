@@ -2,6 +2,7 @@
 
 * Add `Signal#cycle` method
 * Add `Signal#sequential` method
+* Deprecate `Signal.sequential` method (use `Signal.periodic(1000).sequential([1, 2, 3])` instead)
 
 ## 1.3.0 (2019-01-06)
 
