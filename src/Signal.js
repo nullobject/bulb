@@ -298,14 +298,14 @@ export default class Signal {
       if (target.addListener) {
         target.addListener(type, emit.value)
       } else if (target.addEventListener) {
-        target.addEventListener(type, emit.value, useCapture)
+        target.addEventListener(type, emit.value, options.useCapture)
       }
 
       return () => {
         if (target.addListener) {
           target.removeListener(type, emit.value)
         } else {
-          target.removeEventListener('type', emit.value, useCapture)
+          target.removeEventListener('type', emit.value, options.useCapture)
         }
       }
     })
