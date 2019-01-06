@@ -19,7 +19,7 @@ describe('#sample', () => {
 
   it('emits the most recent value when there is an event on the sampler signal', () => {
     const s = Signal.periodic(1000)
-    const t = Signal.sequential(500, range(1, 6))
+    const t = Signal.periodic(500).sequential(range(1, 6))
 
     sample(s)(t).subscribe(valueSpy, errorSpy, completeSpy)
 

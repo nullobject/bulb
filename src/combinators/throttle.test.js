@@ -18,7 +18,7 @@ describe('#throttle', () => {
   })
 
   it('throttle the signal values', () => {
-    const s = Signal.sequential(500, range(1, 3))
+    const s = Signal.periodic(500).sequential(range(1, 3))
 
     throttle(1000)(s).subscribe(valueSpy, errorSpy, completeSpy)
 

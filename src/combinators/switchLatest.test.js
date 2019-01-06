@@ -18,7 +18,7 @@ describe('#switchLatest', () => {
   it('switches to the latest signal value', () => {
     const s = Signal.of('foo')
     const t = Signal.of('bar')
-    const u = Signal.sequential(1000, [s, t])
+    const u = Signal.periodic(1000).sequential([s, t])
 
     switchLatest(u).subscribe(valueSpy, errorSpy, completeSpy)
 

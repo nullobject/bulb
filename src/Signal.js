@@ -757,7 +757,7 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * const s = Signal.sequential(1000, [1, 2, 3])
+   * const s = Signal.periodic(1000).sequential([1, 2, 3])
    * const t = Signal.periodic(1000).always('a')
    * const u = Signal.periodic(1000).always('b')
    * const v = Signal.periodic(1000).always('c')

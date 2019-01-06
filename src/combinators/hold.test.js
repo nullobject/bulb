@@ -22,7 +22,7 @@ describe('#hold', () => {
     const s = Signal.fromCallback(callback => {
       a = a => { callback(null, a) }
     })
-    const t = Signal.sequential(500, range(1, 6))
+    const t = Signal.periodic(500).sequential(range(1, 6))
 
     hold(s)(t).subscribe(valueSpy, errorSpy, completeSpy)
 

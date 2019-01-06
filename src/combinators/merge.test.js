@@ -19,9 +19,9 @@ describe('merge', () => {
 
   describe('#merge', () => {
     it('merges the signals', () => {
-      const s = Signal.sequential(1000, range(1, 3))
-      const t = Signal.sequential(1000, range(4, 3))
-      const u = Signal.sequential(1000, range(7, 3))
+      const s = Signal.periodic(1000).sequential(range(1, 3))
+      const t = Signal.periodic(1000).sequential(range(4, 3))
+      const u = Signal.periodic(1000).sequential(range(7, 3))
 
       merge(s, t, u).subscribe(valueSpy, errorSpy, completeSpy)
 

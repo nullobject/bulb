@@ -18,7 +18,7 @@ describe('#debounce', () => {
   })
 
   it('debounces the signal values', () => {
-    const s = Signal.sequential(100, range(1, 3))
+    const s = Signal.periodic(100).sequential(range(1, 3))
 
     debounce(1000)(s).subscribe(valueSpy, errorSpy, completeSpy)
 
