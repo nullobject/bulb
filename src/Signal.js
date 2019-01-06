@@ -226,7 +226,7 @@ export default class Signal {
    * The signal completes immediately after the last value in the array has
    * been emitted.
    *
-   * @param {Array} as An array of values.
+   * @param {Array} as The array of values.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -354,6 +354,7 @@ export default class Signal {
    * every `n` milliseconds. The signal completes immediately after the last
    * value has been emitted.
    *
+   * @deprecated
    * @param {Number} n The number of milliseconds between each clock tick.
    * @param {Array} as An array of values.
    * @returns {Signal} A new signal.
@@ -403,6 +404,46 @@ export default class Signal {
       emit.value(a)
       return this.subscribe(emit)
     })
+  }
+
+  /**
+   * Cycles through the values of the array of `as` for every signal value.
+   *
+   * @param {Array} as The array of values.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * // A signal that cycles through the values of the array every second.
+   * // e.g. 1, 2, 3, 1, 2, 3, ...
+   * Signal.periodic(1000).cycle([1, 2, 3])
+   */
+  cycle (as) {
+    return stateMachine((a, b, emit) => {
+      emit.value(as[a])
+      return (a + 1) % as.length
+    }, 0, this)
+  }
+
+  /**
+   * Sequentially emits the values of the array of `as` for every signal value.
+   * The signal completes immediately after the last value has been emitted.
+   *
+   * @param {Array} as The array of values.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * // A signal that sequentially emits the values of the array every second.
+   * // e.g. 1, 2, 3
+   * Signal.periodic(1000).sequential([1, 2, 3])
+   */
+  sequential (as) {
+    return stateMachine((a, b, emit) => {
+      emit.value(as[a])
+      if (a === as.length - 1) {
+        emit.complete()
+      }
+      return a + 1
+    }, 0, this)
   }
 
   /**
@@ -648,7 +689,7 @@ export default class Signal {
   }
 
   /**
-   * Pauses emitting values from the given signal `t` if the most recent value
+   * Pauses emitting values from the target signal `t` if the most recent value
    * from the control signal is truthy. It will resume emitting events after
    * there is a falsey value.
    *
