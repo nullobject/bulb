@@ -1,3 +1,10 @@
+## Unreleased
+
+* Rename `emit.next` -> `emit.value`
+* Move keyboard and mouse methods to separate functions (e.g. `keyboardKeys`, `keyboardState`, `mouseButtons`, `mousePosition`, and `mouseState`)
+* Extract all functions to separate files
+* Change to documentation.js for API docs
+
 ## 1.2.0 (2018-12-30)
 
 * Switch to jest for tests
