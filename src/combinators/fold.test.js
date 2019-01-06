@@ -12,16 +12,13 @@ describe('#fold', () => {
     completeSpy = jest.fn()
   })
 
-  it('folds a function over the signal values', done => {
+  it('folds a function over the signal values', () => {
     const s = Signal.fromArray(range(1, 3))
 
     fold(add)(0)(s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    setTimeout(() => {
-      expect(valueSpy).toBeCalledWith(6)
-      expect(completeSpy).toBeCalled()
-      done()
-    }, 0)
+    expect(valueSpy).toBeCalledWith(6)
+    expect(completeSpy).toBeCalled()
   })
 
   it('emits an error if the parent signal emits an error', () => {

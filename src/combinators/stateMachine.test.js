@@ -12,21 +12,17 @@ describe('#stateMachine', () => {
     completeSpy = jest.fn()
   })
 
-  it('iterates a function over the signal values', done => {
+  it('iterates a function over the signal values', () => {
     const s = Signal.fromArray(range(1, 3))
 
     stateMachine((a, b, emit) => {
       emit.value(a * b)
       return a + b
-    })(0)(s).subscribe(valueSpy, errorSpy, completeSpy)
+    })(0)(s).subscribe(valueSpy, errorSpy, completeSpy);
 
-    setTimeout(() => {
-      [0, 2, 9].forEach((n, index) => {
-        expect(valueSpy.mock.calls[index][0]).toBe(n)
-      }, this)
-
-      done()
-    }, 0)
+    [0, 2, 9].forEach((n, index) => {
+      expect(valueSpy.mock.calls[index][0]).toBe(n)
+    }, this)
   })
 
   it('emits an error if the parent signal emits an error', () => {

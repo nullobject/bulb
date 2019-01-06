@@ -12,7 +12,7 @@ describe('#zipWith', () => {
     completeSpy = jest.fn()
   })
 
-  it('zip the corresponding signal values with a function', done => {
+  it('zip the corresponding signal values with a function', () => {
     const s = Signal.fromArray(range(1, 3))
     const t = Signal.fromArray(range(4, 3))
     const u = Signal.fromArray(range(7, 3))
@@ -20,16 +20,13 @@ describe('#zipWith', () => {
 
     zipWith(f, s, t, u).subscribe(valueSpy, errorSpy, completeSpy)
 
-    setTimeout(() => {
-      expect(valueSpy).toHaveBeenCalledTimes(3);
+    expect(valueSpy).toHaveBeenCalledTimes(3);
 
-      [12, 15, 18].forEach((ns, index) => {
-        expect(valueSpy.mock.calls[index][0]).toEqual(ns)
-      }, this)
+    [12, 15, 18].forEach((ns, index) => {
+      expect(valueSpy.mock.calls[index][0]).toEqual(ns)
+    }, this)
 
-      expect(completeSpy).toHaveBeenCalled()
-      done()
-    }, 0)
+    expect(completeSpy).toHaveBeenCalled()
   })
 
   it('emits an error if either signal emits an error', () => {

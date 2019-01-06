@@ -48,19 +48,16 @@ describe('Signal', () => {
   })
 
   describe('.fromArray', () => {
-    it('returns a signal of values from an array', done => {
+    it('returns a signal of values from an array', () => {
       const s = Signal.fromArray(range(1, 3))
 
       s.subscribe(valueSpy, errorSpy, completeSpy)
 
-      setTimeout(() => {
-        range(1, 3).forEach((n, index) => {
-          expect(valueSpy.mock.calls[index][0]).toBe(n)
-        }, this)
+      range(1, 3).forEach((n, index) => {
+        expect(valueSpy.mock.calls[index][0]).toBe(n)
+      }, this)
 
-        expect(completeSpy).toHaveBeenCalled()
-        done()
-      }, 0)
+      expect(completeSpy).toHaveBeenCalled()
     })
   })
 
@@ -230,19 +227,16 @@ describe('Signal', () => {
   })
 
   describe('#always', () => {
-    it('replaces signal values with a constant', done => {
+    it('replaces signal values with a constant', () => {
       const s = Signal.fromArray(range(1, 3)).always('x')
 
       s.subscribe(valueSpy, errorSpy, completeSpy)
 
-      setTimeout(() => {
-        range(1, 3).forEach((n, index) => {
-          expect(valueSpy.mock.calls[index][0]).toBe('x')
-        }, this)
+      range(1, 3).forEach((n, index) => {
+        expect(valueSpy.mock.calls[index][0]).toBe('x')
+      }, this)
 
-        expect(completeSpy).toHaveBeenCalled()
-        done()
-      }, 0)
+      expect(completeSpy).toHaveBeenCalled()
     })
 
     it('emits an error if the parent signal emits an error', () => {
@@ -255,19 +249,16 @@ describe('Signal', () => {
   })
 
   describe('#startWith', () => {
-    it('emits the given value before all other values', done => {
+    it('emits the given value before all other values', () => {
       const s = Signal.fromArray(range(1, 3)).startWith('x')
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(valueSpy, errorSpy, completeSpy);
 
-      setTimeout(() => {
-        ['x', 1, 2, 3].forEach((n, index) => {
-          expect(valueSpy.mock.calls[index][0]).toBe(n)
-        }, this)
+      ['x', 1, 2, 3].forEach((n, index) => {
+        expect(valueSpy.mock.calls[index][0]).toBe(n)
+      }, this)
 
-        expect(completeSpy).toHaveBeenCalled()
-        done()
-      }, 0)
+      expect(completeSpy).toHaveBeenCalled()
     })
 
     it('emits an error if the parent signal emits an error', () => {
