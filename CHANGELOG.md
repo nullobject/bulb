@@ -1,6 +1,7 @@
 ## Unreleased
 
 * Add `Signal#cycle` method
+* Add `Signal#sequential` method
 
 ## 1.3.0 (2019-01-06)
 

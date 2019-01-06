@@ -297,4 +297,23 @@ describe('Signal', () => {
       jest.useRealTimers()
     })
   })
+
+  describe('#sequential', () => {
+    it('sequentially emits the values of an array', () => {
+      jest.useFakeTimers()
+
+      const s = Signal.periodic(1000).sequential(range(1, 3))
+
+      s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      range(1, 3).forEach(n => {
+        jest.advanceTimersByTime(1000)
+        expect(valueSpy).toHaveBeenNthCalledWith(n, n)
+      })
+
+      expect(completeSpy).toHaveBeenCalled()
+
+      jest.useRealTimers()
+    })
+  })
 })

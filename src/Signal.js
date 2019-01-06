@@ -424,6 +424,28 @@ export default class Signal {
   }
 
   /**
+   * Sequentially emits the values of the array of `as` for every signal value.
+   * The signal completes immediately after the last value has been emitted.
+   *
+   * @param {Array} as The array of values.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * // A signal that sequentially emits the values of the array every second.
+   * // e.g. 1, 2, 3
+   * Signal.periodic(1000).sequential([1, 2, 3])
+   */
+  sequential (as) {
+    return stateMachine((a, b, emit) => {
+      emit.value(as[a])
+      if (a === as.length - 1) {
+        emit.complete()
+      }
+      return a + 1
+    }, 0, this)
+  }
+
+  /**
    * Delays the values emitted by the signal by `n` milliseconds.
    *
    * @param {Number} n The number of milliseconds to delay.
