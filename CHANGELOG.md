@@ -1,4 +1,4 @@
-## Unreleased
+## 1.3.0 (2019-01-06)
 
 * Rename `emit.next` -> `emit.value`
 * Move keyboard and mouse methods to separate functions (e.g. `keyboardKeys`, `keyboardState`, `mouseButtons`, `mousePosition`, and `mouseState`)
