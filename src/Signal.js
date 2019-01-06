@@ -67,7 +67,7 @@ function emitter (subscriptions, type) {
  * @example
  *
  * // Create a signal that emits the value 'foo' every second.
- * const signal = new Signal(emit => {
+ * const s = new Signal(emit => {
  *   // Start the timer and emit a value whenever the timer fires.
  *   const id = setInterval(() => emit.value('foo'), 1000)
  *
@@ -75,10 +75,10 @@ function emitter (subscriptions, type) {
  *   return () => clearInterval(id)
  * })
  *
- * // Subscribe to the signal and log the emitted values to the console.
- * const subscription = signal.subscribe(console.log)
+ * // Subscribe to the signal and log emitted values to the console.
+ * const subscription = s.subscribe(console.log)
  *
- * // Once we are done, we can unsubscribe from the signal.
+ * // When we are done, we can unsubscribe from the signal.
  * subscription.unsubscribe()
  */
 export default class Signal {
@@ -124,13 +124,25 @@ export default class Signal {
   /**
    * Subscribes to the signal to handle emitted values.
    *
+   * The `subscribe` method returns a subscription handle, which can be used to
+   * unsubscribe from the signal.
+   *
    * @param {Function} [value] The callback function called when the signal
    * emits a value.
    * @param {Function} [error] The callback function called when the signal
    * emits an error.
    * @param {Function} [complete] The callback function called when the signal
    * has completed.
-   * @returns {Subscription} A new subscription.
+   * @returns {Subscription} A subscription handle.
+   * @example
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   *
+   * // Subscribe to the signal and log emitted values to the console.
+   * const subscription = s.subscribe(console.log)
+   *
+   * // When we are done, we can unsubscribe from the signal.
+   * subscription.unsubscribe()
    */
   subscribe (value, error, complete) {
     let emit = {}
@@ -307,11 +319,12 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * const promise = new Promise((resolve, reject) => {
+   * const p = new Promise((resolve, reject) => {
    *   ...
    * })
    *
-   * const signal = Signal.fromPromise(promise)
+   * // A signal that wraps the promise.
+   * Signal.fromPromise(p)
    */
   static fromPromise (p) {
     return new Signal(emit => {
@@ -429,6 +442,13 @@ export default class Signal {
    *
    * @param {Function} f A function that returns a signal.
    * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   *
+   * // A signal that emits the values emitted by the returned signals.
+   * // e.g. 2, 3, 4
+   * s.concatMap(a => Signal.of(a + 1))
    */
   concatMap (f) {
     return concatMap(f, this)
@@ -441,8 +461,11 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
+   * const s = Signal.fromArray([1, 2, 3])
+   *
    * // A signal that increments the values emitted by the given signal.
-   * signal.map(a => a + 1)
+   * // e.g. 2, 3, 4
+   * s.map(a => a + 1)
    */
   map (f) {
     return map(f, this)
@@ -456,8 +479,11 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * // A signal that only emits positive values emitted by the given signal.
-   * signal.filter(a => a > 0)
+   * const s = Signal.fromArray([1, 2, 3])
+   *
+   * // A signal that only emits values greater than one.
+   * // e.g. 2, 3
+   * s.filter(a => a > 1)
    */
   filter (p) {
     return filter(p, this)
@@ -472,9 +498,12 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
+   * const s = Signal.fromArray([1, 2, 3])
+   *
    * // A signal that emits the sum of the values emitted by the parent signal.
    * // The sum is emitted only after the parent signal is complete.
-   * signal.fold((a, b) => a + b, 0)
+   * // e.g. 6
+   * s.fold((a, b) => a + b, 0)
    */
   fold (f, a) {
     return fold(f, a, this)
@@ -487,6 +516,13 @@ export default class Signal {
    * @param {Function} f A function.
    * @param a The starting value.
    * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   *
+   * // A signal that emits the sum of the values emitted by the parent signal.
+   * // e.g. 1, 3, 6
+   * s.scan((a, b) => a + b, 0)
    */
   scan (f, a) {
     return scan(f, a, this)
@@ -498,17 +534,18 @@ export default class Signal {
    * values or errors using the `emit` object.
    *
    * @param {Function} f A transform function.
-   * @param a The initial state.
+   * @param a The initial value.
    * @returns {Signal} A new signal.
    * @example
    *
-   * // A signal that emits the inverse running total of the values emitted by
-   * // the given signal.
-   * signal.stateMachine((a, b, emit) => {
-   *   emit.value(1 / (a + b))
-   *   return a + b
-   * }, 0)
+   * const s = Signal.fromArray([1, 2, 3])
    *
+   * // A signal that emits the running total of the products of the values.
+   * // e.g. 1, 3, 5
+   * s.stateMachine((a, b, emit) => {
+   *   emit.value(a + b)
+   *   return a * b
+   * }, 1)
    */
   stateMachine (f, a) {
     return stateMachine(f, a, this)
@@ -527,6 +564,7 @@ export default class Signal {
    * const t = Signal.fromArray([4, 5, 6])
    *
    * // A signal that emits the values from the merged signals.
+   * // e.g. 1, 4, 2, 5, 3, 6
    * s.merge(t)
    */
   merge (...ss) {
@@ -552,6 +590,7 @@ export default class Signal {
    * const t = Signal.fromArray([4, 5, 6])
    *
    * // A signal that emits tuples of corresponding values.
+   * // e.g. [1, 4], [2, 5], [3, 6]
    * s.zip(t)
    */
   zip (...ss) {
@@ -578,6 +617,7 @@ export default class Signal {
    * const t = Signal.fromArray([4, 5, 6])
    *
    * // A signal that emits the sum of the corresponding values.
+   * // e.g. 5, 7, 9
    * s.zipWith((a, b) => a + b, t)
    */
   zipWith (f, ...ss) {
@@ -590,32 +630,53 @@ export default class Signal {
   }
 
   /**
-   * Emits the most recent value from the given signal `s` whenever there is an
-   * event on the sampler signal.
+   * Samples events from the target signal `t` whenever there is an event on
+   * the control signal.
    *
-   * @param {Signal} s A signal.
+   * @param {Signal} t The target signal.
    * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = Signal.periodic(1000)
+   * const t = mousePosition(document)
+   *
+   * // A signal that samples the mouse position every second.
+   * s.sample(t)
    */
-  sample (s) {
-    return sample(this, s)
+  sample (t) {
+    return sample(this, t)
   }
 
   /**
-   * Pauses emitting values from the given signal `s` if the most recent value
-   * from the sampler signal is truthy. It will resume emitting events after
+   * Pauses emitting values from the given signal `t` if the most recent value
+   * from the control signal is truthy. It will resume emitting events after
    * there is a falsey value.
    *
-   * @param {Signal} s A signal.
+   * @param {Signal} t The target signal.
    * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = mouseButton(document)
+   * const t = mousePosition(document)
+   *
+   * // A signal that emits the mouse position while no mouse button is down.
+   * s.hold(t)
    */
-  hold (s) {
-    return hold(this, s)
+  hold (t) {
+    return hold(this, t)
   }
 
   /**
    * Removes duplicate values from the signal.
    *
    * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = Signal.fromArray([1, 2, 2, 3, 3, 3])
+   *
+   * // A signal with duplicates removed.
+   * // e.g. 1, 2, 3
+   * s.dedupe()
    */
   dedupe () {
     return dedupe(this)
@@ -626,6 +687,13 @@ export default class Signal {
    *
    * @param {Function} f A comparator function.
    * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = Signal.fromArray([1, 2, 2, 3, 3, 3])
+   *
+   * // A signal with duplicates removed.
+   * // e.g. 1, 2, 3
+   * s.dedupeWith((a, b) => a === b)
    */
   dedupeWith (f) {
     return dedupeWith(f, this)
@@ -642,14 +710,24 @@ export default class Signal {
   }
 
   /**
-   * Switches between the array of signals `ss` based on the last signal value.
-   * The values emitted by the signal represent the index of the signal to
-   * switch to.
+   * Switches between the array of target signals `ts` based on the last signal
+   * value. The values emitted by the control signal represent the index of the
+   * signal to switch to.
    *
-   * @param {Array} ss An array of signals.
+   * @param {Array} ts The array of target signals.
    * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = Signal.sequential(1000, [1, 2, 3])
+   * const t = Signal.periodic(1000).always('a')
+   * const u = Signal.periodic(1000).always('b')
+   * const v = Signal.periodic(1000).always('c')
+   *
+   * // A signal that switches between the target signals.
+   * // e.g. 'a', 'b', 'c'
+   * s.encode(t, u, v)
    */
-  encode (...ss) {
-    return encode(this, ss)
+  encode (...ts) {
+    return encode(this, ts)
   }
 }

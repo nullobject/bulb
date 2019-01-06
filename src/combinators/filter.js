@@ -10,8 +10,11 @@ import Signal from '../Signal'
  * @returns {Signal} A new signal.
  * @example
  *
- * // A signal that only emits positive values emitted by the given signal.
- * filter(a => a > 0, signal)
+ * const s = Signal.fromArray([1, 2, 3])
+ *
+ * // A signal that only emits values greater than one.
+ * // e.g. 2, 3
+ * filter(a => a > 1, s)
  */
 export function filter (p, s) {
   return new Signal(emit => {

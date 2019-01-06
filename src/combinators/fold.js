@@ -12,9 +12,12 @@ import Signal from '../Signal'
  * @returns {Signal} A new signal.
  * @example
  *
- * // A signal that emits the total of the values emitted by the given signal.
- * // The total is emitted only after the given signal is complete.
- * fold((a, b) => a + b, 0, signal)
+ * const s = Signal.fromArray([1, 2, 3])
+ *
+ * // A signal that emits the sum of the values emitted by the parent signal.
+ * // The sum is emitted only after the parent signal is complete.
+ * // e.g. 6
+ * fold((a, b) => a + b, 0, s)
  */
 export function fold (f, a, s) {
   return new Signal(emit => {

@@ -3,12 +3,19 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Emits the most recent value from signal `t` whenever there is an event on
- * the sampler signal `s`.
+ * Samples events from the target signal `t` whenever there is an event on the
+ * control signal `s`.
  *
- * @param {Signal} s A signal.
- * @param {Signal} t A signal.
+ * @param {Signal} s The control signal.
+ * @param {Signal} t The target signal.
  * @returns {Signal} A new signal.
+ * @example
+ *
+ * const s = Signal.periodic(1000)
+ * const t = mousePosition()
+ *
+ * // A signal that samples the mouse position every second.
+ * sample(s, t)
  */
 export function sample (s, t) {
   return new Signal(emit => {

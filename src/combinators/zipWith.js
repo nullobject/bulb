@@ -17,6 +17,7 @@ import Signal from '../Signal'
  * const t = Signal.fromArray([4, 5, 6])
  *
  * // A signal that emits the sum of the corresponding values.
+ * // e.g. 5, 7, 9
  * zipWith((a, b) => a + b, s, t)
  */
 export default function zipWith (f, ...ss) {

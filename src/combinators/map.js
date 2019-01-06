@@ -10,8 +10,11 @@ import Signal from '../Signal'
  * @returns {Signal} A new signal.
  * @example
  *
+ * const s = Signal.fromArray([1, 2, 3])
+ *
  * // A signal that increments the values emitted by the given signal.
- * map(a => a + 1, signal)
+ * // e.g. 2, 3, 4
+ * map(a => a + 1, s)
  */
 export function map (f, s) {
   return new Signal(emit => {

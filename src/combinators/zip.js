@@ -14,6 +14,7 @@ import zipWith from './zipWith'
  * const t = Signal.fromArray([4, 5, 6])
  *
  * // A signal that emits tuples of corresponding values.
+ * // e.g. [1, 4], [2, 5], [3, 6]
  * zip(s, t)
  */
 export default function zip (...ss) {

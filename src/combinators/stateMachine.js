@@ -13,12 +13,14 @@ import Signal from '../Signal'
  * @returns {Signal} A new signal.
  * @example
  *
- * // A signal that emits the inverse running total of the values emitted by
- * // the given signal.
+ * const s = Signal.fromArray([1, 2, 3])
+ *
+ * // A signal that emits the running total of the products of the values.
+ * // e.g. 1, 3, 5
  * stateMachine((a, b, emit) => {
- *   emit.value(1 / (a + b))
- *   return a + b
- * }, 0, signal)
+ *   emit.value(a + b)
+ *   return a * b
+ * }, 1, s)
  */
 export function stateMachine (f, a, s) {
   return new Signal(emit => {

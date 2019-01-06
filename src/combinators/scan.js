@@ -12,9 +12,11 @@ import Signal from '../Signal'
  * @returns {Signal} A new signal.
  * @example
  *
- * // A signal that emits the running total of the values emitted by the given
- * // signal.
- * scan((a, b) => a + b, 0, signal)
+ * const s = Signal.fromArray([1, 2, 3])
+ *
+ * // A signal that emits the sum of the values emitted by the parent signal.
+ * // e.g. 1, 3, 6
+ * scan((a, b) => a + b, 0, s)
  */
 export function scan (f, a, s) {
   return new Signal(emit => {

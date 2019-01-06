@@ -13,6 +13,7 @@ import Signal from '../Signal'
  * const t = Signal.fromArray([4, 5, 6])
  *
  * // A signal that emits the values from the merged signals.
+ * // e.g. 1, 4, 2, 5, 3, 6
  * merge(s, t)
  */
 export default function merge (...ss) {

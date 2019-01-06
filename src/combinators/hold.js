@@ -3,14 +3,21 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Pauses emitting events from signal `t` if the most recent value from the
- * hold signal `s` is truthy.
+ * Stops emitting events from target signal `t` while the most recent value
+ * from the control signal `s` is truthy.
  *
  * It will resume emitting events after there is a falsey value.
  *
- * @param {Signal} s A signal.
- * @param {Signal} t A signal.
+ * @param {Signal} s The control signal.
+ * @param {Signal} t The target signal.
  * @returns {Signal} A new signal.
+ * @example
+ *
+ * const s = mouseButton(document)
+ * const t = mousePosition(document)
+ *
+ * // A signal that emits the mouse position while no mouse button is down.
+ * hold(s, t)
  */
 export function hold (s, t) {
   return new Signal(emit => {
