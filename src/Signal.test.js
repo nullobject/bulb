@@ -125,7 +125,7 @@ describe('Signal', () => {
   })
 
   describe('.periodic', () => {
-    it('delays the signal values', () => {
+    it('periodically emits a value', () => {
       jest.useFakeTimers()
 
       const spy = jest.fn()
@@ -145,7 +145,7 @@ describe('Signal', () => {
   })
 
   describe('.sequential', () => {
-    it('delays the signal values', () => {
+    it('periodically emits values from an array', () => {
       jest.useFakeTimers()
 
       const s = Signal.sequential(1000, range(1, 3))
