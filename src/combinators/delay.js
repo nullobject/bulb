@@ -17,11 +17,7 @@ export function delay (n, s) {
       id = setTimeout(() => emit.value(a), n)
     }
 
-    const complete = () => {
-      setTimeout(() => emit.complete(), n)
-    }
-
-    const subscription = s.subscribe({ ...emit, value, complete })
+    const subscription = s.subscribe({ ...emit, value })
 
     return () => {
       clearTimeout(id)

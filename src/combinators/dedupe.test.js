@@ -10,20 +10,20 @@ describe('dedupe', () => {
     completeSpy = jest.fn()
   })
 
-  it('removes duplicate values from the signal', () => {
-    let a
-    const s = Signal.fromCallback(callback => {
-      a = a => { callback(null, a) }
+  it('removes duplicate signal values', () => {
+    let value
+    const s = new Signal(emit => {
+      value = emit.value
     })
 
     dedupe(s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    a('foo')
-    a('foo')
+    expect(valueSpy).not.toHaveBeenCalled()
+    value('foo')
+    value('foo')
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenLastCalledWith('foo')
-
-    a('bar')
+    value('bar')
     expect(valueSpy).toHaveBeenCalledTimes(2)
     expect(valueSpy).toHaveBeenLastCalledWith('bar')
   })

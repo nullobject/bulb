@@ -3,7 +3,7 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Samples events from the target signal `t` whenever there is an event on the
+ * Emits events from the target signal `t` whenever there is an event on the
  * control signal `s`.
  *
  * @param {Signal} s The control signal.
