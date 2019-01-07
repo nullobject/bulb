@@ -163,17 +163,21 @@ export default class Signal {
         this.unmount()
       }
     })
+    const handleValue = emitter(this._subscriptions, 'value')
+    const handleError = emitter(this._subscriptions, 'error')
+    const handleComplete = () => {
+      // Notify the subscribers that the signal has completed and call the
+      // unmount function.
+      emitter(this._subscriptions, 'complete')()
+      this.unmount()
+    }
 
     // Add the subscription.
     this._subscriptions.add(subscription)
 
     // Call the mount function if we're adding the first subscription.
     if (this._subscriptions.size === 1) {
-      this.mount({
-        value: emitter(this._subscriptions, 'value'),
-        error: emitter(this._subscriptions, 'error'),
-        complete: emitter(this._subscriptions, 'complete')
-      })
+      this.mount({ value: handleValue, error: handleError, complete: handleComplete })
     }
 
     return subscription

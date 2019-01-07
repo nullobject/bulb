@@ -5,6 +5,7 @@
 * Deprecate `Signal.sequential` method (use `Signal.periodic(1000).sequential([1, 2, 3])` instead)
 * Remove `setTimeout` in `Signal.fromArray` method
 * Remove `setTimeout` in `scan` function
+* Unmount signals when they have completed
 
 ## 1.3.0 (2019-01-06)
 

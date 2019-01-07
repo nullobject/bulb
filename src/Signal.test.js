@@ -190,6 +190,19 @@ describe('Signal', () => {
       expect(unmount).toHaveBeenCalledTimes(1)
     })
 
+    it('calls the unmount function when the signal is complete', () => {
+      let complete
+      const unmount = jest.fn()
+      const s = new Signal(emit => {
+        complete = () => { emit.complete() }
+        return unmount
+      })
+
+      s.subscribe()
+      complete()
+      expect(unmount).toHaveBeenCalledTimes(1)
+    })
+
     it('calls the value callback when the signal emits a value', () => {
       const mount = jest.fn(emit => emit.value('foo'))
       const s = new Signal(mount)
