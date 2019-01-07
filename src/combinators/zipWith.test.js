@@ -35,7 +35,7 @@ describe('zipWith', () => {
     expect(valueSpy).toHaveBeenCalledWith(6)
   })
 
-  it('emits an error if either signal emits an error', () => {
+  it('emits an error when any of the given signals emit an error', () => {
     let errorS, errorT
     const s = new Signal(emit => {
       errorS = emit.error
@@ -68,9 +68,8 @@ describe('zipWith', () => {
 
     expect(completeSpy).not.toHaveBeenCalled()
     completeS()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
     completeT()
-    expect(completeSpy).toHaveBeenCalledTimes(2)
+    expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
   it('unmounts the given signals when the returned signal is unsubscribed', () => {

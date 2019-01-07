@@ -23,7 +23,7 @@ export function concatMap (f, s) {
 
     const value = a => {
       if (subscription2) { subscription2.unsubscribe() }
-      subscription2 = f(a).subscribe(emit)
+      subscription2 = f(a).subscribe({ value: emit.value, error: emit.error })
     }
 
     const subscription1 = s.subscribe({ ...emit, value })

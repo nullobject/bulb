@@ -1,4 +1,4 @@
-import { always } from 'fkit'
+import { always, id } from 'fkit'
 
 import Signal from '../Signal'
 import concatMap from './concatMap'
@@ -48,15 +48,20 @@ describe('concatMap', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    let complete
+    let completeS, completeT
     const s = new Signal(emit => {
-      complete = emit.complete
+      completeS = emit.complete
+    })
+    const t = new Signal(emit => {
+      emit.value(s)
+      completeT = emit.complete
     })
 
-    concatMap(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    concatMap(id, t).subscribe(valueSpy, errorSpy, completeSpy)
 
+    completeS()
     expect(completeSpy).not.toHaveBeenCalled()
-    complete()
+    completeT()
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 

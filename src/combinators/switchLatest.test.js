@@ -36,31 +36,54 @@ describe('switchLatest', () => {
     expect(valueSpy).toHaveBeenLastCalledWith('bar')
   })
 
-  it('emits an error when the given signal emits an error', () => {
-    let error
+  it('emits an error when any of the given signals emit an error', () => {
+    let errorS, errorT
     const s = new Signal(emit => {
-      error = emit.error
+      errorS = emit.error
+    })
+    const t = new Signal(emit => {
+      emit.value(s)
+      errorT = emit.error
+    })
+
+    switchLatest(t).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(errorSpy).not.toHaveBeenCalled()
+    errorS('foo')
+    expect(errorSpy).toHaveBeenCalledTimes(1)
+    expect(errorSpy).toHaveBeenLastCalledWith('foo')
+    errorT('bar')
+    expect(errorSpy).toHaveBeenCalledTimes(2)
+    expect(errorSpy).toHaveBeenLastCalledWith('bar')
+  })
+
+  it('throws an error when the given signal emits a non-signal value', () => {
+    let value
+    const s = new Signal(emit => {
+      value = emit.value
     })
 
     switchLatest(s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    expect(errorSpy).not.toHaveBeenCalled()
-    error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(() => value('foo')).toThrow('Signal value must be a signal')
   })
 
   it('completes when the given signal is completed', () => {
-    let complete
+    let completeS, completeT
     const s = new Signal(emit => {
-      complete = emit.complete
+      completeS = emit.complete
+    })
+    const t = new Signal(emit => {
+      emit.value(s)
+      completeT = emit.complete
     })
 
-    switchLatest(s).subscribe(valueSpy, errorSpy, completeSpy)
+    switchLatest(t).subscribe(valueSpy, errorSpy, completeSpy)
 
+    completeS()
     expect(completeSpy).not.toHaveBeenCalled()
-    complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    completeT()
+    expect(completeSpy).toHaveBeenCalled()
   })
 
   it('unmounts the given signal when the returned signal is unsubscribed', () => {

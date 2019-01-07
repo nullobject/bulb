@@ -30,7 +30,7 @@ describe('merge', () => {
     expect(valueSpy).toHaveBeenLastCalledWith('bar')
   })
 
-  it('emits an error when any of the given signals emits an error', () => {
+  it('emits an error when any of the given signals emit an error', () => {
     let errorS, errorT
     const s = new Signal(emit => {
       errorS = emit.error
