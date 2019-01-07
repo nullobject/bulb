@@ -1,5 +1,3 @@
-import { range } from 'fkit'
-
 import Signal from '../Signal'
 import merge from './merge'
 
@@ -10,59 +8,76 @@ describe('merge', () => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
-    jest.useFakeTimers()
   })
 
-  afterEach(() => {
-    jest.useRealTimers()
-  })
-
-  it('merges the signals', () => {
-    const s = Signal.periodic(1000).sequential(range(1, 3))
-    const t = Signal.periodic(1000).sequential(range(4, 3))
-    const u = Signal.periodic(1000).sequential(range(7, 3))
-
-    merge(s, t, u).subscribe(valueSpy, errorSpy, completeSpy)
-
-    jest.advanceTimersByTime(1000)
-    jest.advanceTimersByTime(1000)
-    jest.advanceTimersByTime(1000)
-
-    expect(valueSpy).toHaveBeenCalledTimes(9);
-
-    [1, 4, 7, 2, 5, 8, 3, 6, 9].forEach((n, index) => {
-      expect(valueSpy.mock.calls[index][0]).toBe(n)
-    }, this)
-
-    expect(completeSpy).toHaveBeenCalled()
-  })
-
-  it('emits an error if either signal emits an error', () => {
-    let a, b
-    const s = Signal.fromCallback(callback => {
-      a = e => { callback(e) }
+  it('merges the given signals', () => {
+    let valueS, valueT
+    const s = new Signal(emit => {
+      valueS = emit.value
     })
-    const t = Signal.fromCallback(callback => {
-      b = e => { callback(e) }
+    const t = new Signal(emit => {
+      valueT = emit.value
     })
 
-    merge(s, t).subscribe({ error: errorSpy })
+    merge(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
-    a('foo')
-    b('foo')
+    expect(valueSpy).not.toHaveBeenCalled()
+    valueS('foo')
+    expect(valueSpy).toHaveBeenCalledTimes(1)
+    expect(valueSpy).toHaveBeenLastCalledWith('foo')
+    valueT('bar')
+    expect(valueSpy).toHaveBeenCalledTimes(2)
+    expect(valueSpy).toHaveBeenLastCalledWith('bar')
+  })
 
+  it('emits an error when any of the given signals emits an error', () => {
+    let errorS, errorT
+    const s = new Signal(emit => {
+      errorS = emit.error
+    })
+    const t = new Signal(emit => {
+      errorT = emit.error
+    })
+
+    merge(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(errorSpy).not.toHaveBeenCalled()
+    errorS('foo')
+    expect(errorSpy).toHaveBeenCalledTimes(1)
+    expect(errorSpy).toHaveBeenLastCalledWith('foo')
+    errorT('bar')
     expect(errorSpy).toHaveBeenCalledTimes(2)
+    expect(errorSpy).toHaveBeenLastCalledWith('bar')
   })
 
-  it('unmounts the original signals when it is unsubscribed', () => {
-    const unmount = jest.fn()
-    const s = new Signal(() => unmount)
-    const t = new Signal(() => unmount)
-    const u = new Signal(() => unmount)
-    const a = merge(s, t, u).subscribe()
+  it('completes when all of the given signals are completed', () => {
+    let completeS, completeT
+    const s = new Signal(emit => {
+      completeS = emit.complete
+    })
+    const t = new Signal(emit => {
+      completeT = emit.complete
+    })
 
+    merge(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(completeSpy).not.toHaveBeenCalled()
+    completeS()
+    completeT()
+    expect(completeSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('unmounts the given signals when the returned signal is unsubscribed', () => {
+    const unmountS = jest.fn()
+    const unmountT = jest.fn()
+    const s = new Signal(() => unmountS)
+    const t = new Signal(() => unmountT)
+    const a = merge(s, t).subscribe()
+
+    expect(unmountS).not.toHaveBeenCalled()
+    expect(unmountT).not.toHaveBeenCalled()
     a.unsubscribe()
-
-    expect(unmount).toHaveBeenCalledTimes(3)
+    expect(unmountS).toHaveBeenCalledTimes(1)
+    expect(unmountT).toHaveBeenCalledTimes(1)
   })
 })

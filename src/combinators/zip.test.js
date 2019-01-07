@@ -1,5 +1,3 @@
-import { range } from 'fkit'
-
 import Signal from '../Signal'
 import zip from './zip'
 
@@ -13,18 +11,24 @@ describe('zip', () => {
   })
 
   it('zips the corresponding signal values into tuples', () => {
-    const s = Signal.fromArray(range(1, 3))
-    const t = Signal.fromArray(range(4, 3))
-    const u = Signal.fromArray(range(7, 3))
+    let valueS, valueT, valueU
+    const s = new Signal(emit => {
+      valueS = emit.value
+    })
+    const t = new Signal(emit => {
+      valueT = emit.value
+    })
+    const u = new Signal(emit => {
+      valueU = emit.value
+    })
 
     zip(s, t, u).subscribe(valueSpy, errorSpy, completeSpy)
 
-    expect(valueSpy).toHaveBeenCalledTimes(3);
-
-    [[1, 4, 7], [2, 5, 8], [3, 6, 9]].forEach((ns, index) => {
-      expect(valueSpy.mock.calls[index][0]).toEqual(ns)
-    }, this)
-
-    expect(completeSpy).toHaveBeenCalled()
+    valueS(1)
+    valueT(2)
+    expect(valueSpy).not.toHaveBeenCalled()
+    valueU(3)
+    expect(valueSpy).toHaveBeenCalledTimes(1)
+    expect(valueSpy).toHaveBeenCalledWith([1, 2, 3])
   })
 })

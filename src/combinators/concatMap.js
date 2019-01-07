@@ -3,9 +3,10 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Maps a function `f` over a signal. The function must also return a `Signal`.
+ * Maps a function `f` over the signal `s`. The function must also return a
+ * `Signal`.
  *
- * @param {Function} f A function that returns a signal.
+ * @param {Function} f A function that returns a `Signal`.
  * @param {Signal} s A signal.
  * @returns {Signal} A new signal.
  * @example

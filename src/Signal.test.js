@@ -217,7 +217,7 @@ describe('Signal', () => {
       expect(errorSpy).toHaveBeenCalledWith(error)
     })
 
-    it('calls the error callback when the signal is complete', () => {
+    it('calls the complete callback when the signal is complete', () => {
       const mount = jest.fn(emit => emit.complete())
       const s = new Signal(mount)
 

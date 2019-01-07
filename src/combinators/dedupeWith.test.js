@@ -12,39 +12,58 @@ describe('dedupeWith', () => {
     completeSpy = jest.fn()
   })
 
-  it('removes duplicate values from the signal using a comparator function', () => {
-    let a
-    const s = Signal.fromCallback(callback => {
-      a = a => { callback(null, a) }
+  it('removes duplicate signal values with a comparator function', () => {
+    let value
+    const s = new Signal(emit => {
+      value = emit.value
     })
 
-    dedupeWith(eq)(s).subscribe(valueSpy, errorSpy, completeSpy)
+    dedupeWith(eq, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    a('foo')
-    a('foo')
+    expect(valueSpy).not.toHaveBeenCalled()
+    value('foo')
+    value('foo')
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenLastCalledWith('foo')
-
-    a('bar')
+    value('bar')
     expect(valueSpy).toHaveBeenCalledTimes(2)
     expect(valueSpy).toHaveBeenLastCalledWith('bar')
   })
 
-  it('emits an error if the parent signal emits an error', () => {
-    const mount = jest.fn(emit => emit.error())
-    const s = new Signal(mount)
+  it('emits an error when the given signal emits an error', () => {
+    let error
+    const s = new Signal(emit => {
+      error = emit.error
+    })
 
-    dedupeWith(eq)(s).subscribe({ error: errorSpy })
+    dedupeWith(eq, s).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(errorSpy).not.toHaveBeenCalled()
+    error('foo')
     expect(errorSpy).toHaveBeenCalledTimes(1)
+    expect(errorSpy).toHaveBeenCalledWith('foo')
   })
 
-  it('unmounts the original signal when it is unsubscribed', () => {
+  it('completes when the given signal is completed', () => {
+    let complete
+    const s = new Signal(emit => {
+      complete = emit.complete
+    })
+
+    dedupeWith(eq, s).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(completeSpy).not.toHaveBeenCalled()
+    complete()
+    expect(completeSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('unmounts the given signal when the returned signal is unsubscribed', () => {
     const unmount = jest.fn()
     const s = new Signal(() => unmount)
-    const a = dedupeWith(eq)(s).subscribe()
+    const a = dedupeWith(eq, s).subscribe()
 
+    expect(unmount).not.toHaveBeenCalled()
     a.unsubscribe()
-
     expect(unmount).toHaveBeenCalledTimes(1)
   })
 })

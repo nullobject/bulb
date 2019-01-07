@@ -11,11 +11,11 @@ import Signal from '../Signal'
  */
 export function throttle (n, s) {
   return new Signal(emit => {
-    let lastTime
+    let lastTime = null
 
     const value = a => {
       const t = Date.now()
-      if (!lastTime || t - lastTime >= n) {
+      if (lastTime === null || t - lastTime >= n) {
         emit.value(a)
         lastTime = t
       }
