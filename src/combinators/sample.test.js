@@ -5,7 +5,7 @@ import sample from './sample'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#sample', () => {
+describe('sample', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

@@ -3,7 +3,7 @@ import dedupe from './dedupe'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#dedupe', () => {
+describe('dedupe', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

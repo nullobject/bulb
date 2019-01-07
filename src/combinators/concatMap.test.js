@@ -5,7 +5,7 @@ import concatMap from './concatMap'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#concatMap', () => {
+describe('concatMap', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

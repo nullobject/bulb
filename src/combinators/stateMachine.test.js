@@ -5,7 +5,7 @@ import stateMachine from './stateMachine'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#stateMachine', () => {
+describe('stateMachine', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

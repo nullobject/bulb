@@ -5,7 +5,7 @@ import filter from './filter'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#filter', () => {
+describe('filter', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

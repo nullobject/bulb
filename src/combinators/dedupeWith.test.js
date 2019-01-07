@@ -5,7 +5,7 @@ import dedupeWith from './dedupeWith'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#dedupeWith', () => {
+describe('dedupeWith', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

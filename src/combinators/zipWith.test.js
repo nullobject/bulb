@@ -5,7 +5,7 @@ import zipWith from './zipWith'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#zipWith', () => {
+describe('zipWith', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

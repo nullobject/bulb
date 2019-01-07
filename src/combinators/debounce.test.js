@@ -5,7 +5,7 @@ import debounce from './debounce'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#debounce', () => {
+describe('debounce', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

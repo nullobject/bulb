@@ -5,7 +5,7 @@ import delay from './delay'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#delay', () => {
+describe('delay', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

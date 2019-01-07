@@ -5,7 +5,7 @@ import hold from './hold'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#hold', () => {
+describe('hold', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

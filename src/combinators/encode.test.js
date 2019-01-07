@@ -3,7 +3,7 @@ import encode from './encode'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#encode', () => {
+describe('encode', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

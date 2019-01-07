@@ -5,7 +5,7 @@ import fold from './fold'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#fold', () => {
+describe('fold', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

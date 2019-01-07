@@ -5,7 +5,7 @@ import scan from './scan'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#scan', () => {
+describe('scan', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

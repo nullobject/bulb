@@ -3,7 +3,7 @@ import switchLatest from './switchLatest'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#switchLatest', () => {
+describe('switchLatest', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

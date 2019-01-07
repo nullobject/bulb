@@ -5,7 +5,7 @@ import map from './map'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#map', () => {
+describe('map', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()

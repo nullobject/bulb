@@ -5,7 +5,7 @@ import throttle from './throttle'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('#throttle', () => {
+describe('throttle', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
