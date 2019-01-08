@@ -1,4 +1,4 @@
-## Unreleased
+## 1.4.0 (2019-01-08)
 
 * Add `Signal#cycle` method
 * Add `Signal#sequential` method
