@@ -1,23 +1,22 @@
 import switchLatest from './switchLatest'
 
 /**
- * Switches between the array of target signals `ts` based on the last control
- * signal value. The values emitted by the control signal `s` represent the
- * index of the signal to switch to.
+ * Switches between the target signals `ts` based on the most recent value
+ * emitted by the control signal `s`. The values emitted by the control signal
+ * represent the index of the target signal to switch to.
  *
  * @param {Signal} s The control signal.
- * @param {Array} ts The array of target signals.
+ * @param {Array} ts The target signals.
  * @returns {Signal} A new signal.
  * @example
  *
- * const s = Signal.periodic(1000).sequential([1, 2, 3])
- * const t = Signal.periodic(1000).always('a')
- * const u = Signal.periodic(1000).always('b')
- * const v = Signal.periodic(1000).always('c')
+ * import { Signal, encode } from 'bulb'
  *
- * // A signal that switches between the target signals.
- * // e.g. 'a', 'b', 'c'
- * encode(s, t, u, v)
+ * const s = Signal.of(1)
+ * const t = Signal.of(2)
+ * const u = Signal.periodic(1000).sequential([1, 2])
+ *
+ * encode(u, s, t).subscribe(console.log) // 1, 2
  */
 export default function encode (s, ...ts) {
   // Allow the signals to be given as an array.

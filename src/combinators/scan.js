@@ -3,20 +3,22 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Scans a function `f` over the signal `s`. Unlike the `fold` function, the
- * signal values are emitted incrementally.
+ * Applies an accumulator function `f` to each value emitted by the signal `s`.
+ * The accumulated value will be emitted for each value emitted by the signal.
  *
- * @param {Function} f A function.
- * @param a A starting value.
- * @param {Signal} s A signal.
+ * @param {Function} f The accumulator function to apply to each value emitted
+ * by the signal.
+ * @param a The starting value.
+ * @param {Signal} s The signal.
  * @returns {Signal} A new signal.
  * @example
  *
- * const s = Signal.fromArray([1, 2, 3])
+ * import { Signal, scan } from 'bulb'
  *
- * // A signal that emits the sum of the values emitted by the parent signal.
- * // e.g. 1, 3, 6
- * scan((a, b) => a + b, 0, s)
+ * const s = Signal.fromArray([1, 2, 3])
+ * const t = scan((a, b) => a + b, 0, s)
+ *
+ * t.subscribe(console.log) // 1, 3, 6
  */
 export function scan (f, a, s) {
   return new Signal(emit => {

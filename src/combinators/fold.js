@@ -3,21 +3,22 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Folds a function `f` over the signal `s`. The final value is emitted when
- * the signal completes.
+ * Applies an accumulator function `f` to each value emitted by the signal `s`.
+ * The accumulated value will be emitted when the signal has completed.
  *
- * @param {Function} f A function.
- * @param a A starting value.
- * @param {Signal} s A signal.
+ * @param {Function} f The accumulator function to apply to each value emitted
+ * by the signal.
+ * @param a The starting value.
+ * @param {Signal} s The signal.
  * @returns {Signal} A new signal.
  * @example
  *
- * const s = Signal.fromArray([1, 2, 3])
+ * import { Signal, fold } from 'bulb'
  *
- * // A signal that emits the sum of the values emitted by the parent signal.
- * // The sum is emitted only after the parent signal is complete.
- * // e.g. 6
- * fold((a, b) => a + b, 0, s)
+ * const s = Signal.fromArray([1, 2, 3])
+ * const t = fold((a, b) => a + b, 0, s)
+ *
+ * t.subscribe(console.log) // 6
  */
 export function fold (f, a, s) {
   return new Signal(emit => {

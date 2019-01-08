@@ -1,20 +1,20 @@
 import Signal from '../Signal'
 
 /**
- * Merges the signals `ss`.
+ * Merges the given signals `ss` and emits their values. The returned signal
+ * will complete once *all* of the given signals have completed.
  *
- * The signal completes when *all* of the merged signals have completed.
- *
- * @param {Array} ss An array of signals.
+ * @param {Array} ss The signals to merge.
  * @returns {Signal} A new signal.
  * @example
  *
+ * import { Signal, merge } from 'bulb'
+ *
  * const s = Signal.fromArray([1, 2, 3])
  * const t = Signal.fromArray([4, 5, 6])
+ * const u = merge(s, t)
  *
- * // A signal that emits the values from the merged signals.
- * // e.g. 1, 4, 2, 5, 3, 6
- * merge(s, t)
+ * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
  */
 export default function merge (...ss) {
   // Allow the signals to be given as an array.
