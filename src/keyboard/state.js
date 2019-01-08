@@ -6,11 +6,18 @@ import Signal from '../Signal'
  * When a key is pressed or released, then the signal will emit an array
  * containing the key codes of all the currently pressed keys.
  *
- * @param {Element} target A DOM element.
- * @param {Object} [options] An options object.
- * @param {Booelan} [options.preventDefault=false] A boolean indicating
- * whether the default action should be taken for the event.
+ * @param {EventTarget} target The event target (e.g. a DOM element).
+ * @param {Object} [options] The options.
+ * @param {Booelan} [options.preventDefault=false] A boolean indicating whether
+ * the default action should be taken for the event.
  * @returns {Signal} A new signal.
+ * @example
+ *
+ * import { keyboardState } from 'bulb'
+ *
+ * const s = keyboardState(document)
+ *
+ * s.subscribe(console.log) // [1], [1, 2], ...
  */
 export default function keyboardState (target, options) {
   options = options || { preventDefault: false }

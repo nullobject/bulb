@@ -7,12 +7,18 @@ import Signal from '../Signal'
  * representing the logical sum of the currently pressed button codes (left=1,
  * right=2, middle=4).
  *
- * @summary Creates a mouse button signal.
- * @param {Element} target A DOM element.
- * @param {Object} [options] An options object.
- * @param {Booelan} [options.preventDefault=false] A boolean indicating
- * whether the default action should be taken for the event.
+ * @param {EventTarget} target The event target (e.g. a DOM element).
+ * @param {Object} [options] The options.
+ * @param {Booelan} [options.preventDefault=false] A boolean indicating whether
+ * the default action should be taken for the event.
  * @returns {Signal} A new signal.
+ * @example
+ *
+ * import { mouseButtons } from 'bulb'
+ *
+ * const s = mouseButtons(document)
+ *
+ * s.subscribe(console.log) // 1, 2, ...
  */
 export default function mouseButtons (target, options) {
   options = options || { preventDefault: false }

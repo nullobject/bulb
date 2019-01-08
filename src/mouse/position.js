@@ -6,11 +6,18 @@ import Signal from '../Signal'
  * When the mouse is moved, then the signal will emit an array containing the
  * mouse position.
  *
- * @param {Element} target A DOM element.
- * @param {Object} [options] An options object.
- * @param {Booelan} [options.preventDefault=false] A boolean indicating
- * whether the default action should be taken for the event.
+ * @param {EventTarget} target The event target (e.g. a DOM element).
+ * @param {Object} [options] The options.
+ * @param {Booelan} [options.preventDefault=false] A boolean indicating whether
+ * the default action should be taken for the event.
  * @returns {Signal} A new signal.
+ * @example
+ *
+ * import { mousePosition } from 'bulb'
+ *
+ * const s = mousePosition(document)
+ *
+ * s.subscribe(console.log) // [1, 1], [2, 2], ...
  */
 export default function mousePosition (target, options) {
   options = options || { preventDefault: false }

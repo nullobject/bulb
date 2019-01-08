@@ -297,14 +297,16 @@ export default class Signal {
    * Creates a signal that emits events of `type` from the
    * `EventTarget`-compatible `target` object.
    *
-   * @param {String} type A string representing the event type to listen for.
+   * @param {String} type The event type to listen for.
    * @param {EventTarget} target The event target (e.g. a DOM element).
-   * @param {Object} [options] An options object.
-   * @param {Boolean} [options.useCapture=true] A boolean indicating that events of
-   * this type will be dispatched to the signal before being dispatched to any
-   * `EventTarget` beneath it in the DOM tree.
+   * @param {Object} [options] The options.
+   * @param {Boolean} [options.useCapture=true] A boolean indicating that
+   * events of this type will be dispatched to the signal before being
+   * dispatched to any `EventTarget` beneath it in the DOM tree.
    * @returns {Signal} A new signal.
    * @example
+   *
+   * import { Signal } from 'bulb'
    *
    * Signal.fromEvent('click', document)
    */
