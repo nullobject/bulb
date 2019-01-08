@@ -3,18 +3,22 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Filters a signal using a predicate function `p`.
+ * Filters the signal `s` by only emitting values that satisfy a predicate
+ * function `p`.
  *
- * @param {Function} p A predicate function.
- * @param {Signal} s A signal.
+ * @param {Function} p The predicate function to apply to each value emitted by
+ * the signal. If it returns `true`, the value will be emitted, otherwise the
+ * value will not be emitted.
+ * @param {Signal} s The signal.
  * @returns {Signal} A new signal.
  * @example
  *
- * const s = Signal.fromArray([1, 2, 3])
+ * import { Signal, filter } from 'bulb'
  *
- * // A signal that only emits values greater than one.
- * // e.g. 2, 3
- * filter(a => a > 1, s)
+ * const s = Signal.fromArray([1, 2, 3])
+ * const t = filter(a => a > 1, s)
+ *
+ * t.subscribe(console.log) // 2, 3
  */
 export function filter (p, s) {
   return new Signal(emit => {

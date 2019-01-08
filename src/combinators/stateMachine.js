@@ -3,24 +3,27 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Runs a state machine over the signal using a transform function `t`. The
- * transform function must return a new state, it can also optionally emit
+ * Applies a transform function `f` to each value emitted by the signal `s`.
+ *
+ * The transform function must return a new state, it can also optionally emit
  * values or errors using the `emit` object.
  *
- * @param {Function} f A transform function.
+ * @param {Function} f The transform function to apply to each value emitted by
+ * the signal.
  * @param a The initial state.
- * @param {Signal} s A signal.
+ * @param {Signal} s The signal.
  * @returns {Signal} A new signal.
  * @example
  *
- * const s = Signal.fromArray([1, 2, 3])
+ * import { Signal, stateMachine } from 'bulb'
  *
- * // A signal that emits the running total of the products of the values.
- * // e.g. 1, 3, 5
- * stateMachine((a, b, emit) => {
+ * const s = Signal.fromArray([1, 2, 3])
+ * const t = stateMachine((a, b, emit) => {
  *   emit.value(a + b)
  *   return a * b
  * }, 1, s)
+ *
+ * t.subscribe(console.log) // 1, 3, 5
  */
 export function stateMachine (f, a, s) {
   return new Signal(emit => {

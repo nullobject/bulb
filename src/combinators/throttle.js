@@ -3,11 +3,20 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Limits the rate at which values are emitted by a signal.
+ * Limits the rate at which values are emitted by the signal `s`. Values are
+ * dropped when the rate limit is exceeded.
  *
- * @param {Number} n The number of milliseconds between emitted values.
- * @param {Signal} s A signal.
+ * @param {Number} n The number of milliseconds to wait between emitted values.
+ * @param {Signal} s The signal.
  * @returns {Signal} A new signal.
+ * @example
+ *
+ * import { mousePosition, throttle } from 'bulb'
+ *
+ * const s = mousePosition(document)
+ * const t = throttle(1000, s)
+ *
+ * t.subscribe(console.log) // [1, 1], [2, 2], ...
  */
 export function throttle (n, s) {
   return new Signal(emit => {

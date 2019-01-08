@@ -3,18 +3,20 @@ import { compose, curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Maps a function `f` over a signal.
+ * Applies a function `f` to each value emitted by the signal `s`.
  *
- * @param {Function} f A function that returns a value.
- * @param {Signal} s A signal.
+ * @param {Function} f The function to apply to each value emitted by the
+ * signal.
+ * @param {Signal} s The signal.
  * @returns {Signal} A new signal.
  * @example
  *
- * const s = Signal.fromArray([1, 2, 3])
+ * import { Signal, map } from 'bulb'
  *
- * // A signal that increments the values emitted by the given signal.
- * // e.g. 2, 3, 4
- * map(a => a + 1, s)
+ * const s = Signal.fromArray([1, 2, 3])
+ * const t = map(a => a + 1, s)
+ *
+ * t.subscribe(console.log) // 2, 3, 4
  */
 export function map (f, s) {
   return new Signal(emit => {
