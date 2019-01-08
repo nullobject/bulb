@@ -11,6 +11,8 @@ import { concatMap } from './combinators/concatMap'
 import { debounce } from './combinators/debounce'
 import { dedupeWith } from './combinators/dedupeWith'
 import { delay } from './combinators/delay'
+import { drop } from './combinators/drop'
+import { dropWhile } from './combinators/dropWhile'
 import { filter } from './combinators/filter'
 import { fold } from './combinators/fold'
 import { hold } from './combinators/hold'
@@ -18,6 +20,8 @@ import { map } from './combinators/map'
 import { sample } from './combinators/sample'
 import { scan } from './combinators/scan'
 import { stateMachine } from './combinators/stateMachine'
+import { take } from './combinators/take'
+import { takeWhile } from './combinators/takeWhile'
 import { throttle } from './combinators/throttle'
 
 /**
@@ -670,6 +674,47 @@ export default class Signal {
     }
 
     return zipWith(f, [this].concat(ss))
+  }
+
+  /**
+   * Takes the first `n` values from the signal, and then completes.
+   *
+   * @param {Number} n The number of values to take.
+   * @returns {Signal} A new signal.
+   */
+  take (n) {
+    return take(n, this)
+  }
+
+  /**
+   * Emits values from the signal while the predicate function `p` is true, and
+   * then completes.
+   *
+   * @param {Function} p A predicate function.
+   * @returns {Signal} A new signal.
+   */
+  takeWhile (p) {
+    return takeWhile(p, this)
+  }
+
+  /**
+   * Drops the first `n` values from the signal.
+   *
+   * @param {Number} n The number of values to drop.
+   * @returns {Signal} A new signal.
+   */
+  drop (n) {
+    return drop(n, this)
+  }
+
+  /**
+   * Drops values from the signal while the predicate function `p` is true.
+   *
+   * @param {Function} p A predicate function.
+   * @returns {Signal} A new signal.
+   */
+  dropWhile (p) {
+    return dropWhile(p, this)
   }
 
   /**

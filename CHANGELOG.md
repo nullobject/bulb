@@ -6,6 +6,14 @@
 * Remove `setTimeout` in `Signal.fromArray` method
 * Remove `setTimeout` in `scan` function
 * Unmount signals when they have completed
+* Add `take` function
+* Add `takeWhile` function
+* Add `drop` function
+* Add `dropWhile` function
+* Add `Signal#take` method
+* Add `Signal#takeWhile` method
+* Add `Signal#drop` method
+* Add `Signal#dropWhile` method
 
 ## 1.3.0 (2019-01-06)
 
