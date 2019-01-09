@@ -1,3 +1,6 @@
+## Unreleased
+
+* Add `switchMap` function
 ## 1.4.0 (2019-01-08)
 
 * Add `Signal#cycle` method
