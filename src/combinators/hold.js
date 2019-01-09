@@ -31,7 +31,7 @@ export function hold (s, t) {
       t.subscribe({ ...emit, value }),
 
       // Set the hold value.
-      s.subscribe(a => { hold = a }, emit.error, emit.complete)
+      s.subscribe({ ...emit, value: a => { hold = a } })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())

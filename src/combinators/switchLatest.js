@@ -20,19 +20,19 @@ import Signal from '../Signal'
  */
 export default function switchLatest (s) {
   return new Signal(emit => {
-    let childSubscription
+    let innerSubscription
 
     const value = a => {
       if (!(a instanceof Signal)) { throw new Error('Signal value must be a signal') }
-      if (childSubscription) { childSubscription.unsubscribe() }
-      childSubscription = a.subscribe({ value: emit.value, error: emit.error })
+      if (innerSubscription) { innerSubscription.unsubscribe() }
+      innerSubscription = a.subscribe({ ...emit, complete: null })
     }
 
-    const parentSubscription = s.subscribe({ ...emit, value })
+    const outerSubscription = s.subscribe({ ...emit, value })
 
     return () => {
-      parentSubscription.unsubscribe()
-      if (childSubscription) { childSubscription.unsubscribe() }
+      if (innerSubscription) { innerSubscription.unsubscribe() }
+      outerSubscription.unsubscribe()
     }
   })
 }

@@ -22,18 +22,18 @@ import Signal from '../Signal'
  */
 export function switchMap (f, s) {
   return new Signal(emit => {
-    let subscription2
+    let innerSubscription
 
     const value = a => {
-      if (subscription2) { subscription2.unsubscribe() }
-      subscription2 = f(a).subscribe({ ...emit, complete: null })
+      if (innerSubscription) { innerSubscription.unsubscribe() }
+      innerSubscription = f(a).subscribe({ ...emit, complete: null })
     }
 
-    const subscription1 = s.subscribe({ ...emit, value })
+    const outerSubscription = s.subscribe({ ...emit, value })
 
     return () => {
-      subscription1.unsubscribe()
-      if (subscription2) { subscription2.unsubscribe() }
+      if (innerSubscription) { innerSubscription.unsubscribe() }
+      outerSubscription.unsubscribe()
     }
   })
 }

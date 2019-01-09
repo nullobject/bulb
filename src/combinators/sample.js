@@ -31,7 +31,7 @@ export function sample (s, t) {
       s.subscribe({ ...emit, value }),
 
       // Buffer the last value.
-      t.subscribe(a => { buffer = a }, emit.error, emit.complete)
+      t.subscribe({ ...emit, value: a => { buffer = a } })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())
