@@ -1,11 +1,11 @@
 import { always, id } from 'fkit'
 
 import Signal from '../Signal'
-import concatMap from './concatMap'
+import switchMap from './switchMap'
 
 let valueSpy, errorSpy, completeSpy
 
-describe('concatMap', () => {
+describe('switchMap', () => {
   beforeEach(() => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
@@ -13,46 +13,33 @@ describe('concatMap', () => {
   })
 
   it('applies a function to the signal values', () => {
-    let valueS, valueT, valueU
-    let completeT
+    let value
     const s = new Signal(emit => {
-      valueS = emit.value
+      value = emit.value
     })
-    const t = new Signal(emit => {
-      valueT = emit.value
-      completeT = emit.complete
-    })
-    const u = new Signal(emit => {
-      valueU = emit.value
-    })
+    const f = a => Signal.of(a)
 
-    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    switchMap(f, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    valueS(t)
     expect(valueSpy).not.toHaveBeenCalled()
-    valueT(1)
+    value(1)
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenLastCalledWith(1)
-    valueS(u)
-    valueT(2)
+    value(2)
     expect(valueSpy).toHaveBeenCalledTimes(2)
     expect(valueSpy).toHaveBeenLastCalledWith(2)
-    completeT()
-    valueU(3)
+    value(3)
     expect(valueSpy).toHaveBeenCalledTimes(3)
     expect(valueSpy).toHaveBeenLastCalledWith(3)
-    valueU(4)
-    expect(valueSpy).toHaveBeenCalledTimes(4)
-    expect(valueSpy).toHaveBeenLastCalledWith(4)
   })
 
-  it('emits an error when the outer signal emits an error', () => {
+  it('emits an error when the given signal emits an error', () => {
     let error
     const s = new Signal(emit => {
       error = emit.error
     })
 
-    concatMap(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    switchMap(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     error('foo')
@@ -60,7 +47,7 @@ describe('concatMap', () => {
     expect(errorSpy).toHaveBeenCalledWith('foo')
   })
 
-  it('completes when the outer signal is completed', () => {
+  it('completes when the given signal is completed', () => {
     let completeS, completeT
     const s = new Signal(emit => {
       completeS = emit.complete
@@ -70,7 +57,7 @@ describe('concatMap', () => {
       completeT = emit.complete
     })
 
-    concatMap(id, t).subscribe(valueSpy, errorSpy, completeSpy)
+    switchMap(id, t).subscribe(valueSpy, errorSpy, completeSpy)
 
     completeS()
     expect(completeSpy).not.toHaveBeenCalled()
@@ -78,21 +65,21 @@ describe('concatMap', () => {
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the outer signal when the returned signal is unsubscribed', () => {
+  it('unmounts the given signal when the returned signal is unsubscribed', () => {
     const unmount = jest.fn()
     const s = new Signal(() => unmount)
-    const a = concatMap(id, s).subscribe()
+    const a = switchMap(id, s).subscribe()
 
     expect(unmount).not.toHaveBeenCalled()
     a.unsubscribe()
     expect(unmount).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the inner signal when the returned signal is unsubscribed', () => {
+  it('unmounts the child signal when the returned signal is unsubscribed', () => {
     const unmount = jest.fn()
     const s = new Signal(() => unmount)
     const t = Signal.of(s)
-    const a = concatMap(id, t).subscribe()
+    const a = switchMap(id, t).subscribe()
 
     expect(unmount).not.toHaveBeenCalled()
     a.unsubscribe()

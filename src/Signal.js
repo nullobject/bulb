@@ -20,6 +20,7 @@ import { map } from './combinators/map'
 import { sample } from './combinators/sample'
 import { scan } from './combinators/scan'
 import { stateMachine } from './combinators/stateMachine'
+import { switchMap } from './combinators/switchMap'
 import { take } from './combinators/take'
 import { takeWhile } from './combinators/takeWhile'
 import { throttle } from './combinators/throttle'
@@ -558,8 +559,9 @@ export default class Signal {
   }
 
   /**
-   * Applies a function `f` to each value emitted by the signal. The function
-   * must return a `Signal`.
+   * Applies a function `f`, which returns a `Signal`, to each value emitted by
+   * the signal. The returned signal will merge all signals returned by the
+   * function, waiting for each one to complete before merging the next.
    *
    * @param {Function} f The function to apply to each value emitted by the
    * signal. It must also return a `Signal`.
@@ -941,6 +943,27 @@ export default class Signal {
    */
   switchLatest () {
     return switchLatest(this)
+  }
+
+  /**
+   * Applies a function `f`, which returns a `Signal`, to each value emitted by
+   * the signal. The returned signal will emit values from the most recent
+   * signal returned by the function.
+   *
+   * @param {Function} f The function to apply to each value emitted by the
+   * signal. It must also return a `Signal`.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = s.switchMap(a => Signal.of(a + 1))
+   *
+   * t.subscribe(console.log) // 2, 3, 4
+   */
+  switchMap () {
+    return switchMap(this)
   }
 
   /**
