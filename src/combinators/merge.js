@@ -1,8 +1,8 @@
 import Signal from '../Signal'
 
 /**
- * Merges the given signals `ss` and emits their values. The returned signal
- * will complete once *all* of the given signals have completed.
+ * Merges the signals `ss` and emits their values. The returned signal will
+ * complete once *all* of the given signals have completed.
  *
  * @param {Array} ss The signals to merge.
  * @returns {Signal} A new signal.

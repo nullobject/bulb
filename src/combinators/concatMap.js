@@ -4,7 +4,7 @@ import Signal from '../Signal'
 
 /**
  * Applies a function `f`, which returns a `Signal`, to each value emitted by
- * the signal `s`. The returned signal will merge all signals returned by the
+ * the signal `s`. The returned signal will join all signals returned by the
  * function, waiting for each one to complete before merging the next.
  *
  * @param {Function} f The function to apply to each value emitted by the

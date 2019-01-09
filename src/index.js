@@ -1,4 +1,5 @@
 export { default as Signal } from './Signal'
+export { default as concat } from './combinators/concat'
 export { default as concatMap } from './combinators/concatMap'
 export { default as debounce } from './combinators/debounce'
 export { default as dedupe } from './combinators/dedupe'
