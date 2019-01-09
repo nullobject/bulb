@@ -1,7 +1,9 @@
 ## Unreleased
 
 * Add `switchMap` function
+* Add `Signal#switchMap` method
 * Fix an issue where `concatMap` wouldn't wait for signals to complete
+* Add missing combinators to exports
 
 ## 1.4.0 (2019-01-08)
 
