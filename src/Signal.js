@@ -1,6 +1,7 @@
 import { always, apply, empty, head, tail } from 'fkit'
 
 import Subscription from './Subscription'
+import concat from './combinators/concat'
 import dedupe from './combinators/dedupe'
 import encode from './combinators/encode'
 import merge from './combinators/merge'
@@ -559,8 +560,34 @@ export default class Signal {
   }
 
   /**
+   * Concatenates the signals `ss` and emits their values. The returned signal
+   * will join the given signals, waiting for each one to complete before joining
+   * the next, and will complete once *all* of the given signals have completed.
+   *
+   * @param {Array} ss The signals to concatenate.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = Signal.fromArray([4, 5, 6])
+   * const u = s.concat(t)
+   *
+   * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
+   */
+  concat (...ss) {
+    // Allow the signals to be given as an array.
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
+    }
+
+    return concat([this].concat(ss))
+  }
+
+  /**
    * Applies a function `f`, which returns a `Signal`, to each value emitted by
-   * the signal. The returned signal will merge all signals returned by the
+   * the signal. The returned signal will join all signals returned by the
    * function, waiting for each one to complete before merging the next.
    *
    * @param {Function} f The function to apply to each value emitted by the
@@ -689,8 +716,8 @@ export default class Signal {
   }
 
   /**
-   * Merges the given signals `ss` and emits their values. The returned signal
-   * will complete once *all* of the given signals have completed.
+   * Merges the signals `ss` and emits their values. The returned signal will
+   * complete once *all* of the given signals have completed.
    *
    * @param {Array} ss The signals to merge.
    * @returns {Signal} A new signal.
