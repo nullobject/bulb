@@ -989,8 +989,8 @@ export default class Signal {
    *
    * t.subscribe(console.log) // 2, 3, 4
    */
-  switchMap () {
-    return switchMap(this)
+  switchMap (f) {
+    return switchMap(f, this)
   }
 
   /**
