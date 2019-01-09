@@ -1,6 +1,6 @@
 import { eq } from 'fkit'
 
-import dedupeWith from './dedupeWith'
+import { dedupeWith } from './dedupeWith'
 
 /**
  * Removes duplicate values emitted by the signal `s`.

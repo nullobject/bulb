@@ -1,5 +1,9 @@
 import zipWith from './zipWith'
 
+export function tuple (...as) {
+  return as
+}
+
 /**
  * Combines the corresponding values emitted by the signals `ss` into tuples.
  * The returned signal will complete when *any* of the given signals have
@@ -18,5 +22,5 @@ import zipWith from './zipWith'
  * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
  */
 export default function zip (...ss) {
-  return zipWith((...as) => as, ss)
+  return zipWith(tuple, ss)
 }
