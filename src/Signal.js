@@ -559,8 +559,9 @@ export default class Signal {
   }
 
   /**
-   * Applies a function `f` to each value emitted by the signal. The function
-   * must return a `Signal`.
+   * Applies a function `f`, which returns a `Signal`, to each value emitted by
+   * the signal. The returned signal will merge all signals returned by the
+   * function, waiting for each one to complete before merging the next.
    *
    * @param {Function} f The function to apply to each value emitted by the
    * signal. It must also return a `Signal`.

@@ -1,6 +1,8 @@
 ## Unreleased
 
 * Add `switchMap` function
+* Fix an issue where `concatMap` wouldn't wait for signals to complete
+
 ## 1.4.0 (2019-01-08)
 
 * Add `Signal#cycle` method

@@ -12,28 +12,41 @@ describe('concatMap', () => {
     completeSpy = jest.fn()
   })
 
-  it('maps a function over the signal values', () => {
-    let value
+  it('applies a function to the signal values', () => {
+    let valueS, valueT, valueU
+    let completeT
     const s = new Signal(emit => {
-      value = emit.value
+      valueS = emit.value
     })
-    const f = a => Signal.of(a)
+    const t = new Signal(emit => {
+      valueT = emit.value
+      completeT = emit.complete
+    })
+    const u = new Signal(emit => {
+      valueU = emit.value
+    })
 
-    concatMap(f, s).subscribe(valueSpy, errorSpy, completeSpy)
+    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
+    valueS(t)
     expect(valueSpy).not.toHaveBeenCalled()
-    value(1)
+    valueT(1)
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenLastCalledWith(1)
-    value(2)
+    valueS(u)
+    valueT(2)
     expect(valueSpy).toHaveBeenCalledTimes(2)
     expect(valueSpy).toHaveBeenLastCalledWith(2)
-    value(3)
+    completeT()
+    valueU(3)
     expect(valueSpy).toHaveBeenCalledTimes(3)
     expect(valueSpy).toHaveBeenLastCalledWith(3)
+    valueU(4)
+    expect(valueSpy).toHaveBeenCalledTimes(4)
+    expect(valueSpy).toHaveBeenLastCalledWith(4)
   })
 
-  it('emits an error when the given signal emits an error', () => {
+  it('emits an error when the outer signal emits an error', () => {
     let error
     const s = new Signal(emit => {
       error = emit.error
@@ -47,7 +60,7 @@ describe('concatMap', () => {
     expect(errorSpy).toHaveBeenCalledWith('foo')
   })
 
-  it('completes when the given signal is completed', () => {
+  it('completes when the outer signal is completed', () => {
     let completeS, completeT
     const s = new Signal(emit => {
       completeS = emit.complete
@@ -65,22 +78,21 @@ describe('concatMap', () => {
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
+  it('unmounts the outer signal when the returned signal is unsubscribed', () => {
     const unmount = jest.fn()
     const s = new Signal(() => unmount)
-    const f = a => Signal.of(a)
-    const a = concatMap(f, s).subscribe()
+    const a = concatMap(id, s).subscribe()
 
     expect(unmount).not.toHaveBeenCalled()
     a.unsubscribe()
     expect(unmount).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the child signal when the returned signal is unsubscribed', () => {
+  it('unmounts the inner signal when the returned signal is unsubscribed', () => {
     const unmount = jest.fn()
-    const s = Signal.of(0)
-    const f = a => new Signal(() => unmount)
-    const a = concatMap(f, s).subscribe()
+    const s = new Signal(() => unmount)
+    const t = Signal.of(s)
+    const a = concatMap(id, t).subscribe()
 
     expect(unmount).not.toHaveBeenCalled()
     a.unsubscribe()

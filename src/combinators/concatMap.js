@@ -3,8 +3,9 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Applies a function `f` to each value emitted by the signal `s`. The function
- * must return a `Signal`.
+ * Applies a function `f`, which returns a `Signal`, to each value emitted by
+ * the signal `s`. The returned signal will merge all signals returned by the
+ * function, waiting for each one to complete before merging the next.
  *
  * @param {Function} f The function to apply to each value emitted by the
  * signal. It must also return a `Signal`.
@@ -21,18 +22,37 @@ import Signal from '../Signal'
  */
 export function concatMap (f, s) {
   return new Signal(emit => {
-    let subscription2
+    let queue = []
+    let innerSubscription
 
-    const value = a => {
-      if (subscription2) { subscription2.unsubscribe() }
-      subscription2 = f(a).subscribe({ value: emit.value, error: emit.error })
+    // Subscribes to the next signal in the queue.
+    const subscribeNext = () => {
+      if (innerSubscription) {
+        innerSubscription.unsubscribe()
+        innerSubscription = null
+      }
+
+      if (queue.length > 0) {
+        const a = queue.shift()
+        if (a !== undefined) {
+          innerSubscription = f(a).subscribe({ ...emit, complete: subscribeNext })
+        }
+      }
     }
 
-    const subscription1 = s.subscribe({ ...emit, value })
+    // Enqueues the given signal.
+    const enqueueSignal = a => {
+      queue.push(a)
+      if (!innerSubscription) {
+        subscribeNext()
+      }
+    }
+
+    const outerSubscription = s.subscribe({ ...emit, value: enqueueSignal })
 
     return () => {
-      subscription1.unsubscribe()
-      if (subscription2) { subscription2.unsubscribe() }
+      if (innerSubscription) { innerSubscription.unsubscribe() }
+      outerSubscription.unsubscribe()
     }
   })
 }
