@@ -46,6 +46,17 @@ describe('concatMap', () => {
     expect(valueSpy).toHaveBeenLastCalledWith(4)
   })
 
+  it('throws an error when the given signal emits a non-signal value', () => {
+    let value
+    const s = new Signal(emit => {
+      value = emit.value
+    })
+
+    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(() => value('foo')).toThrow('Signal value must be a signal')
+  })
+
   it('emits an error when the outer signal emits an error', () => {
     let error
     const s = new Signal(emit => {

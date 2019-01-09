@@ -25,8 +25,12 @@ export function switchMap (f, s) {
     let innerSubscription
 
     const value = a => {
+      const b = f(a)
+      if (!(b instanceof Signal)) {
+        throw new Error('Signal value must be a signal')
+      }
       if (innerSubscription) { innerSubscription.unsubscribe() }
-      innerSubscription = f(a).subscribe({ ...emit, complete: null })
+      innerSubscription = b.subscribe({ ...emit, complete: null })
     }
 
     const outerSubscription = s.subscribe({ ...emit, value })

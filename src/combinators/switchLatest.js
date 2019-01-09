@@ -23,7 +23,9 @@ export default function switchLatest (s) {
     let innerSubscription
 
     const value = a => {
-      if (!(a instanceof Signal)) { throw new Error('Signal value must be a signal') }
+      if (!(a instanceof Signal)) {
+        throw new Error('Signal value must be a signal')
+      }
       if (innerSubscription) { innerSubscription.unsubscribe() }
       innerSubscription = a.subscribe({ ...emit, complete: null })
     }

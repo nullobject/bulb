@@ -35,7 +35,11 @@ export function concatMap (f, s) {
       if (queue.length > 0) {
         const a = queue.shift()
         if (a !== undefined) {
-          innerSubscription = f(a).subscribe({ ...emit, complete: subscribeNext })
+          const b = f(a)
+          if (!(b instanceof Signal)) {
+            throw new Error('Signal value must be a signal')
+          }
+          innerSubscription = b.subscribe({ ...emit, complete: subscribeNext })
         }
       }
     }
