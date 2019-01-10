@@ -3,8 +3,10 @@ import { range } from 'fkit'
 
 import Signal from './Signal'
 import { asap } from './scheduler'
+import concat from './combinators/concat'
 import { mockSignal } from './emitter'
 
+jest.mock('./combinators/concat')
 jest.mock('./scheduler')
 
 let valueSpy, errorSpy, completeSpy
@@ -257,6 +259,21 @@ describe('Signal', () => {
       expect(completeSpy).not.toHaveBeenCalled()
       s.complete()
       expect(completeSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('#startWith', () => {
+    it('calls concat', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const spy = jest.spyOn(Signal, 'of').mockReturnValue(t)
+
+      s.startWith(0)
+
+      expect(spy).toHaveBeenCalledWith(0)
+      expect(concat).toHaveBeenCalledWith(t, s)
+
+      spy.mockRestore()
     })
   })
 })
