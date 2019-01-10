@@ -1,7 +1,7 @@
 import Signal from '../Signal'
 import append from './append'
 import concat from './concat'
-import { mockSignal } from '../emitter'
+import mockSignal from '../internal/mockSignal'
 
 jest.mock('../Signal')
 jest.mock('./concat')

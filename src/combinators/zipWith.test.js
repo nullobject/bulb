@@ -1,7 +1,7 @@
 import { always } from 'fkit'
 
+import mockSignal from '../internal/mockSignal'
 import zipWith from './zipWith'
-import { mockSignal } from '../emitter'
 
 let s, t, u
 let valueSpy, errorSpy, completeSpy

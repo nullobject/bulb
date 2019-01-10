@@ -1,7 +1,7 @@
 import { add, always } from 'fkit'
 
 import fold from './fold'
-import { mockSignal } from '../emitter'
+import mockSignal from '../internal/mockSignal'
 
 let s
 let valueSpy, errorSpy, completeSpy

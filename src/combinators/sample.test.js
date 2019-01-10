@@ -1,5 +1,5 @@
+import mockSignal from '../internal/mockSignal'
 import sample from './sample'
-import { mockSignal } from '../emitter'
 
 let s, t
 let valueSpy, errorSpy, completeSpy

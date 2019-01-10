@@ -1,7 +1,7 @@
 import { eq } from 'fkit'
 
 import dedupeWith from './dedupeWith'
-import { mockSignal } from '../emitter'
+import mockSignal from '../internal/mockSignal'
 
 let s
 let valueSpy, errorSpy, completeSpy

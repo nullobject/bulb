@@ -1,7 +1,7 @@
 import { always, id } from 'fkit'
 
 import concatMap from './concatMap'
-import { mockSignal } from '../emitter'
+import mockSignal from '../internal/mockSignal'
 
 let s, t, u
 let valueSpy, errorSpy, completeSpy

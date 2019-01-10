@@ -1,4 +1,4 @@
-import emitter from '../emitter'
+import emitter from '../internal/emitter'
 import state from './state'
 
 describe('state', () => {

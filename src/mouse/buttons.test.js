@@ -1,5 +1,5 @@
 import buttons from './buttons'
-import emitter from '../emitter'
+import emitter from '../internal/emitter'
 
 describe('buttons', () => {
   it('returns a new mouse buttons signal', () => {

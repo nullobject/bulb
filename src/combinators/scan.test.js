@@ -1,8 +1,8 @@
 import { add, always } from 'fkit'
 
+import mockSignal from '../internal/mockSignal'
 import scan from './scan'
 import { asap } from '../scheduler'
-import { mockSignal } from '../emitter'
 
 jest.mock('../scheduler')
 

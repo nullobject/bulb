@@ -1,7 +1,7 @@
 import { always, id } from 'fkit'
 
+import mockSignal from '../internal/mockSignal'
 import switchMap from './switchMap'
-import { mockSignal } from '../emitter'
 
 let s, t, u
 let valueSpy, errorSpy, completeSpy

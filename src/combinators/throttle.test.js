@@ -1,5 +1,5 @@
+import mockSignal from '../internal/mockSignal'
 import throttle from './throttle'
-import { mockSignal } from '../emitter'
 
 let s
 let valueSpy, errorSpy, completeSpy

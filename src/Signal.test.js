@@ -4,11 +4,11 @@ import { range } from 'fkit'
 import Signal from './Signal'
 import concat from './combinators/concat'
 import merge from './combinators/merge'
+import mockSignal from './internal/mockSignal'
 import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
 import { append } from './combinators/append'
 import { asap } from './scheduler'
-import { mockSignal } from './emitter'
 import { prepend } from './combinators/prepend'
 
 jest.mock('./combinators/append')

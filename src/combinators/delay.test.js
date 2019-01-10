@@ -1,5 +1,5 @@
 import delay from './delay'
-import { mockSignal } from '../emitter'
+import mockSignal from '../internal/mockSignal'
 
 let s
 let valueSpy, errorSpy, completeSpy

@@ -1,5 +1,5 @@
 import hold from './hold'
-import { mockSignal } from '../emitter'
+import mockSignal from '../internal/mockSignal'
 
 let s, t
 let valueSpy, errorSpy, completeSpy

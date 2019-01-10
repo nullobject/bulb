@@ -1,7 +1,7 @@
 import { range } from 'fkit'
 
 import cycle from './cycle'
-import { mockSignal } from '../emitter'
+import mockSignal from '../internal/mockSignal'
 
 let s
 let valueSpy, errorSpy, completeSpy

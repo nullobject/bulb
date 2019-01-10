@@ -1,19 +1,11 @@
-import Signal from './Signal'
-import events from 'events'
+import Signal from '../Signal'
 
 /**
- * Returns a new event emitter that can be used as a mock object in tests.
+ * Creates a mock signal to be used for testing.
  *
  * @private
  */
-export default function emitter () {
-  const emitter = new events.EventEmitter()
-  emitter.addEventListener = emitter.on
-  emitter.removeEventListener = jest.fn()
-  return emitter
-}
-
-export function mockSignal () {
+export default function mockSignal () {
   let value, error, complete
   const unmount = jest.fn()
   const s = new Signal(emit => {

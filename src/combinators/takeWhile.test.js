@@ -1,7 +1,7 @@
 import { always, lt } from 'fkit'
 
+import mockSignal from '../internal/mockSignal'
 import takeWhile from './takeWhile'
-import { mockSignal } from '../emitter'
 
 let s
 let valueSpy, errorSpy, completeSpy
