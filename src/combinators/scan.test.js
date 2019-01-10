@@ -2,6 +2,9 @@ import { add, always } from 'fkit'
 
 import Signal from '../Signal'
 import scan from './scan'
+import { asap } from '../scheduler'
+
+jest.mock('../scheduler')
 
 let valueSpy, errorSpy, completeSpy
 
@@ -10,6 +13,8 @@ describe('scan', () => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
+
+    asap.mockImplementation(f => f())
   })
 
   it('scans a function over the signal values', () => {
@@ -17,6 +22,9 @@ describe('scan', () => {
     const s = new Signal(emit => {
       value = emit.value
     })
+  afterEach(() => {
+    asap.mockRestore()
+  })
 
     scan(add, 0, s).subscribe(valueSpy, errorSpy, completeSpy)
 

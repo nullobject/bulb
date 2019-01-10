@@ -2,6 +2,9 @@ import events from 'events'
 import { range } from 'fkit'
 
 import Signal from './Signal'
+import { asap } from './scheduler'
+
+jest.mock('./scheduler')
 
 let valueSpy, errorSpy, completeSpy
 
@@ -37,6 +40,14 @@ describe('Signal', () => {
   })
 
   describe('.of', () => {
+    beforeEach(() => {
+      asap.mockImplementation(f => f())
+    })
+
+    afterEach(() => {
+      asap.mockRestore()
+    })
+
     it('returns a signal with a single value', () => {
       const s = Signal.of(1)
 
@@ -48,6 +59,14 @@ describe('Signal', () => {
   })
 
   describe('.fromArray', () => {
+    beforeEach(() => {
+      asap.mockImplementation(f => f())
+    })
+
+    afterEach(() => {
+      asap.mockRestore()
+    })
+
     it('returns a signal of values from an array', () => {
       const s = Signal.fromArray(range(1, 3))
 
@@ -215,7 +234,7 @@ describe('Signal', () => {
       const mount = jest.fn(emit => emit.error('foo'))
       const s = new Signal(mount)
 
-      s.subscribe({ error: errorSpy })
+      s.subscribe(valueSpy, errorSpy, completeSpy)
       expect(errorSpy).toHaveBeenCalledWith('foo')
     })
 
@@ -226,7 +245,7 @@ describe('Signal', () => {
       })
       const s = new Signal(mount)
 
-      s.subscribe({ error: errorSpy })
+      s.subscribe(valueSpy, errorSpy, completeSpy)
       expect(errorSpy).toHaveBeenCalledWith(error)
     })
 
@@ -241,45 +260,102 @@ describe('Signal', () => {
 
   describe('#always', () => {
     it('replaces signal values with a constant', () => {
-      const s = Signal.fromArray(range(1, 3)).always('x')
+      let value
+      const s = new Signal(emit => {
+        value = emit.value
+      })
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        expect(valueSpy.mock.calls[index][0]).toBe('x')
-      }, this)
-
-      expect(completeSpy).toHaveBeenCalled()
+      expect(valueSpy).not.toHaveBeenCalled()
+      value(1)
+      expect(valueSpy).toHaveBeenCalledTimes(1)
+      expect(valueSpy).toHaveBeenCalledWith(0)
+      value(2)
+      expect(valueSpy).toHaveBeenCalledTimes(2)
+      expect(valueSpy).toHaveBeenCalledWith(0)
+      value(3)
+      expect(valueSpy).toHaveBeenCalledTimes(3)
+      expect(valueSpy).toHaveBeenCalledWith(0)
     })
 
-    it('emits an error if the parent signal emits an error', () => {
-      const mount = jest.fn(emit => emit.error())
-      const s = new Signal(mount)
+    it('emits an error when the given signal emits an error', () => {
+      let error
+      const s = new Signal(emit => {
+        error = emit.error
+      })
 
-      s.always('x').subscribe({ error: errorSpy })
+      s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(errorSpy).not.toHaveBeenCalled()
+      error('foo')
       expect(errorSpy).toHaveBeenCalledTimes(1)
+      expect(errorSpy).toHaveBeenCalledWith('foo')
+    })
+
+    it('completes when the given signal is completed', () => {
+      let complete
+      const s = new Signal(emit => {
+        complete = emit.complete
+      })
+
+      s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(completeSpy).not.toHaveBeenCalled()
+      complete()
+      expect(completeSpy).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('#startWith', () => {
-    it('emits the given value before all other values', () => {
-      const s = Signal.fromArray(range(1, 3)).startWith('x')
-
-      s.subscribe(valueSpy, errorSpy, completeSpy);
-
-      ['x', 1, 2, 3].forEach((n, index) => {
-        expect(valueSpy.mock.calls[index][0]).toBe(n)
-      }, this)
-
-      expect(completeSpy).toHaveBeenCalled()
+    beforeEach(() => {
+      asap.mockImplementation(f => f())
     })
 
-    it('emits an error if the parent signal emits an error', () => {
-      const mount = jest.fn(emit => emit.error())
-      const s = new Signal(mount)
+    afterEach(() => {
+      asap.mockRestore()
+    })
 
-      s.startWith('x').subscribe({ error: errorSpy })
+    it('emits the given value before all other values', () => {
+      let value
+      const s = new Signal(emit => {
+        value = emit.value
+      })
+
+      s.startWith(1).subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(valueSpy).toHaveBeenCalledTimes(1)
+      expect(valueSpy).toHaveBeenCalledWith(1)
+      value(2)
+      expect(valueSpy).toHaveBeenCalledTimes(2)
+      expect(valueSpy).toHaveBeenCalledWith(2)
+    })
+
+    it('emits an error when the given signal emits an error', () => {
+      let error
+      const s = new Signal(emit => {
+        error = emit.error
+      })
+
+      s.startWith(0).subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(errorSpy).not.toHaveBeenCalled()
+      error('foo')
       expect(errorSpy).toHaveBeenCalledTimes(1)
+      expect(errorSpy).toHaveBeenCalledWith('foo')
+    })
+
+    it('completes when the given signal is completed', () => {
+      let complete
+      const s = new Signal(emit => {
+        complete = emit.complete
+      })
+
+      s.startWith(0).subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(completeSpy).not.toHaveBeenCalled()
+      complete()
+      expect(completeSpy).toHaveBeenCalledTimes(1)
     })
   })
 

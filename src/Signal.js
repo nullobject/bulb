@@ -8,6 +8,7 @@ import merge from './combinators/merge'
 import switchLatest from './combinators/switchLatest'
 import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
+import { asap } from './scheduler'
 import { concatMap } from './combinators/concatMap'
 import { debounce } from './combinators/debounce'
 import { dedupeWith } from './combinators/dedupeWith'
@@ -233,8 +234,10 @@ export default class Signal {
    */
   static of (a) {
     return new Signal(emit => {
-      emit.value(a)
-      emit.complete()
+      asap(() => {
+        emit.value(a)
+        emit.complete()
+      })
     })
   }
 
@@ -255,8 +258,10 @@ export default class Signal {
    */
   static fromArray (as) {
     return new Signal(emit => {
-      as.map(apply(emit.value))
-      emit.complete()
+      asap(() => {
+        as.map(apply(emit.value))
+        emit.complete()
+      })
     })
   }
 
@@ -449,7 +454,7 @@ export default class Signal {
    */
   startWith (a) {
     return new Signal(emit => {
-      emit.value(a)
+      asap(() => { emit.value(a) })
       return this.subscribe(emit)
     })
   }
