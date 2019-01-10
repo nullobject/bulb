@@ -10,6 +10,7 @@
 * Add `cycle` function
 * Add `sequential` function
 * Add `startWith` function
+* Add `endWith` function
 
 ## 1.4.0 (2019-01-08)
 
