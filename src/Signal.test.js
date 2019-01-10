@@ -2,9 +2,21 @@ import events from 'events'
 import { range } from 'fkit'
 
 import Signal from './Signal'
+import concat from './combinators/concat'
+import merge from './combinators/merge'
+import zip from './combinators/zip'
+import zipWith from './combinators/zipWith'
+import { append } from './combinators/append'
 import { asap } from './scheduler'
 import { mockSignal } from './emitter'
+import { prepend } from './combinators/prepend'
 
+jest.mock('./combinators/append')
+jest.mock('./combinators/concat')
+jest.mock('./combinators/merge')
+jest.mock('./combinators/prepend')
+jest.mock('./combinators/zip')
+jest.mock('./combinators/zipWith')
 jest.mock('./scheduler')
 
 let valueSpy, errorSpy, completeSpy
@@ -257,6 +269,118 @@ describe('Signal', () => {
       expect(completeSpy).not.toHaveBeenCalled()
       s.complete()
       expect(completeSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('#append', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.append([t, u])
+      expect(append).toHaveBeenCalledWith([t, u], s)
+    })
+
+    it('handles multiple arguments', () => {
+      s.append(t, u)
+      expect(append).toHaveBeenCalledWith([t, u], s)
+    })
+  })
+
+  describe('#prepend', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.prepend([t, u])
+      expect(prepend).toHaveBeenCalledWith([t, u], s)
+    })
+
+    it('handles multiple arguments', () => {
+      s.prepend(t, u)
+      expect(prepend).toHaveBeenCalledWith([t, u], s)
+    })
+  })
+
+  describe('#startWith', () => {
+    it('calls concat', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const spy = jest.spyOn(Signal, 'of').mockReturnValue(t)
+
+      s.startWith(0)
+
+      expect(spy).toHaveBeenCalledWith(0)
+      expect(concat).toHaveBeenCalledWith(t, s)
+
+      spy.mockRestore()
+    })
+  })
+
+  describe('#concat', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.concat([t, u])
+      expect(concat).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.concat(t, u)
+      expect(concat).toHaveBeenCalledWith([s, t, u])
+    })
+  })
+
+  describe('#merge', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.merge([t, u])
+      expect(merge).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.merge(t, u)
+      expect(merge).toHaveBeenCalledWith([s, t, u])
+    })
+  })
+
+  describe('#zip', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.zip([t, u])
+      expect(zip).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.zip(t, u)
+      expect(zip).toHaveBeenCalledWith([s, t, u])
+    })
+  })
+
+  describe('#zipWith', () => {
+    const f = jest.fn()
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.zipWith(f, [t, u])
+      expect(zipWith).toHaveBeenCalledWith(f, [s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.zipWith(f, t, u)
+      expect(zipWith).toHaveBeenCalledWith(f, [s, t, u])
     })
   })
 })

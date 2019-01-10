@@ -9,6 +9,7 @@ import switchLatest from './combinators/switchLatest'
 import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
 import { always } from './combinators/always'
+import { append } from './combinators/append'
 import { asap } from './scheduler'
 import { concatMap } from './combinators/concatMap'
 import { cycle } from './combinators/cycle'
@@ -21,10 +22,10 @@ import { filter } from './combinators/filter'
 import { fold } from './combinators/fold'
 import { hold } from './combinators/hold'
 import { map } from './combinators/map'
+import { prepend } from './combinators/prepend'
 import { sample } from './combinators/sample'
 import { scan } from './combinators/scan'
 import { sequential } from './combinators/sequential'
-import { startWith } from './combinators/startWith'
 import { stateMachine } from './combinators/stateMachine'
 import { switchMap } from './combinators/switchMap'
 import { take } from './combinators/take'
@@ -440,8 +441,56 @@ export default class Signal {
   }
 
   /**
+   * Emits the values from an array `as` after the signal has completed.
+   *
+   * @param {Array} as The values to append.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal, append } from 'bulb'
+   *
+   * const s = Signal.fromArray[1, 2, 3]
+   * const t = s.append([4, 5, 6])
+   *
+   * t.subscribe(console.log) // 1, 2, 3, 4, 5, 6
+   */
+  append (...as) {
+    // Allow the values to be given as an array.
+    if (as.length === 1 && Array.isArray(as[0])) {
+      as = as[0]
+    }
+
+    return append(as, this)
+  }
+
+  /**
+   * Emits the values from an array `as` before any other values are emitted by
+   * the signal.
+   *
+   * @param {Array} as The values to prepend.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal, prepend } from 'bulb'
+   *
+   * const s = Signal.fromArray[1, 2, 3]
+   * const t = s.prepend([4, 5, 6])
+   *
+   * t.subscribe(console.log) // 4, 5, 6, 1, 2, 3
+   */
+  prepend (...as) {
+    // Allow the values to be given as an array.
+    if (as.length === 1 && Array.isArray(as[0])) {
+      as = as[0]
+    }
+
+    return prepend(as, this)
+  }
+
+  /**
    * Emits a value `a` before any other values are emitted by the signal.
    *
+   * @deprecated
    * @param a The value to emit first.
    * @returns {Signal} A new signal.
    * @example
@@ -454,7 +503,7 @@ export default class Signal {
    * t.subscribe(console.log) // 0, 1, 2, 3
    */
   startWith (a) {
-    return startWith(a, this)
+    return concat(Signal.of(a), this)
   }
 
   /**
