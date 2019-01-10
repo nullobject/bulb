@@ -303,22 +303,6 @@ describe('Signal', () => {
     })
   })
 
-  describe('#cycle', () => {
-    it('cycles through the values of an array', () => {
-      const s = mockSignal()
-      const t = s.cycle(range(1, 3))
-
-      t.subscribe(valueSpy, errorSpy, completeSpy)
-
-      range(0, 6).forEach(n => {
-        s.value()
-        expect(valueSpy).toHaveBeenNthCalledWith(n + 1, (n % 3) + 1)
-      })
-
-      expect(completeSpy).not.toHaveBeenCalled()
-    })
-  })
-
   describe('#sequential', () => {
     it('sequentially emits the values of an array', () => {
       const s = mockSignal()

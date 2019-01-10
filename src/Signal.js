@@ -11,6 +11,7 @@ import zipWith from './combinators/zipWith'
 import { always } from './combinators/always'
 import { asap } from './scheduler'
 import { concatMap } from './combinators/concatMap'
+import { cycle } from './combinators/cycle'
 import { debounce } from './combinators/debounce'
 import { dedupeWith } from './combinators/dedupeWith'
 import { delay } from './combinators/delay'
@@ -473,10 +474,7 @@ export default class Signal {
    * t.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
   cycle (as) {
-    return stateMachine((a, b, emit) => {
-      emit.value(as[a])
-      return (a + 1) % as.length
-    }, 0, this)
+    return cycle(as, this)
   }
 
   /**
