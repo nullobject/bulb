@@ -1,99 +1,79 @@
 import { always, id } from 'fkit'
 
-import Signal from '../Signal'
 import switchMap from './switchMap'
+import { mockSignal } from '../emitter'
 
+let s, t, u
 let valueSpy, errorSpy, completeSpy
 
 describe('switchMap', () => {
   beforeEach(() => {
+    s = mockSignal()
+    t = mockSignal()
+    u = mockSignal()
+
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('applies a function to the signal values', () => {
-    let value
-    const s = new Signal(emit => {
-      value = emit.value
-    })
-    const f = a => Signal.of(a)
+    switchMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    switchMap(f, s).subscribe(valueSpy, errorSpy, completeSpy)
-
+    s.value(t)
     expect(valueSpy).not.toHaveBeenCalled()
-    value(1)
+    t.value(1)
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenLastCalledWith(1)
-    value(2)
+    s.value(u)
+    t.value(2)
+    u.value(3)
     expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith(2)
-    value(3)
-    expect(valueSpy).toHaveBeenCalledTimes(3)
     expect(valueSpy).toHaveBeenLastCalledWith(3)
+    u.value(4)
+    expect(valueSpy).toHaveBeenCalledTimes(3)
+    expect(valueSpy).toHaveBeenLastCalledWith(4)
   })
 
   it('throws an error when the given signal emits a non-signal value', () => {
-    let value
-    const s = new Signal(emit => {
-      value = emit.value
-    })
-
     switchMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    expect(() => value('foo')).toThrow('Signal value must be a signal')
+    expect(() => s.value('foo')).toThrow('Signal value must be a signal')
   })
 
   it('emits an error when the given signal emits an error', () => {
-    let error
-    const s = new Signal(emit => {
-      error = emit.error
-    })
-
     switchMap(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
-    error('foo')
+    s.error('foo')
     expect(errorSpy).toHaveBeenCalledTimes(1)
     expect(errorSpy).toHaveBeenCalledWith('foo')
   })
 
   it('completes when the given signal is completed', () => {
-    let completeS, completeT
-    const s = new Signal(emit => {
-      completeS = emit.complete
-    })
-    const t = new Signal(emit => {
-      emit.value(s)
-      completeT = emit.complete
-    })
-
     switchMap(id, t).subscribe(valueSpy, errorSpy, completeSpy)
 
-    completeS()
+    s.complete()
     expect(completeSpy).not.toHaveBeenCalled()
-    completeT()
+    t.complete()
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const unmount = jest.fn()
-    const s = new Signal(() => unmount)
+  it('unmounts the outer signal when the returned signal is unsubscribed', () => {
     const a = switchMap(id, s).subscribe()
 
-    expect(unmount).not.toHaveBeenCalled()
+    expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
-    expect(unmount).toHaveBeenCalledTimes(1)
+    expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the child signal when the returned signal is unsubscribed', () => {
-    const unmount = jest.fn()
-    const s = new Signal(() => unmount)
-    const t = Signal.of(s)
-    const a = switchMap(id, t).subscribe()
+  it('unmounts the inner signal when the returned signal is unsubscribed', () => {
+    const t = mockSignal()
+    const a = switchMap(id, s).subscribe()
 
-    expect(unmount).not.toHaveBeenCalled()
+    s.value(t)
+    expect(t.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
-    expect(unmount).toHaveBeenCalledTimes(1)
+    expect(t.unmount).toHaveBeenCalledTimes(1)
   })
 })

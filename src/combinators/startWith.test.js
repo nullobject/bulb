@@ -1,42 +1,42 @@
-import delay from './delay'
+import startWith from './startWith'
+import { asap } from '../scheduler'
 import { mockSignal } from '../emitter'
+
+jest.mock('../scheduler')
 
 let s
 let valueSpy, errorSpy, completeSpy
 
-describe('delay', () => {
+describe('startWith', () => {
   beforeEach(() => {
     s = mockSignal()
 
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
-    jest.useFakeTimers()
+
+    asap.mockImplementation(f => f())
   })
 
   afterEach(() => {
-    jest.useRealTimers()
+    asap.mockRestore()
   })
 
-  it('delays the signal values', () => {
-    delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+  it('emits the given value before all other values', () => {
+    startWith(0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
+    expect(valueSpy).toHaveBeenCalledTimes(1)
+    expect(valueSpy).toHaveBeenLastCalledWith(0)
     s.value(1)
-    s.value(2)
-    jest.advanceTimersByTime(500)
-    s.value(3)
-    expect(valueSpy).not.toHaveBeenCalled()
-    jest.advanceTimersByTime(500)
     expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenNthCalledWith(1, 1)
-    expect(valueSpy).toHaveBeenNthCalledWith(2, 2)
-    jest.advanceTimersByTime(500)
+    expect(valueSpy).toHaveBeenLastCalledWith(1)
+    s.value(2)
     expect(valueSpy).toHaveBeenCalledTimes(3)
-    expect(valueSpy).toHaveBeenNthCalledWith(3, 3)
+    expect(valueSpy).toHaveBeenLastCalledWith(2)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+    startWith(0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -45,7 +45,7 @@ describe('delay', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+    startWith(0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -53,7 +53,7 @@ describe('delay', () => {
   })
 
   it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = delay(1000, s).subscribe()
+    const a = startWith(0, s).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()

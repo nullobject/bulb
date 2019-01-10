@@ -1,4 +1,4 @@
-import { always, apply, empty, head, tail } from 'fkit'
+import { apply, empty, head, tail } from 'fkit'
 
 import Subscription from './Subscription'
 import concat from './combinators/concat'
@@ -8,7 +8,10 @@ import merge from './combinators/merge'
 import switchLatest from './combinators/switchLatest'
 import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
+import { always } from './combinators/always'
+import { asap } from './scheduler'
 import { concatMap } from './combinators/concatMap'
+import { cycle } from './combinators/cycle'
 import { debounce } from './combinators/debounce'
 import { dedupeWith } from './combinators/dedupeWith'
 import { delay } from './combinators/delay'
@@ -20,6 +23,8 @@ import { hold } from './combinators/hold'
 import { map } from './combinators/map'
 import { sample } from './combinators/sample'
 import { scan } from './combinators/scan'
+import { sequential } from './combinators/sequential'
+import { startWith } from './combinators/startWith'
 import { stateMachine } from './combinators/stateMachine'
 import { switchMap } from './combinators/switchMap'
 import { take } from './combinators/take'
@@ -214,7 +219,7 @@ export default class Signal {
    * @returns {Signal} A new signal.
    */
   static never () {
-    return new Signal(always)
+    return new Signal(() => {})
   }
 
   /**
@@ -233,8 +238,10 @@ export default class Signal {
    */
   static of (a) {
     return new Signal(emit => {
-      emit.value(a)
-      emit.complete()
+      asap(() => {
+        emit.value(a)
+        emit.complete()
+      })
     })
   }
 
@@ -255,8 +262,10 @@ export default class Signal {
    */
   static fromArray (as) {
     return new Signal(emit => {
-      as.map(apply(emit.value))
-      emit.complete()
+      asap(() => {
+        as.map(apply(emit.value))
+        emit.complete()
+      })
     })
   }
 
@@ -413,7 +422,7 @@ export default class Signal {
   }
 
   /**
-   * Replaces the signal values with a constant `c`.
+   * Replaces the values of the signal with a constant `c`.
    *
    * @param c The constant value.
    * @returns {Signal} A new signal.
@@ -427,10 +436,7 @@ export default class Signal {
    * t.subscribe(console.log) // 1, 1, 1
    */
   always (c) {
-    return new Signal(emit => {
-      const value = () => emit.value(c)
-      return this.subscribe({ ...emit, value })
-    })
+    return always(c, this)
   }
 
   /**
@@ -448,10 +454,7 @@ export default class Signal {
    * t.subscribe(console.log) // 0, 1, 2, 3
    */
   startWith (a) {
-    return new Signal(emit => {
-      emit.value(a)
-      return this.subscribe(emit)
-    })
+    return startWith(a, this)
   }
 
   /**
@@ -470,10 +473,7 @@ export default class Signal {
    * t.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
   cycle (as) {
-    return stateMachine((a, b, emit) => {
-      emit.value(as[a])
-      return (a + 1) % as.length
-    }, 0, this)
+    return cycle(as, this)
   }
 
   /**
@@ -493,13 +493,7 @@ export default class Signal {
    * t.subscribe(console.log) // 1, 2, 3
    */
   sequential (as) {
-    return stateMachine((a, b, emit) => {
-      emit.value(as[a])
-      if (a === as.length - 1) {
-        emit.complete()
-      }
-      return a + 1
-    }, 0, this)
+    return sequential(as, this)
   }
 
   /**

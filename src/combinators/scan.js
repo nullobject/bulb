@@ -1,6 +1,7 @@
 import { curry } from 'fkit'
 
 import Signal from '../Signal'
+import { asap } from '../scheduler'
 
 /**
  * Applies an accumulator function `f` to each value emitted by the signal `s`.
@@ -23,7 +24,7 @@ import Signal from '../Signal'
 export function scan (f, a, s) {
   return new Signal(emit => {
     // Emit the starting value.
-    emit.value(a)
+    asap(() => { emit.value(a) })
 
     // Fold the current value with the previous value and emit the next value
     const value = b => {
