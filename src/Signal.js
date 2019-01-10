@@ -24,6 +24,7 @@ import { map } from './combinators/map'
 import { sample } from './combinators/sample'
 import { scan } from './combinators/scan'
 import { sequential } from './combinators/sequential'
+import { startWith } from './combinators/startWith'
 import { stateMachine } from './combinators/stateMachine'
 import { switchMap } from './combinators/switchMap'
 import { take } from './combinators/take'
@@ -453,10 +454,7 @@ export default class Signal {
    * t.subscribe(console.log) // 0, 1, 2, 3
    */
   startWith (a) {
-    return new Signal(emit => {
-      asap(() => { emit.value(a) })
-      return this.subscribe(emit)
-    })
+    return startWith(a, this)
   }
 
   /**

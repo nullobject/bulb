@@ -259,47 +259,4 @@ describe('Signal', () => {
       expect(completeSpy).toHaveBeenCalledTimes(1)
     })
   })
-
-  describe('#startWith', () => {
-    beforeEach(() => {
-      asap.mockImplementation(f => f())
-    })
-
-    afterEach(() => {
-      asap.mockRestore()
-    })
-
-    it('emits the given value before all other values', () => {
-      const s = mockSignal()
-
-      s.startWith(1).subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(valueSpy).toHaveBeenCalledTimes(1)
-      expect(valueSpy).toHaveBeenCalledWith(1)
-      s.value(2)
-      expect(valueSpy).toHaveBeenCalledTimes(2)
-      expect(valueSpy).toHaveBeenCalledWith(2)
-    })
-
-    it('emits an error when the given signal emits an error', () => {
-      const s = mockSignal()
-
-      s.startWith(0).subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(errorSpy).not.toHaveBeenCalled()
-      s.error('foo')
-      expect(errorSpy).toHaveBeenCalledTimes(1)
-      expect(errorSpy).toHaveBeenCalledWith('foo')
-    })
-
-    it('completes when the given signal is completed', () => {
-      const s = mockSignal()
-
-      s.startWith(0).subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(completeSpy).not.toHaveBeenCalled()
-      s.complete()
-      expect(completeSpy).toHaveBeenCalledTimes(1)
-    })
-  })
 })
