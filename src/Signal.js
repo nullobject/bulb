@@ -443,7 +443,7 @@ export default class Signal {
   /**
    * Emits the values from an array `as` after the signal has completed.
    *
-   * @param as The value to append.
+   * @param {Array} as The values to append.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -467,7 +467,7 @@ export default class Signal {
    * Emits the values from an array `as` before any other values are emitted by
    * the signal.
    *
-   * @param as The values to prepend.
+   * @param {Array} as The values to prepend.
    * @returns {Signal} A new signal.
    * @example
    *

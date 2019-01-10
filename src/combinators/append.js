@@ -6,8 +6,8 @@ import concat from './concat'
 /**
  * Emits the values from an array `as` after the signal `s` has completed.
  *
- * @param as The value to append.
- * @param s {Signal} The signal.
+ * @param {Array} as The values to append.
+ * @param {Signal} s The signal.
  * @returns {Signal} A new signal.
  * @example
  *

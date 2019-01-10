@@ -2,11 +2,15 @@ import events from 'events'
 import { range } from 'fkit'
 
 import Signal from './Signal'
-import { asap } from './scheduler'
 import concat from './combinators/concat'
+import { append } from './combinators/append'
+import { asap } from './scheduler'
 import { mockSignal } from './emitter'
+import { prepend } from './combinators/prepend'
 
+jest.mock('./combinators/append')
 jest.mock('./combinators/concat')
+jest.mock('./combinators/prepend')
 jest.mock('./scheduler')
 
 let valueSpy, errorSpy, completeSpy
@@ -259,6 +263,38 @@ describe('Signal', () => {
       expect(completeSpy).not.toHaveBeenCalled()
       s.complete()
       expect(completeSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('#append', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.append([t, u])
+      expect(append).toHaveBeenCalledWith([t, u], s)
+    })
+
+    it('handles multiple arguments', () => {
+      s.append(t, u)
+      expect(append).toHaveBeenCalledWith([t, u], s)
+    })
+  })
+
+  describe('#prepend', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.prepend([t, u])
+      expect(prepend).toHaveBeenCalledWith([t, u], s)
+    })
+
+    it('handles multiple arguments', () => {
+      s.prepend(t, u)
+      expect(prepend).toHaveBeenCalledWith([t, u], s)
     })
   })
 

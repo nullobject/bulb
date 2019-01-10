@@ -7,8 +7,8 @@ import concat from './concat'
  * Emits the values from an array `as` before any other values are emitted by
  * the signal `s`.
  *
- * @param as The values to prepend.
- * @param s {Signal} The signal.
+ * @param {Array} as The values to prepend.
+ * @param {Signal} s The signal.
  * @returns {Signal} A new signal.
  * @example
  *
