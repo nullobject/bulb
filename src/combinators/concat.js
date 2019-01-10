@@ -18,13 +18,16 @@ import Signal from '../Signal'
  * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
  */
 export default function concat (...ss) {
-  const signals = ss.slice(0)
+  // Allow the signals to be given as an array.
+  if (ss.length === 1 && Array.isArray(ss[0])) {
+    ss = ss[0].slice(0)
+  }
 
   return new Signal(emit => {
     let subscription
 
     const subscribeNext = () => {
-      const a = signals.shift()
+      const a = ss.shift()
       if (a) {
         if (subscription) { subscription.unsubscribe() }
         subscription = a.subscribe({ ...emit, complete: subscribeNext })
