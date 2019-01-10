@@ -5,6 +5,7 @@ import Signal from './Signal'
 import concat from './combinators/concat'
 import merge from './combinators/merge'
 import zip from './combinators/zip'
+import zipWith from './combinators/zipWith'
 import { append } from './combinators/append'
 import { asap } from './scheduler'
 import { mockSignal } from './emitter'
@@ -15,6 +16,7 @@ jest.mock('./combinators/concat')
 jest.mock('./combinators/merge')
 jest.mock('./combinators/prepend')
 jest.mock('./combinators/zip')
+jest.mock('./combinators/zipWith')
 jest.mock('./scheduler')
 
 let valueSpy, errorSpy, completeSpy
@@ -362,6 +364,23 @@ describe('Signal', () => {
     it('handles multiple arguments', () => {
       s.zip(t, u)
       expect(zip).toHaveBeenCalledWith([s, t, u])
+    })
+  })
+
+  describe('#zipWith', () => {
+    const f = jest.fn()
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.zipWith(f, [t, u])
+      expect(zipWith).toHaveBeenCalledWith(f, [s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.zipWith(f, t, u)
+      expect(zipWith).toHaveBeenCalledWith(f, [s, t, u])
     })
   })
 })
