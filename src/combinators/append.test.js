@@ -10,11 +10,11 @@ describe('append', () => {
     const s = 'foo'
     const t = 'bar'
 
-    Signal.of.mockReturnValue(t)
+    Signal.fromArray.mockReturnValue(t)
 
     append(0, s)
 
-    expect(Signal.of).toHaveBeenCalledWith(0)
+    expect(Signal.fromArray).toHaveBeenCalledWith(0)
     expect(concat).toHaveBeenCalledWith(s, t)
   })
 })

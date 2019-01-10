@@ -441,39 +441,50 @@ export default class Signal {
   }
 
   /**
-   * Emits a value `a` after the signal has completed.
+   * Emits the values from an array `as` after the signal has completed.
    *
-   * @param a The value to append.
+   * @param as The value to append.
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { Signal } from 'bulb'
+   * import { Signal, append } from 'bulb'
    *
    * const s = Signal.fromArray[1, 2, 3]
-   * const t = s.append(4)
+   * const t = s.append([4, 5, 6])
    *
-   * t.subscribe(console.log) // 1, 2, 3, 4
+   * t.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
-  append (a) {
-    return append(a, this)
+  append (...as) {
+    // Allow the values to be given as an array.
+    if (as.length === 1 && Array.isArray(as[0])) {
+      as = as[0]
+    }
+
+    return append(as, this)
   }
 
   /**
-   * Emits a value `a` before any other values are emitted by the signal.
+   * Emits the values from an array `as` before any other values are emitted by
+   * the signal.
    *
-   * @param a The value to prepend.
+   * @param as The values to prepend.
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { Signal } from 'bulb'
+   * import { Signal, prepend } from 'bulb'
    *
    * const s = Signal.fromArray[1, 2, 3]
-   * const t = s.prepend(0)
+   * const t = s.prepend([4, 5, 6])
    *
-   * t.subscribe(console.log) // 0, 1, 2, 3
+   * t.subscribe(console.log) // 4, 5, 6, 1, 2, 3
    */
-  prepend (a) {
-    return prepend(a, this)
+  prepend (...as) {
+    // Allow the values to be given as an array.
+    if (as.length === 1 && Array.isArray(as[0])) {
+      as = as[0]
+    }
+
+    return prepend(as, this)
   }
 
   /**
@@ -492,7 +503,7 @@ export default class Signal {
    * t.subscribe(console.log) // 0, 1, 2, 3
    */
   startWith (a) {
-    return prepend(a, this)
+    return concat(Signal.of(a), this)
   }
 
   /**

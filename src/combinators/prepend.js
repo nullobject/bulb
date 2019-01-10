@@ -4,9 +4,10 @@ import Signal from '../Signal'
 import concat from './concat'
 
 /**
- * Emits a value `a` before any other values are emitted by the signal `s`.
+ * Emits the values from an array `as` before any other values are emitted by
+ * the signal `s`.
  *
- * @param a The value to prepend.
+ * @param as The values to prepend.
  * @param s {Signal} The signal.
  * @returns {Signal} A new signal.
  * @example
@@ -14,12 +15,12 @@ import concat from './concat'
  * import { Signal, prepend } from 'bulb'
  *
  * const s = Signal.fromArray[1, 2, 3]
- * const t = prepend(0, s)
+ * const t = prepend([4, 5, 6], s)
  *
- * t.subscribe(console.log) // 0, 1, 2, 3
+ * t.subscribe(console.log) // 4, 5, 6, 1, 2, 3
  */
-export function prepend (a, s) {
-  return concat(Signal.of(a), s)
+export function prepend (as, s) {
+  return concat(Signal.fromArray(as), s)
 }
 
 export default curry(prepend)

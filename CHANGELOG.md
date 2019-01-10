@@ -11,6 +11,8 @@
 * Add `sequential` function
 * Add `prepend` function
 * Add `append` function
+* Add `Signal#prepend` method
+* Add `Signal#append` method
 
 ## 1.4.0 (2019-01-08)
 
