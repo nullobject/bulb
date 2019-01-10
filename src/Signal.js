@@ -108,7 +108,7 @@ export default class Signal {
    *
    * @private
    */
-  mount (emit) {
+  tryMount (emit) {
     try {
       // Mount the signal and store the reference to the unmount function.
       this._unmount = this._mount(emit)
@@ -122,7 +122,7 @@ export default class Signal {
    *
    * @private
    */
-  unmount () {
+  tryUnmount () {
     if (typeof this._unmount === 'function') {
       try {
         this._unmount()
@@ -173,7 +173,7 @@ export default class Signal {
 
       // Call the unmount function if we're removing the last subscription.
       if (this._subscriptions.size === 0) {
-        this.unmount()
+        this.tryUnmount()
       }
     })
     const handleValue = emitter(this._subscriptions, 'value')
@@ -182,7 +182,7 @@ export default class Signal {
       // Notify the subscribers that the signal has completed and call the
       // unmount function.
       emitter(this._subscriptions, 'complete')()
-      this.unmount()
+      this.tryUnmount()
     }
 
     // Add the subscription.
@@ -190,7 +190,7 @@ export default class Signal {
 
     // Call the mount function if we're adding the first subscription.
     if (this._subscriptions.size === 1) {
-      this.mount({ value: handleValue, error: handleError, complete: handleComplete })
+      this.tryMount({ value: handleValue, error: handleError, complete: handleComplete })
     }
 
     return subscription
