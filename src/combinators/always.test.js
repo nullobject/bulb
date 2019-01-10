@@ -1,10 +1,10 @@
-import drop from './drop'
+import always from './always'
 import { mockSignal } from '../emitter'
 
 let s
 let valueSpy, errorSpy, completeSpy
 
-describe('drop', () => {
+describe('always', () => {
   beforeEach(() => {
     s = mockSignal()
 
@@ -13,21 +13,23 @@ describe('drop', () => {
     completeSpy = jest.fn()
   })
 
-  it('drops the given number of values', () => {
-    drop(1, s).subscribe(valueSpy, errorSpy, completeSpy)
+  it('replaces signal values with a constant', () => {
+    always(0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    s.value(1)
     expect(valueSpy).not.toHaveBeenCalled()
-    s.value(2)
+    s.value(1)
     expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith(2)
-    s.value(3)
+    expect(valueSpy).toHaveBeenCalledWith(0)
+    s.value(2)
     expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith(3)
+    expect(valueSpy).toHaveBeenCalledWith(0)
+    s.value(3)
+    expect(valueSpy).toHaveBeenCalledTimes(3)
+    expect(valueSpy).toHaveBeenCalledWith(0)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    drop(1, s).subscribe(valueSpy, errorSpy, completeSpy)
+    always(0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -36,7 +38,7 @@ describe('drop', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    drop(1, s).subscribe(valueSpy, errorSpy, completeSpy)
+    always(0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -44,7 +46,7 @@ describe('drop', () => {
   })
 
   it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = drop(1, s).subscribe()
+    const a = always(0, s).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()

@@ -8,6 +8,7 @@ import merge from './combinators/merge'
 import switchLatest from './combinators/switchLatest'
 import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
+import { always } from './combinators/always'
 import { asap } from './scheduler'
 import { concatMap } from './combinators/concatMap'
 import { debounce } from './combinators/debounce'
@@ -418,7 +419,7 @@ export default class Signal {
   }
 
   /**
-   * Replaces the signal values with a constant `c`.
+   * Replaces the values of the signal with a constant `c`.
    *
    * @param c The constant value.
    * @returns {Signal} A new signal.
@@ -432,10 +433,7 @@ export default class Signal {
    * t.subscribe(console.log) // 1, 1, 1
    */
   always (c) {
-    return new Signal(emit => {
-      const value = () => emit.value(c)
-      return this.subscribe({ ...emit, value })
-    })
+    return always(c, this)
   }
 
   /**

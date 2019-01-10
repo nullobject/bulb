@@ -260,46 +260,6 @@ describe('Signal', () => {
     })
   })
 
-  describe('#always', () => {
-    it('replaces signal values with a constant', () => {
-      const s = mockSignal()
-
-      s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(valueSpy).not.toHaveBeenCalled()
-      s.value(1)
-      expect(valueSpy).toHaveBeenCalledTimes(1)
-      expect(valueSpy).toHaveBeenCalledWith(0)
-      s.value(2)
-      expect(valueSpy).toHaveBeenCalledTimes(2)
-      expect(valueSpy).toHaveBeenCalledWith(0)
-      s.value(3)
-      expect(valueSpy).toHaveBeenCalledTimes(3)
-      expect(valueSpy).toHaveBeenCalledWith(0)
-    })
-
-    it('emits an error when the given signal emits an error', () => {
-      const s = mockSignal()
-
-      s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(errorSpy).not.toHaveBeenCalled()
-      s.error('foo')
-      expect(errorSpy).toHaveBeenCalledTimes(1)
-      expect(errorSpy).toHaveBeenCalledWith('foo')
-    })
-
-    it('completes when the given signal is completed', () => {
-      const s = mockSignal()
-
-      s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(completeSpy).not.toHaveBeenCalled()
-      s.complete()
-      expect(completeSpy).toHaveBeenCalledTimes(1)
-    })
-  })
-
   describe('#startWith', () => {
     beforeEach(() => {
       asap.mockImplementation(f => f())
