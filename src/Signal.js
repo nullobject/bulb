@@ -447,7 +447,7 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { Signal, append } from 'bulb'
+   * import { Signal } from 'bulb'
    *
    * const s = Signal.fromArray[1, 2, 3]
    * const t = s.append([4, 5, 6])
@@ -471,7 +471,7 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { Signal, prepend } from 'bulb'
+   * import { Signal } from 'bulb'
    *
    * const s = Signal.fromArray[1, 2, 3]
    * const t = s.prepend([4, 5, 6])
