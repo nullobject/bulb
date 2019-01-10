@@ -1,4 +1,4 @@
-import { always, apply, empty, head, tail } from 'fkit'
+import { apply, empty, head, tail } from 'fkit'
 
 import Subscription from './Subscription'
 import concat from './combinators/concat'
@@ -215,7 +215,7 @@ export default class Signal {
    * @returns {Signal} A new signal.
    */
   static never () {
-    return new Signal(always)
+    return new Signal(() => {})
   }
 
   /**

@@ -1,10 +1,13 @@
-import Signal from '../Signal'
 import delay from './delay'
+import { mockSignal } from '../emitter'
 
+let s
 let valueSpy, errorSpy, completeSpy
 
 describe('delay', () => {
   beforeEach(() => {
+    s = mockSignal()
+
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
@@ -16,17 +19,12 @@ describe('delay', () => {
   })
 
   it('delays the signal values', () => {
-    let value
-    const s = new Signal(emit => {
-      value = emit.value
-    })
-
     delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    value(1)
-    value(2)
+    s.value(1)
+    s.value(2)
     jest.advanceTimersByTime(500)
-    value(3)
+    s.value(3)
     expect(valueSpy).not.toHaveBeenCalled()
     jest.advanceTimersByTime(500)
     expect(valueSpy).toHaveBeenCalledTimes(2)
@@ -38,39 +36,27 @@ describe('delay', () => {
   })
 
   it('emits an error when the given signal emits an error', () => {
-    let error
-    const s = new Signal(emit => {
-      error = emit.error
-    })
-
     delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
-    error('foo')
+    s.error('foo')
     expect(errorSpy).toHaveBeenCalledTimes(1)
     expect(errorSpy).toHaveBeenCalledWith('foo')
   })
 
   it('completes when the given signal is completed', () => {
-    let complete
-    const s = new Signal(emit => {
-      complete = emit.complete
-    })
-
     delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
-    complete()
+    s.complete()
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
   it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const unmount = jest.fn()
-    const s = new Signal(() => unmount)
     const a = delay(1000, s).subscribe()
 
-    expect(unmount).not.toHaveBeenCalled()
+    expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
-    expect(unmount).toHaveBeenCalledTimes(1)
+    expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })

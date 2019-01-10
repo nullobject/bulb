@@ -3,6 +3,7 @@ import { range } from 'fkit'
 
 import Signal from './Signal'
 import { asap } from './scheduler'
+import { mockSignal } from './emitter'
 
 jest.mock('./scheduler')
 
@@ -82,15 +83,15 @@ describe('Signal', () => {
 
   describe('.fromCallback', () => {
     it('returns a signal of values from the callback function', () => {
-      let emit
+      let value
       const s = Signal.fromCallback(callback => {
-        emit = a => { callback(null, a) }
+        value = a => { callback(null, a) }
       })
 
       s.subscribe(valueSpy, errorSpy, completeSpy)
 
       range(1, 3).forEach((n, index) => {
-        emit(n)
+        value(n)
         expect(valueSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
@@ -197,44 +198,43 @@ describe('Signal', () => {
     })
 
     it('calls the unmount function when the last observer unsubscribes', () => {
-      const unmount = jest.fn()
-      const s = new Signal(() => unmount)
+      const s = mockSignal()
       const a = s.subscribe()
       const b = s.subscribe()
 
       a.unsubscribe()
-      expect(unmount).not.toHaveBeenCalled()
-
+      expect(s.unmount).not.toHaveBeenCalled()
       b.unsubscribe()
-      expect(unmount).toHaveBeenCalledTimes(1)
+      expect(s.unmount).toHaveBeenCalledTimes(1)
     })
 
     it('calls the unmount function when the signal is complete', () => {
-      let complete
-      const unmount = jest.fn()
-      const s = new Signal(emit => {
-        complete = () => { emit.complete() }
-        return unmount
-      })
+      const s = mockSignal()
 
       s.subscribe()
-      complete()
-      expect(unmount).toHaveBeenCalledTimes(1)
+
+      expect(s.unmount).not.toHaveBeenCalled()
+      s.complete()
+      expect(s.unmount).toHaveBeenCalledTimes(1)
     })
 
     it('calls the value callback when the signal emits a value', () => {
-      const mount = jest.fn(emit => emit.value('foo'))
-      const s = new Signal(mount)
+      const s = mockSignal()
 
       s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(valueSpy).not.toHaveBeenCalled()
+      s.value('foo')
       expect(valueSpy).toHaveBeenCalledWith('foo')
     })
 
     it('calls the error callback when the signal emits an error', () => {
-      const mount = jest.fn(emit => emit.error('foo'))
-      const s = new Signal(mount)
+      const s = mockSignal()
 
       s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(errorSpy).not.toHaveBeenCalled()
+      s.error('foo')
       expect(errorSpy).toHaveBeenCalledWith('foo')
     })
 
@@ -250,59 +250,52 @@ describe('Signal', () => {
     })
 
     it('calls the complete callback when the signal is complete', () => {
-      const mount = jest.fn(emit => emit.complete())
-      const s = new Signal(mount)
+      const s = mockSignal()
 
-      s.subscribe({ complete: completeSpy })
-      expect(completeSpy).toHaveBeenCalled()
+      s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(completeSpy).not.toHaveBeenCalled()
+      s.complete()
+      expect(completeSpy).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('#always', () => {
     it('replaces signal values with a constant', () => {
-      let value
-      const s = new Signal(emit => {
-        value = emit.value
-      })
+      const s = mockSignal()
 
       s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
 
       expect(valueSpy).not.toHaveBeenCalled()
-      value(1)
+      s.value(1)
       expect(valueSpy).toHaveBeenCalledTimes(1)
       expect(valueSpy).toHaveBeenCalledWith(0)
-      value(2)
+      s.value(2)
       expect(valueSpy).toHaveBeenCalledTimes(2)
       expect(valueSpy).toHaveBeenCalledWith(0)
-      value(3)
+      s.value(3)
       expect(valueSpy).toHaveBeenCalledTimes(3)
       expect(valueSpy).toHaveBeenCalledWith(0)
     })
 
     it('emits an error when the given signal emits an error', () => {
-      let error
-      const s = new Signal(emit => {
-        error = emit.error
-      })
+      const s = mockSignal()
 
       s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
 
       expect(errorSpy).not.toHaveBeenCalled()
-      error('foo')
+      s.error('foo')
       expect(errorSpy).toHaveBeenCalledTimes(1)
       expect(errorSpy).toHaveBeenCalledWith('foo')
     })
 
     it('completes when the given signal is completed', () => {
-      let complete
-      const s = new Signal(emit => {
-        complete = emit.complete
-      })
+      const s = mockSignal()
 
       s.always(0).subscribe(valueSpy, errorSpy, completeSpy)
 
       expect(completeSpy).not.toHaveBeenCalled()
-      complete()
+      s.complete()
       expect(completeSpy).toHaveBeenCalledTimes(1)
     })
   })
@@ -317,83 +310,68 @@ describe('Signal', () => {
     })
 
     it('emits the given value before all other values', () => {
-      let value
-      const s = new Signal(emit => {
-        value = emit.value
-      })
+      const s = mockSignal()
 
       s.startWith(1).subscribe(valueSpy, errorSpy, completeSpy)
 
       expect(valueSpy).toHaveBeenCalledTimes(1)
       expect(valueSpy).toHaveBeenCalledWith(1)
-      value(2)
+      s.value(2)
       expect(valueSpy).toHaveBeenCalledTimes(2)
       expect(valueSpy).toHaveBeenCalledWith(2)
     })
 
     it('emits an error when the given signal emits an error', () => {
-      let error
-      const s = new Signal(emit => {
-        error = emit.error
-      })
+      const s = mockSignal()
 
       s.startWith(0).subscribe(valueSpy, errorSpy, completeSpy)
 
       expect(errorSpy).not.toHaveBeenCalled()
-      error('foo')
+      s.error('foo')
       expect(errorSpy).toHaveBeenCalledTimes(1)
       expect(errorSpy).toHaveBeenCalledWith('foo')
     })
 
     it('completes when the given signal is completed', () => {
-      let complete
-      const s = new Signal(emit => {
-        complete = emit.complete
-      })
+      const s = mockSignal()
 
       s.startWith(0).subscribe(valueSpy, errorSpy, completeSpy)
 
       expect(completeSpy).not.toHaveBeenCalled()
-      complete()
+      s.complete()
       expect(completeSpy).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('#cycle', () => {
     it('cycles through the values of an array', () => {
-      jest.useFakeTimers()
+      const s = mockSignal()
+      const t = s.cycle(range(1, 3))
 
-      const s = Signal.periodic(1000).cycle(range(1, 3))
-
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      t.subscribe(valueSpy, errorSpy, completeSpy)
 
       range(0, 6).forEach(n => {
-        jest.advanceTimersByTime(1000)
+        s.value()
         expect(valueSpy).toHaveBeenNthCalledWith(n + 1, (n % 3) + 1)
       })
 
       expect(completeSpy).not.toHaveBeenCalled()
-
-      jest.useRealTimers()
     })
   })
 
   describe('#sequential', () => {
     it('sequentially emits the values of an array', () => {
-      jest.useFakeTimers()
+      const s = mockSignal()
+      const t = s.sequential(range(1, 3))
 
-      const s = Signal.periodic(1000).sequential(range(1, 3))
-
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      t.subscribe(valueSpy, errorSpy, completeSpy)
 
       range(1, 3).forEach(n => {
-        jest.advanceTimersByTime(1000)
+        s.value()
         expect(valueSpy).toHaveBeenNthCalledWith(n, n)
       })
 
       expect(completeSpy).toHaveBeenCalled()
-
-      jest.useRealTimers()
     })
   })
 })
