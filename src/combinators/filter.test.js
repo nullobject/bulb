@@ -1,4 +1,4 @@
-import { always, gt } from 'fkit'
+import { id, gt } from 'fkit'
 
 import filter from './filter'
 import mockSignal from '../internal/mockSignal'
@@ -29,7 +29,7 @@ describe('filter', () => {
   })
 
   it('emits an error when the given signal emits an error', () => {
-    filter(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    filter(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -38,7 +38,7 @@ describe('filter', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    filter(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    filter(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -46,7 +46,7 @@ describe('filter', () => {
   })
 
   it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = filter(always(), s).subscribe()
+    const a = filter(id, s).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()

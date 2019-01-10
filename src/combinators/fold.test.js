@@ -1,4 +1,4 @@
-import { add, always } from 'fkit'
+import { add, id } from 'fkit'
 
 import fold from './fold'
 import mockSignal from '../internal/mockSignal'
@@ -28,7 +28,7 @@ describe('fold', () => {
   })
 
   it('emits an error when the given signal emits an error', () => {
-    fold(always(), 0, s).subscribe(valueSpy, errorSpy, completeSpy)
+    fold(id, 0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -37,7 +37,7 @@ describe('fold', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    fold(always(), 0, s).subscribe(valueSpy, errorSpy, completeSpy)
+    fold(id, 0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -45,7 +45,7 @@ describe('fold', () => {
   })
 
   it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = fold(always(), 0, s).subscribe()
+    const a = fold(id, 0, s).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()

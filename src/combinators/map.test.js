@@ -1,4 +1,4 @@
-import { always, inc } from 'fkit'
+import { id, inc } from 'fkit'
 
 import map from './map'
 import mockSignal from '../internal/mockSignal'
@@ -31,7 +31,7 @@ describe('map', () => {
   })
 
   it('emits an error when the given signal emits an error', () => {
-    map(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    map(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -40,7 +40,7 @@ describe('map', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    map(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    map(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -48,7 +48,7 @@ describe('map', () => {
   })
 
   it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = map(always(), s).subscribe()
+    const a = map(id, s).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()

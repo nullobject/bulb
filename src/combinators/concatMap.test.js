@@ -1,4 +1,4 @@
-import { always, id } from 'fkit'
+import { id } from 'fkit'
 
 import concatMap from './concatMap'
 import mockSignal from '../internal/mockSignal'
@@ -45,7 +45,7 @@ describe('concatMap', () => {
   })
 
   it('emits an error when the outer signal emits an error', () => {
-    concatMap(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')

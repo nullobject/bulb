@@ -47,9 +47,7 @@ export function concatMap (f, s) {
     // Enqueues the given signal.
     const enqueueSignal = a => {
       queue.push(a)
-      if (!innerSubscription) {
-        subscribeNext()
-      }
+      if (!innerSubscription) { subscribeNext() }
     }
 
     const outerSubscription = s.subscribe({ ...emit, value: enqueueSignal })

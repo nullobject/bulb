@@ -11,6 +11,7 @@ describe('delay', () => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
+
     jest.useFakeTimers()
   })
 

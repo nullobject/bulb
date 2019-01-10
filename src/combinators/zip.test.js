@@ -1,3 +1,4 @@
+import mockSignal from '../internal/mockSignal'
 import zip, { tuple } from './zip'
 import zipWith from './zipWith'
 
@@ -13,9 +14,9 @@ describe('tuple', () => {
 
 describe('zip', () => {
   it('calls zipWith', () => {
-    const s = 'foo'
-    const t = 'bar'
-    const u = 'baz'
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
 
     zip(s, t, u)
 

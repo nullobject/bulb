@@ -1,4 +1,4 @@
-import { always, lt } from 'fkit'
+import { id, lt } from 'fkit'
 
 import dropWhile from './dropWhile'
 import mockSignal from '../internal/mockSignal'
@@ -29,7 +29,7 @@ describe('dropWhile', () => {
   })
 
   it('emits an error when the given signal emits an error', () => {
-    dropWhile(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    dropWhile(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -38,7 +38,7 @@ describe('dropWhile', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    dropWhile(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    dropWhile(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -46,10 +46,10 @@ describe('dropWhile', () => {
   })
 
   it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = dropWhile(always(), s).subscribe()
+    const a = dropWhile(id, s).subscribe()
 
+    expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
-
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })
