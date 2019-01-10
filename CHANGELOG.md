@@ -9,8 +9,8 @@
 * Add `always` function
 * Add `cycle` function
 * Add `sequential` function
-* Add `startWith` function
-* Add `endWith` function
+* Add `prepend` function
+* Add `append` function
 
 ## 1.4.0 (2019-01-08)
 

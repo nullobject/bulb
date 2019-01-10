@@ -6,20 +6,20 @@ import concat from './concat'
 /**
  * Emits a value `a` before any other values are emitted by the signal `s`.
  *
- * @param a The value to emit first.
+ * @param a The value to prepend.
  * @param s {Signal} The signal.
  * @returns {Signal} A new signal.
  * @example
  *
- * import { Signal, startWith } from 'bulb'
+ * import { Signal, prepend } from 'bulb'
  *
  * const s = Signal.fromArray[1, 2, 3]
- * const t = startWith(0, s)
+ * const t = prepend(0, s)
  *
  * t.subscribe(console.log) // 0, 1, 2, 3
  */
-export function startWith (a, s) {
+export function prepend (a, s) {
   return concat(Signal.of(a), s)
 }
 
-export default curry(startWith)
+export default curry(prepend)
