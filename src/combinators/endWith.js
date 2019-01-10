@@ -1,6 +1,7 @@
 import { curry } from 'fkit'
 
 import Signal from '../Signal'
+import concat from './concat'
 
 /**
  * Emits a value `a` before any other values are emitted by the signal `s`.
@@ -18,14 +19,7 @@ import Signal from '../Signal'
  * t.subscribe(console.log) // 1, 2, 3, 4
  */
 export function endWith (a, s) {
-  return new Signal(emit => {
-    const complete = () => {
-      emit.value(a)
-      emit.complete()
-    }
-    const subscription = s.subscribe({ ...emit, complete })
-    return () => subscription.unsubscribe()
-  })
+  return concat(s, Signal.of(a))
 }
 
 export default curry(endWith)

@@ -16,7 +16,9 @@ describe('zip', () => {
     const s = 'foo'
     const t = 'bar'
     const u = 'baz'
+
     zip(s, t, u)
+
     expect(zipWith).toHaveBeenCalledWith(tuple, [s, t, u])
   })
 })

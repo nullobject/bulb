@@ -52,12 +52,14 @@ describe('concat', () => {
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the current signal when the returned signal is unsubscribed', () => {
+  it('unmounts the given signals when the returned signal is unsubscribed', () => {
     const a = concat(s, t).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    s.complete()
     expect(s.unmount).toHaveBeenCalledTimes(1)
     expect(t.unmount).not.toHaveBeenCalled()
+    a.unsubscribe()
+    expect(t.unmount).toHaveBeenCalledTimes(1)
   })
 })
