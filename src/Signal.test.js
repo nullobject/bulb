@@ -312,4 +312,20 @@ describe('Signal', () => {
       spy.mockRestore()
     })
   })
+
+  describe('#concat', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.concat([t, u])
+      expect(concat).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.concat(t, u)
+      expect(concat).toHaveBeenCalledWith([s, t, u])
+    })
+  })
 })
