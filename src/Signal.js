@@ -23,6 +23,7 @@ import { hold } from './combinators/hold'
 import { map } from './combinators/map'
 import { sample } from './combinators/sample'
 import { scan } from './combinators/scan'
+import { sequential } from './combinators/sequential'
 import { stateMachine } from './combinators/stateMachine'
 import { switchMap } from './combinators/switchMap'
 import { take } from './combinators/take'
@@ -494,13 +495,7 @@ export default class Signal {
    * t.subscribe(console.log) // 1, 2, 3
    */
   sequential (as) {
-    return stateMachine((a, b, emit) => {
-      emit.value(as[a])
-      if (a === as.length - 1) {
-        emit.complete()
-      }
-      return a + 1
-    }, 0, this)
+    return sequential(as, this)
   }
 
   /**

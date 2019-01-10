@@ -302,20 +302,4 @@ describe('Signal', () => {
       expect(completeSpy).toHaveBeenCalledTimes(1)
     })
   })
-
-  describe('#sequential', () => {
-    it('sequentially emits the values of an array', () => {
-      const s = mockSignal()
-      const t = s.sequential(range(1, 3))
-
-      t.subscribe(valueSpy, errorSpy, completeSpy)
-
-      range(1, 3).forEach(n => {
-        s.value()
-        expect(valueSpy).toHaveBeenNthCalledWith(n, n)
-      })
-
-      expect(completeSpy).toHaveBeenCalled()
-    })
-  })
 })
