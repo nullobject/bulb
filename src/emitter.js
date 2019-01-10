@@ -20,7 +20,7 @@ export function mockSignal () {
     value = emit.value
     error = emit.error
     complete = emit.complete
-    return () => unmount
+    return unmount
   })
   s.value = a => { value && value(a) }
   s.error = e => { error && error(e) }
