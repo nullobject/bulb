@@ -26,6 +26,11 @@ describe('Signal', () => {
     valueSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
+    asap.mockImplementation(f => f())
+  })
+
+  afterEach(() => {
+    asap.mockRestore()
   })
 
   describe('.empty', () => {
@@ -53,14 +58,6 @@ describe('Signal', () => {
   })
 
   describe('.of', () => {
-    beforeEach(() => {
-      asap.mockImplementation(f => f())
-    })
-
-    afterEach(() => {
-      asap.mockRestore()
-    })
-
     it('returns a signal with a single value', () => {
       const s = Signal.of(1)
 
@@ -72,14 +69,6 @@ describe('Signal', () => {
   })
 
   describe('.fromArray', () => {
-    beforeEach(() => {
-      asap.mockImplementation(f => f())
-    })
-
-    afterEach(() => {
-      asap.mockRestore()
-    })
-
     it('returns a signal of values from an array', () => {
       const s = Signal.fromArray(range(1, 3))
 

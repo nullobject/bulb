@@ -207,7 +207,7 @@ export default class Signal {
    */
   static empty () {
     return new Signal(emit => {
-      emit.complete()
+      asap(() => emit.complete())
     })
   }
 
