@@ -239,17 +239,6 @@ describe('Signal', () => {
       expect(errorSpy).toHaveBeenCalledWith('foo')
     })
 
-    it('calls the error callback when the signal raises an error', () => {
-      const error = new Error('foo')
-      const mount = jest.fn(() => {
-        throw error
-      })
-      const s = new Signal(mount)
-
-      s.subscribe(valueSpy, errorSpy, completeSpy)
-      expect(errorSpy).toHaveBeenCalledWith(error)
-    })
-
     it('calls the complete callback when the signal is complete', () => {
       const s = mockSignal()
 

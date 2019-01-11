@@ -110,12 +110,7 @@ export default class Signal {
    * @private
    */
   tryMount (emit) {
-    try {
-      // Mount the signal and store the reference to the unmount function.
-      this._unmount = this._mount(emit)
-    } catch (e) {
-      emit.error(e)
-    }
+    this._unmount = this._mount(emit)
   }
 
   /**
@@ -125,9 +120,7 @@ export default class Signal {
    */
   tryUnmount () {
     if (typeof this._unmount === 'function') {
-      try {
-        this._unmount()
-      } catch (e) {}
+      this._unmount()
     }
 
     this._unmount = null
