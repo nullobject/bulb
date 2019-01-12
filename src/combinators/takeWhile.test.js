@@ -15,7 +15,7 @@ describe('takeWhile', () => {
     completeSpy = jest.fn()
   })
 
-  it('emits values while the predicate is true', () => {
+  it('emits values from the target signal while the predicate is true', () => {
     takeWhile(lt(3), s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(valueSpy).not.toHaveBeenCalled()

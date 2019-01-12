@@ -887,7 +887,7 @@ export default class Signal {
   }
 
   /**
-   * Ignores values emitted by the signal while the predicate function `p` is
+   * Drops values emitted by the signal while the predicate function `p` is
    * satisfied. The returned signal will emit values once the predicate
    * function is not satisfied.
    *
@@ -929,7 +929,7 @@ export default class Signal {
   }
 
   /**
-   * Stops emitting events from the target signal `t` while the signal is
+   * Stops emitting values from the target signal `t` while the signal is
    * truthy.
    *
    * @param {Signal} t The target signal.

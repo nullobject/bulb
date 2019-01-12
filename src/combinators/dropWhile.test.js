@@ -15,7 +15,7 @@ describe('dropWhile', () => {
     completeSpy = jest.fn()
   })
 
-  it('emits values after the predicate is false', () => {
+  it('drops values from the target signal until the predicate is false', () => {
     dropWhile(lt(2), s).subscribe(valueSpy, errorSpy, completeSpy)
 
     s.value(1)

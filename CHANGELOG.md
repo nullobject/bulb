@@ -15,6 +15,7 @@
 * Add `Signal#append` method
 * Fix an issue where exceptions were being swallowed when mounting
 * Add `takeUntil` function
+* Add `dropUntil` function
 
 ## 1.4.0 (2019-01-08)
 

@@ -1,10 +1,12 @@
+import { always, lt } from 'fkit'
+
 import mockSignal from '../internal/mockSignal'
-import sample from './sample'
+import dropUntil from './dropUntil'
 
 let s, t
 let valueSpy, errorSpy, completeSpy
 
-describe('sample', () => {
+describe('dropUntil', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
@@ -14,23 +16,19 @@ describe('sample', () => {
     completeSpy = jest.fn()
   })
 
-  it('emits values from the target signal whenever the control signal emits a value', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+  it('drops values from the target signal until the control signal emits a value', () => {
+    dropUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
-    t.value('foo')
+    t.value(1)
     expect(valueSpy).not.toHaveBeenCalled()
     s.value()
+    t.value(2)
     expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith('foo')
-    t.value('bar')
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    s.value()
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith('bar')
+    expect(valueSpy).toHaveBeenLastCalledWith(2)
   })
 
   it('emits an error when either signal emits an error', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    dropUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -42,7 +40,7 @@ describe('sample', () => {
   })
 
   it('completes when the target signal is completed', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    dropUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     t.complete()
@@ -50,7 +48,7 @@ describe('sample', () => {
   })
 
   it('completes when the control signal is completed', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    dropUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -58,7 +56,7 @@ describe('sample', () => {
   })
 
   it('unmounts the control signal when the returned signal is unsubscribed', () => {
-    const a = sample(s, t).subscribe()
+    const a = dropUntil(s, t).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
@@ -66,7 +64,7 @@ describe('sample', () => {
   })
 
   it('unmounts the target signal when the returned signal is unsubscribed', () => {
-    const a = sample(s, t).subscribe()
+    const a = dropUntil(s, t).subscribe()
 
     expect(t.unmount).not.toHaveBeenCalled()
     a.unsubscribe()

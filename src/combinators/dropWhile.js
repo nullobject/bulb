@@ -3,7 +3,7 @@ import { curry } from 'fkit'
 import stateMachine from './stateMachine'
 
 /**
- * Ignores values emitted by the signal `s` while the predicate function `p` is
+ * Drops values emitted by the signal `s` while the predicate function `p` is
  * satisfied. The returned signal will emit values once the predicate function
  * is not satisfied.
  *

@@ -3,7 +3,7 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Stops emitting events from the target signal `t` while the control signal
+ * Stops emitting values from the target signal `t` while the control signal
  * `s` is truthy.
  *
  * @param {Signal} s The control signal.
@@ -21,17 +21,17 @@ import Signal from '../Signal'
  */
 export function hold (s, t) {
   return new Signal(emit => {
-    let hold
+    let enabled = true
 
     const value = a => {
-      if (!hold) { emit.value(a) }
+      if (enabled) { emit.value(a) }
     }
 
     const subscriptions = [
       t.subscribe({ ...emit, value }),
 
       // Set the hold value.
-      s.subscribe({ ...emit, value: a => { hold = a } })
+      s.subscribe({ ...emit, value: a => { enabled = !a } })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())
