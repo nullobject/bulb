@@ -11,4 +11,3 @@ export default function emitter () {
   emitter.removeEventListener = jest.fn()
   return emitter
 }
-

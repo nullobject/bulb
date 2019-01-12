@@ -1,5 +1,3 @@
-import { always, lt } from 'fkit'
-
 import mockSignal from '../internal/mockSignal'
 import takeUntil from './takeUntil'
 
