@@ -29,6 +29,7 @@ import { sequential } from './combinators/sequential'
 import { stateMachine } from './combinators/stateMachine'
 import { switchMap } from './combinators/switchMap'
 import { take } from './combinators/take'
+import { takeUntil } from './combinators/takeUntil'
 import { takeWhile } from './combinators/takeWhile'
 import { throttle } from './combinators/throttle'
 
@@ -846,6 +847,24 @@ export default class Signal {
    */
   take (n) {
     return take(n, this)
+  }
+
+  /**
+   * Emits values from the signal until the control signal `s` emits a value.
+   * The returned signal will complete once the control signal emits a value.
+   *
+   * @param {Signal} s The control signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = Signal.periodic(1000).sequential([1, 2, 3])
+   * const t = Signal.of().delay(1000)
+   * const u = s.takeUntil(t)
+   *
+   * u.subscribe(console.log) // 1
+   */
+  takeUntil (s) {
+    return takeUntil(s, this)
   }
 
   /**
