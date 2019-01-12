@@ -11,6 +11,7 @@ import zipWith from './combinators/zipWith'
 import { always } from './combinators/always'
 import { append } from './combinators/append'
 import { asap } from './scheduler'
+import { buffer } from './combinators/buffer'
 import { concatMap } from './combinators/concatMap'
 import { cycle } from './combinators/cycle'
 import { debounce } from './combinators/debounce'
@@ -480,6 +481,27 @@ export default class Signal {
     }
 
     return prepend(as, this)
+  }
+
+  /**
+   * Buffers values emitted by the signal and emits the buffer contents when it
+   * is full. The buffer contents will be emitted when the signal completes,
+   * regardless of whether the buffer is full.
+   *
+   * @param {Number} [n=Infinity] The size of the buffer. If the size is set to
+   * `Infinity`, then the signal will be buffered until it completes.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3, 4])
+   * const t = s.buffer(2)
+   *
+   * u.subscribe(console.log) // [1, 2], [2, 4], ...
+   */
+  buffer (n = Infinity) {
+    return buffer(n, this)
   }
 
   /**
