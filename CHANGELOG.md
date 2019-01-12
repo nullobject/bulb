@@ -17,6 +17,7 @@
 * Add `takeUntil` function
 * Add `dropUntil` function
 * Add `Signal#takeUntil` method
+* Add `Signal#dropUntil` method
 
 ## 1.4.0 (2019-01-08)
 

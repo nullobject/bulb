@@ -17,6 +17,7 @@ import { debounce } from './combinators/debounce'
 import { dedupeWith } from './combinators/dedupeWith'
 import { delay } from './combinators/delay'
 import { drop } from './combinators/drop'
+import { dropUntil } from './combinators/dropUntil'
 import { dropWhile } from './combinators/dropWhile'
 import { filter } from './combinators/filter'
 import { fold } from './combinators/fold'
@@ -903,6 +904,24 @@ export default class Signal {
    */
   drop (n) {
     return drop(n, this)
+  }
+
+  /**
+   * Drops values emitted by the signal until the control signal `s` emits a
+   * value.
+   *
+   * @param {Signal} s The control signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * const s = Signal.periodic(1000).sequential([1, 2, 3])
+   * const t = Signal.of().delay(1000)
+   * const u = s.dropUntil(t)
+   *
+   * u.subscribe(console.log) // 2, 3
+   */
+  dropUntil (s) {
+    return dropUntil(s, this)
   }
 
   /**
