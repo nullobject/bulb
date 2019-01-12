@@ -1,7 +1,7 @@
 ## Unreleased
 
 * Add `buffer` function
-* Add `Signal#buffer` function
+* Add `Signal#buffer` method
 
 ## 2.0.0 (2019-01-12)
 
