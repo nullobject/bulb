@@ -1,6 +1,6 @@
 <h1 align="center"><img alt="Bulb" src="https://raw.githubusercontent.com/nullobject/bulb/master/logo.png" width="200px" /></h1>
 
-[![Build Status](https://travis-ci.org/nullobject/bulb.svg?branch=master)](https://travis-ci.org/nullobject/bulb)
+[![Build Status](https://travis-ci.com/nullobject/bulb.svg?branch=master)](https://travis-ci.com/nullobject/bulb)
 
 Bulb is a [reactive
 programming](https://en.wikipedia.org/wiki/Reactive_programming) library for
