@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add `buffer` function
+
 ## 2.0.0 (2019-01-12)
 
 * Add `switchMap` function

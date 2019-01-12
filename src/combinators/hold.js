@@ -11,7 +11,7 @@ import Signal from '../Signal'
  * @returns {Signal} A new signal.
  * @example
  *
- * import { mouseButton, mousePosition } from 'bulb'
+ * import { hold, mouseButton, mousePosition } from 'bulb'
  *
  * const s = mouseButton(document)
  * const t = mousePosition(document)

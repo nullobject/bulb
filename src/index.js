@@ -1,6 +1,7 @@
 export { default as Signal } from './Signal'
 export { default as always } from './combinators/always'
 export { default as append } from './combinators/append'
+export { default as buffer } from './combinators/buffer'
 export { default as concat } from './combinators/concat'
 export { default as concatMap } from './combinators/concatMap'
 export { default as cycle } from './combinators/cycle'
