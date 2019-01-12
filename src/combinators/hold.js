@@ -3,8 +3,8 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Pauses emitting events from target signal `t` when the most recent value
- * from the control signal `s` is truthy.
+ * Stops emitting events from the target signal `t` while the control signal
+ * `s` is truthy.
  *
  * @param {Signal} s The control signal.
  * @param {Signal} t The target signal.

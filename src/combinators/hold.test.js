@@ -14,7 +14,7 @@ describe('hold', () => {
     completeSpy = jest.fn()
   })
 
-  it('stops emitting values from the target signal when while is a truthy value on the control signal', () => {
+  it('stops emitting values from the target signal while the control signal is truthy', () => {
     hold(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(valueSpy).not.toHaveBeenCalled()
@@ -38,6 +38,14 @@ describe('hold', () => {
     t.error('bar')
     expect(errorSpy).toHaveBeenCalledTimes(2)
     expect(errorSpy).toHaveBeenLastCalledWith('bar')
+  })
+
+  it('completes when the target signal is completed', () => {
+    hold(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(completeSpy).not.toHaveBeenCalled()
+    t.complete()
+    expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
   it('completes when the control signal is completed', () => {

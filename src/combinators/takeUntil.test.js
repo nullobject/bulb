@@ -1,10 +1,12 @@
+import { always, lt } from 'fkit'
+
 import mockSignal from '../internal/mockSignal'
-import sample from './sample'
+import takeUntil from './takeUntil'
 
 let s, t
 let valueSpy, errorSpy, completeSpy
 
-describe('sample', () => {
+describe('takeUntil', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
@@ -14,23 +16,21 @@ describe('sample', () => {
     completeSpy = jest.fn()
   })
 
-  it('emits values from the target signal when control signal emits a value', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+  it('emits values from the target signal until the control signal emits a value', () => {
+    takeUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
-    t.value('foo')
     expect(valueSpy).not.toHaveBeenCalled()
-    s.value()
+    t.value(1)
     expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith('foo')
-    t.value('bar')
-    expect(valueSpy).toHaveBeenCalledTimes(1)
+    expect(valueSpy).toHaveBeenLastCalledWith(1)
     s.value()
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith('bar')
+    t.value(2)
+    expect(valueSpy).toHaveBeenCalledTimes(1)
+    expect(valueSpy).toHaveBeenLastCalledWith(1)
   })
 
   it('emits an error when either signal emits an error', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    takeUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -41,8 +41,16 @@ describe('sample', () => {
     expect(errorSpy).toHaveBeenLastCalledWith('bar')
   })
 
+  it('completes when the control signal emits a value', () => {
+    takeUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(completeSpy).not.toHaveBeenCalled()
+    s.value()
+    expect(completeSpy).toHaveBeenCalledTimes(1)
+  })
+
   it('completes when the target signal is completed', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    takeUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     t.complete()
@@ -50,7 +58,7 @@ describe('sample', () => {
   })
 
   it('completes when the control signal is completed', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    takeUntil(s, t).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -58,7 +66,7 @@ describe('sample', () => {
   })
 
   it('unmounts the control signal when the returned signal is unsubscribed', () => {
-    const a = sample(s, t).subscribe()
+    const a = takeUntil(s, t).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
@@ -66,7 +74,7 @@ describe('sample', () => {
   })
 
   it('unmounts the target signal when the returned signal is unsubscribed', () => {
-    const a = sample(s, t).subscribe()
+    const a = takeUntil(s, t).subscribe()
 
     expect(t.unmount).not.toHaveBeenCalled()
     a.unsubscribe()

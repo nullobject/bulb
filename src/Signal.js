@@ -909,8 +909,8 @@ export default class Signal {
   }
 
   /**
-   * Emits the most recent value from the target signal `t` when there is an
-   * event on the control signal.
+   * Emits the most recent value from the target signal `t` whenever there is
+   * an event on the signal.
    *
    * @param {Signal} t The target signal.
    * @returns {Signal} A new signal.
@@ -929,8 +929,8 @@ export default class Signal {
   }
 
   /**
-   * Pauses emitting events from target signal `t` when the most recent value
-   * from the signal is truthy.
+   * Stops emitting events from the target signal `t` while the signal is
+   * truthy.
    *
    * @param {Signal} t The target signal.
    * @returns {Signal} A new signal.

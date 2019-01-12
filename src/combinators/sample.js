@@ -3,8 +3,8 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Emits the most recent value from the target signal `t` when there is an
- * event on the control signal `s`.
+ * Emits the most recent value from the target signal `t` whenever the control
+ * signal `s` emits a value.
  *
  * @param {Signal} s The control signal.
  * @param {Signal} t The target signal.
