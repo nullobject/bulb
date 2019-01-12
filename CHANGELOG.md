@@ -18,6 +18,7 @@
 * Add `dropUntil` function
 * Add `Signal#takeUntil` method
 * Add `Signal#dropUntil` method
+* Reorder the arguments for `Signal#sample` and `Signal#hold`
 
 ## 1.4.0 (2019-01-08)
 

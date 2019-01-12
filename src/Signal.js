@@ -947,43 +947,43 @@ export default class Signal {
   }
 
   /**
-   * Emits the most recent value from the target signal `t` whenever there is
-   * an event on the signal.
+   * Emits the most recent value from the signal whenever there is an event on
+   * the control signal `s`.
    *
-   * @param {Signal} t The target signal.
+   * @param {Signal} s The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal, mousePosition } from 'bulb'
    *
-   * const s = Signal.periodic(1000)
-   * const t = mousePosition()
+   * const s = mousePosition()
+   * const t = Signal.periodic(1000)
    * const u = s.sample(t)
    *
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
    */
-  sample (t) {
-    return sample(this, t)
+  sample (s) {
+    return sample(s, this)
   }
 
   /**
-   * Stops emitting values from the target signal `t` while the signal is
+   * Stops emitting values from the signal while the control signal `s` is
    * truthy.
    *
-   * @param {Signal} t The target signal.
+   * @param {Signal} s The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { mouseButton, mousePosition } from 'bulb'
    *
-   * const s = mouseButton(document)
-   * const t = mousePosition(document)
+   * const s = mousePosition(document)
+   * const t = mouseButton(document)
    * const u = s.hold(t)
    *
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
    */
-  hold (t) {
-    return hold(this, t)
+  hold (s) {
+    return hold(s, this)
   }
 
   /**
