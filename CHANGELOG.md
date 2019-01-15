@@ -2,6 +2,7 @@
 
 * Add `buffer` function
 * Add `Signal#buffer` method
+* Add `apply` function
 
 ## 2.0.0 (2019-01-12)
 
