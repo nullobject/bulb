@@ -1,4 +1,4 @@
-import { apply, empty, head, tail } from 'fkit'
+import { empty, head, tail } from 'fkit'
 
 import Subscription from './Subscription'
 import concat from './combinators/concat'
@@ -10,6 +10,7 @@ import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
 import { always } from './combinators/always'
 import { append } from './combinators/append'
+import { apply } from './combinators/apply'
 import { asap } from './scheduler'
 import { buffer } from './combinators/buffer'
 import { concatMap } from './combinators/concatMap'
@@ -260,7 +261,7 @@ export default class Signal {
   static fromArray (as) {
     return new Signal(emit => {
       asap(() => {
-        as.map(apply(emit.value))
+        as.map(a => emit.value(a))
         emit.complete()
       })
     })
@@ -416,6 +417,27 @@ export default class Signal {
 
       return () => clearInterval(id)
     })
+  }
+
+/**
+ * Applies the latest function emitted by the signal to latest value emitted by
+ * the signal `t`. The returned signal will complete when either of the given
+ * signals have completed.
+ *
+ * @param {Signal} t The signal of values.
+ * @returns {Signal} A new signal.
+ * @example
+ *
+ * import { Signal } from 'bulb'
+ *
+ * const s = Signal.fromArray([a => a + 1])
+ * const t = Signal.fromArray([1, 2, 3])
+ * const u = s.apply(t)
+ *
+ * u.subscribe(console.log) // 2, 3, 4
+ */
+  apply (t) {
+    return apply(this, t)
   }
 
   /**
