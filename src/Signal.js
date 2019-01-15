@@ -419,23 +419,23 @@ export default class Signal {
     })
   }
 
-/**
- * Applies the latest function emitted by the signal to latest value emitted by
- * the signal `t`. The returned signal will complete when either of the given
- * signals have completed.
- *
- * @param {Signal} t The signal of values.
- * @returns {Signal} A new signal.
- * @example
- *
- * import { Signal } from 'bulb'
- *
- * const s = Signal.fromArray([a => a + 1])
- * const t = Signal.fromArray([1, 2, 3])
- * const u = s.apply(t)
- *
- * u.subscribe(console.log) // 2, 3, 4
- */
+  /**
+   * Applies the latest function emitted by the signal to latest value emitted by
+   * the signal `t`. The returned signal will complete when either of the given
+   * signals have completed.
+   *
+   * @param {Signal} t The signal of values.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([a => a + 1])
+   * const t = Signal.fromArray([1, 2, 3])
+   * const u = s.apply(t)
+   *
+   * u.subscribe(console.log) // 2, 3, 4
+   */
   apply (t) {
     return apply(this, t)
   }
