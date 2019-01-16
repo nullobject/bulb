@@ -70,6 +70,17 @@ describe('Signal', () => {
     })
   })
 
+  describe('.throwError', () => {
+    it('returns a signal that throws an error', () => {
+      const s = Signal.throwError('foo')
+
+      s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(errorSpy).toHaveBeenCalledWith('foo')
+      expect(completeSpy).toHaveBeenCalled()
+    })
+  })
+
   describe('.fromArray', () => {
     it('returns a signal that emits values from an array', () => {
       const s = Signal.fromArray(range(1, 3))

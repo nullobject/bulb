@@ -249,6 +249,29 @@ export default class Signal {
   }
 
   /**
+   * Creates a signal that emits an error `e`. The returned signal will
+   * complete immediately after the error has been emited.
+   *
+   * @param e The error to emit.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.error('foo')
+   *
+   * s.subscribe({ error: console.error }) // 'foo'
+   */
+  static throwError (e) {
+    return new Signal(emit => {
+      asap(() => {
+        emit.error(e)
+        emit.complete()
+      })
+    })
+  }
+
+  /**
    * Creates a signal that sequentially emits the values from an array `as`.
    * The returned signal will complete immediately after the last value in the
    * array has been emitted.
