@@ -30,7 +30,7 @@ export default function zipWith (f, ...ss) {
   return new Signal(emit => {
     const buffers = replicate(ss.length, [])
 
-    const value = (a, index) => {
+    const value = index => a => {
       // Buffer the value.
       buffers[index].push(a)
 
@@ -48,7 +48,7 @@ export default function zipWith (f, ...ss) {
     }
 
     const subscriptions = ss.map((s, i) =>
-      s.subscribe(a => value(a, i), emit.error, emit.complete)
+      s.subscribe({ ...emit, value: value(i) })
     )
 
     return () => subscriptions.forEach(s => s.unsubscribe())
