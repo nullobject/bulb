@@ -4,6 +4,7 @@
 * Add `Signal#buffer` method
 * Add `apply` function
 * Add `Signal.throwError` static method
+* Add `catchError` function
 
 ## 2.0.0 (2019-01-12)
 
