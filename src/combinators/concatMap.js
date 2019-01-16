@@ -3,8 +3,8 @@ import { curry } from 'fkit'
 import Signal from '../Signal'
 
 /**
- * Applies a function `f` that returns a `Signal`, to each value emitted by the
- * signal `s`. The returned signal will join all signals returned by the
+ * Applies a function `f`, that returns a `Signal`, to each value emitted by
+ * the signal `s`. The returned signal will join all signals returned by the
  * function, waiting for each one to complete before merging the next.
  *
  * @param {Function} f The function to apply to each value emitted by the

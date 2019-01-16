@@ -44,7 +44,7 @@ describe('concatMap', () => {
     expect(() => s.value('foo')).toThrow('Signal value must be a signal')
   })
 
-  it('emits an error when the outer signal emits an error', () => {
+  it('emits an error when the given signal emits an error', () => {
     concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
@@ -53,12 +53,11 @@ describe('concatMap', () => {
     expect(errorSpy).toHaveBeenCalledWith('foo')
   })
 
-  it('completes when the outer signal is completed', () => {
-    concatMap(id, t).subscribe(valueSpy, errorSpy, completeSpy)
+  it('completes when the given signal is completed', () => {
+    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    s.complete()
     expect(completeSpy).not.toHaveBeenCalled()
-    t.complete()
+    s.complete()
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
