@@ -1,4 +1,6 @@
-import switchLatest from './switchLatest'
+import { id } from 'fkit'
+
+import { switchMap } from './switchMap'
 
 /**
  * Switches between the target signals `ts` based on the most recent value
@@ -24,5 +26,5 @@ export default function encode (s, ...ts) {
     ts = ts[0]
   }
 
-  return switchLatest(s.map(a => ts[a]))
+  return switchMap(id, s.map(a => ts[a]))
 }
