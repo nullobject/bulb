@@ -5,6 +5,7 @@
 * Add `apply` function
 * Add `Signal.throwError` static method
 * Add `catchError` function
+* Add `Signal#catchError` method
 
 ## 2.0.0 (2019-01-12)
 

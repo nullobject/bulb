@@ -13,6 +13,7 @@ import { always } from './combinators/always'
 import { append } from './combinators/append'
 import { asap } from './scheduler'
 import { buffer } from './combinators/buffer'
+import { catchError } from './combinators/catchError'
 import { concatMap } from './combinators/concatMap'
 import { cycle } from './combinators/cycle'
 import { debounce } from './combinators/debounce'
@@ -582,6 +583,28 @@ export default class Signal {
    */
   startWith (a) {
     return concat(Signal.of(a), this)
+  }
+
+  /**
+   * Applies a function `f`, that returns a `Signal`, to the first error
+   * emitted by the signal. The returned signal will emit values from the
+   * signal returned by the function.
+   *
+   * @param {Function} f The function to apply to the first error emitted by the
+   * signal. It must also return a `Signal`.
+   * @param {Signal} s The signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.throwError()
+   * const t = s.catchError(e => Signal.of(1))
+   *
+   * t.subscribe(console.log) // 1
+   */
+  catchError (f) {
+    return catchError(f, this)
   }
 
   /**
