@@ -20,9 +20,7 @@ import stateMachine from './stateMachine'
 export function take (n, s) {
   return stateMachine((a, b, emit) => {
     emit.value(b)
-    if (a >= n - 1) {
-      emit.complete()
-    }
+    if (a >= n - 1) { emit.complete() }
     return a + 1
   }, 0, s)
 }

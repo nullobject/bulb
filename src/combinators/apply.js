@@ -36,9 +36,7 @@ export default function apply (s, ...ts) {
     const values = new Array(ts.length)
 
     const flush = () => {
-      if (f && all(id, values)) {
-        emit.value(f(...values))
-      }
+      if (f && all(id, values)) { emit.value(f(...values)) }
     }
 
     const functionHandler = a => {

@@ -26,8 +26,8 @@ export function scan (f, a, s) {
     // Emit the starting value.
     asap(() => { emit.value(a) })
 
-    // Fold the current value with the previous value and emit the next value
     const value = b => {
+      // Fold the current value with the previous value.
       a = f(a, b)
       emit.value(a)
     }

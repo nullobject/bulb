@@ -22,7 +22,7 @@ import Signal from '../Signal'
  */
 export function fold (f, a, s) {
   return new Signal(emit => {
-    // Fold the next value with the previous value.
+    // Fold the current value with the previous value.
     const value = b => { a = f(a, b) }
 
     const complete = () => {

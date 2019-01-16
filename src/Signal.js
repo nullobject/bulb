@@ -679,7 +679,7 @@ export default class Signal {
   }
 
   /**
-   * Applies a function `f`, which returns a `Signal`, to each value emitted by
+   * Applies a function `f` that returns a `Signal`, to each value emitted by
    * the signal. The returned signal will join all signals returned by the
    * function, waiting for each one to complete before merging the next.
    *

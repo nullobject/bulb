@@ -28,7 +28,7 @@ import Signal from '../Signal'
 export function stateMachine (f, a, s) {
   return new Signal(emit => {
     const value = b => {
-      // Fold the next value with the previous value.
+      // Fold the current value with the previous value.
       a = f(a, b, emit)
     }
 

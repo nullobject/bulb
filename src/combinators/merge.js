@@ -23,13 +23,12 @@ export default function merge (...ss) {
   }
 
   return new Signal(emit => {
-    let numComplete = 0
+    let n = 0
 
     const complete = () => {
-      if (++numComplete >= ss.length) { emit.complete() }
+      if (++n >= ss.length) { emit.complete() }
     }
 
-    // Emit values from any signal.
     const subscriptions = ss.map(s => s.subscribe({ ...emit, complete }))
 
     return () => subscriptions.forEach(s => s.unsubscribe())

@@ -28,10 +28,8 @@ export function hold (s, t) {
     }
 
     const subscriptions = [
-      t.subscribe({ ...emit, value }),
-
-      // Set the hold value.
-      s.subscribe({ ...emit, value: a => { enabled = !a } })
+      s.subscribe({ ...emit, value: a => { enabled = !a } }),
+      t.subscribe({ ...emit, value })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())

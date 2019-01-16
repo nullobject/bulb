@@ -28,10 +28,8 @@ export function sample (s, t) {
     }
 
     const subscriptions = [
-      s.subscribe({ ...emit, value }),
-
-      // Buffer the last value.
-      t.subscribe({ ...emit, value: a => { buffer = a } })
+      t.subscribe({ ...emit, value: a => { buffer = a } }),
+      s.subscribe({ ...emit, value })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())
