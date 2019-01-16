@@ -1,11 +1,14 @@
-## Unreleased
+## 2.2.0 (2019-01-17)
 
-* Add `buffer` function
-* Add `Signal#buffer` method
 * Add `apply` function
 * Add `Signal.throwError` static method
 * Add `catchError` function
 * Add `Signal#catchError` method
+
+## 2.1.0 (2019-01-12)
+
+* Add `buffer` function
+* Add `Signal#buffer` method
 
 ## 2.0.0 (2019-01-12)
 
