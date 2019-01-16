@@ -1,4 +1,4 @@
-import { all, replicate } from 'fkit'
+import { all, id } from 'fkit'
 
 import Signal from '../Signal'
 
@@ -32,22 +32,22 @@ export default function apply (s, ...ts) {
   }
 
   return new Signal(emit => {
-    const buffers = replicate(ts.length, null)
-    let functionBuffer
+    let f
+    const values = new Array(ts.length)
 
     const flush = () => {
-      if (functionBuffer && all(buffer => !!buffer, buffers)) {
-        emit.value(functionBuffer(...buffers))
+      if (f && all(id, values)) {
+        emit.value(f(...values))
       }
     }
 
     const functionHandler = a => {
-      functionBuffer = a
+      f = a
       flush()
     }
 
     const valueHandler = index => a => {
-      buffers[index] = a
+      values[index] = a
       flush()
     }
 
