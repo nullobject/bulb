@@ -23,7 +23,7 @@ export function debounce (n, s) {
     let buffer
     let id
 
-    const emitLastValue = (emit) => {
+    const flush = () => {
       if (buffer) { emit.value(buffer) }
       buffer = null
     }
@@ -31,12 +31,12 @@ export function debounce (n, s) {
     const value = a => {
       clearTimeout(id)
       buffer = a
-      id = setTimeout(() => emitLastValue(emit), n)
+      id = setTimeout(flush, n)
     }
 
     const complete = () => {
       clearTimeout(id)
-      emitLastValue(emit)
+      flush()
       emit.complete()
     }
 
