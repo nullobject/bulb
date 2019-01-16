@@ -51,11 +51,10 @@ describe('switchMap', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    switchMap(id, t).subscribe(valueSpy, errorSpy, completeSpy)
+    switchMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    s.complete()
     expect(completeSpy).not.toHaveBeenCalled()
-    t.complete()
+    s.complete()
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 

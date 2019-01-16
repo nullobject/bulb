@@ -13,6 +13,7 @@ import { always } from './combinators/always'
 import { append } from './combinators/append'
 import { asap } from './scheduler'
 import { buffer } from './combinators/buffer'
+import { catchError } from './combinators/catchError'
 import { concatMap } from './combinators/concatMap'
 import { cycle } from './combinators/cycle'
 import { debounce } from './combinators/debounce'
@@ -44,7 +45,7 @@ import { throttle } from './combinators/throttle'
  * @param {String} type The type of callback to create.
  * @returns {Function} A function that emits a value to all of the subscriptions.
  */
-function emitter (subscriptions, type) {
+function broadcast (subscriptions, type) {
   return value => {
     subscriptions.forEach(s => {
       if (typeof s.emit[type] === 'function') {
@@ -136,12 +137,12 @@ export default class Signal {
    * The `subscribe` method returns a subscription handle, which can be used to
    * unsubscribe from the signal.
    *
-   * @param {Function} [value] The callback function called when the signal
+   * @param {Function} [onValue] The callback function called when the signal
    * emits a value.
-   * @param {Function} [error] The callback function called when the signal
+   * @param {Function} [onError] The callback function called when the signal
    * emits an error.
-   * @param {Function} [complete] The callback function called when the signal
-   * has completed.
+   * @param {Function} [onComplete] The callback function called when the
+   * signal has completed.
    * @returns {Subscription} A subscription handle.
    * @example
    *
@@ -155,13 +156,13 @@ export default class Signal {
    * // When we are done, we can unsubscribe from the signal.
    * subscription.unsubscribe()
    */
-  subscribe (value, error, complete) {
+  subscribe (onValue, onError, onComplete) {
     let emit = {}
 
-    if (typeof value === 'function') {
-      emit = { value, error, complete }
-    } else if (typeof value === 'object') {
-      emit = value
+    if (typeof onValue === 'function') {
+      emit = { value: onValue, error: onError, complete: onComplete }
+    } else if (typeof onValue === 'object') {
+      emit = onValue
     }
 
     // Create a new subscription to the signal.
@@ -174,21 +175,26 @@ export default class Signal {
         this.tryUnmount()
       }
     })
-    const handleValue = emitter(this._subscriptions, 'value')
-    const handleError = emitter(this._subscriptions, 'error')
-    const handleComplete = () => {
-      // Notify the subscribers that the signal has completed and call the
-      // unmount function.
-      emitter(this._subscriptions, 'complete')()
-      this.tryUnmount()
-    }
 
     // Add the subscription.
     this._subscriptions.add(subscription)
 
+    // Notifies the observers that a value was emitted.
+    const value = broadcast(this._subscriptions, 'value')
+
+    // Notifies the observers that an error was emitted.
+    const error = broadcast(this._subscriptions, 'error')
+
+    // Notifies the observers that the signal has completed and calls the
+    // unmount function.
+    const complete = () => {
+      broadcast(this._subscriptions, 'complete')()
+      this.tryUnmount()
+    }
+
     // Call the mount function if we're adding the first subscription.
     if (this._subscriptions.size === 1) {
-      this.tryMount({ value: handleValue, error: handleError, complete: handleComplete })
+      this.tryMount({ value, error, complete })
     }
 
     return subscription
@@ -238,6 +244,29 @@ export default class Signal {
     return new Signal(emit => {
       asap(() => {
         emit.value(a)
+        emit.complete()
+      })
+    })
+  }
+
+  /**
+   * Creates a signal that emits an error `e`. The returned signal will
+   * complete immediately after the error has been emited.
+   *
+   * @param e The error to emit.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.error('foo')
+   *
+   * s.subscribe({ error: console.error }) // 'foo'
+   */
+  static throwError (e) {
+    return new Signal(emit => {
+      asap(() => {
+        emit.error(e)
         emit.complete()
       })
     })
@@ -557,6 +586,28 @@ export default class Signal {
   }
 
   /**
+   * Applies a function `f`, that returns a `Signal`, to the first error
+   * emitted by the signal. The returned signal will emit values from the
+   * signal returned by the function.
+   *
+   * @param {Function} f The function to apply to the first error emitted by the
+   * signal. It must also return a `Signal`.
+   * @param {Signal} s The signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.throwError()
+   * const t = s.catchError(e => Signal.of(1))
+   *
+   * t.subscribe(console.log) // 1
+   */
+  catchError (f) {
+    return catchError(f, this)
+  }
+
+  /**
    * Cycles through the values of an array `as` for every value emitted by the
    * signal.
    *
@@ -679,7 +730,7 @@ export default class Signal {
   }
 
   /**
-   * Applies a function `f` that returns a `Signal`, to each value emitted by
+   * Applies a function `f`, that returns a `Signal`, to each value emitted by
    * the signal. The returned signal will join all signals returned by the
    * function, waiting for each one to complete before merging the next.
    *
@@ -1102,7 +1153,7 @@ export default class Signal {
   }
 
   /**
-   * Applies a function `f` that returns a `Signal`, to each value emitted by
+   * Applies a function `f`, that returns a `Signal`, to each value emitted by
    * the signal. The returned signal will emit values from the most recent
    * signal returned by the function.
    *

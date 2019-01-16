@@ -1,12 +1,12 @@
-import { id } from 'fkit'
+import { always, id } from 'fkit'
 
-import concatMap from './concatMap'
+import catchError from './catchError'
 import mockSignal from '../internal/mockSignal'
 
 let s, t, u
 let valueSpy, errorSpy, completeSpy
 
-describe('concatMap', () => {
+describe('catchError', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
@@ -17,52 +17,48 @@ describe('concatMap', () => {
     completeSpy = jest.fn()
   })
 
-  it('applies a function to the signal values', () => {
-    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+  it('applies a function to the signal errors', () => {
+    catchError(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    s.value(t)
-    expect(valueSpy).not.toHaveBeenCalled()
+    s.error(t)
+    expect(errorSpy).not.toHaveBeenCalled()
     t.value(1)
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenLastCalledWith(1)
-    s.value(u)
     t.value(2)
     expect(valueSpy).toHaveBeenCalledTimes(2)
     expect(valueSpy).toHaveBeenLastCalledWith(2)
-    t.complete()
-    u.value(3)
+    s.error(u)
+    expect(errorSpy).not.toHaveBeenCalled()
+    t.value(3)
     expect(valueSpy).toHaveBeenCalledTimes(3)
     expect(valueSpy).toHaveBeenLastCalledWith(3)
-    u.value(4)
-    expect(valueSpy).toHaveBeenCalledTimes(4)
-    expect(valueSpy).toHaveBeenLastCalledWith(4)
   })
 
-  it('throws an error when the given signal emits a non-signal value', () => {
-    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+  it('throws an error when the given signal emits a non-signal error', () => {
+    catchError(id, s).subscribe(valueSpy, errorSpy, completeSpy)
 
-    expect(() => s.value('foo')).toThrow('Signal value must be a signal')
-  })
-
-  it('emits an error when the given signal emits an error', () => {
-    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
-
-    expect(errorSpy).not.toHaveBeenCalled()
-    s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(() => s.error('foo')).toThrow('Signal value must be a signal')
   })
 
   it('completes when the given signal is completed', () => {
-    concatMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    catchError(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
+  it('unmounts the given signal when it emits an error', () => {
+    catchError(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+
+    expect(s.unmount).not.toHaveBeenCalled()
+    s.error(t)
+    expect(s.unmount).toHaveBeenCalledTimes(1)
+  })
+
   it('unmounts the outer signal when the returned signal is unsubscribed', () => {
-    const a = concatMap(id, s).subscribe()
+    const a = catchError(id, s).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
@@ -70,9 +66,10 @@ describe('concatMap', () => {
   })
 
   it('unmounts the inner signal when the returned signal is unsubscribed', () => {
-    const a = concatMap(id, s).subscribe()
+    const t = mockSignal()
+    const a = catchError(id, s).subscribe()
 
-    s.value(t)
+    s.error(t)
     expect(t.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
     expect(t.unmount).toHaveBeenCalledTimes(1)
