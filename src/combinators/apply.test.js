@@ -1,15 +1,14 @@
-import { dec, inc } from 'fkit'
-
 import apply from './apply'
 import mockSignal from '../internal/mockSignal'
 
-let s, t
+let s, t, u
 let valueSpy, errorSpy, completeSpy
 
 describe('apply', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
+    u = mockSignal()
 
     valueSpy = jest.fn()
     errorSpy = jest.fn()
@@ -17,22 +16,31 @@ describe('apply', () => {
   })
 
   it('applies the latest function to the latest value', () => {
-    apply(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    const f = jest.fn((a, b) => b + a)
+    const g = jest.fn((a, b) => b - a)
 
-    s.value(inc)
-    expect(valueSpy).not.toHaveBeenCalled()
+    apply(s, t, u).subscribe(valueSpy, errorSpy, completeSpy)
+
+    s.value(f)
     t.value(1)
+    expect(f).not.toHaveBeenCalled()
+    expect(valueSpy).not.toHaveBeenCalled()
+    u.value(2)
+    expect(f).toHaveBeenLastCalledWith(1, 2)
     expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith(2)
-    s.value(dec)
+    expect(valueSpy).toHaveBeenLastCalledWith(3)
+    s.value(g)
+    expect(g).toHaveBeenLastCalledWith(1, 2)
     expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith(0)
-    t.value(2)
-    expect(valueSpy).toHaveBeenCalledTimes(3)
     expect(valueSpy).toHaveBeenLastCalledWith(1)
     t.value(3)
+    expect(g).toHaveBeenLastCalledWith(3, 2)
+    expect(valueSpy).toHaveBeenCalledTimes(3)
+    expect(valueSpy).toHaveBeenLastCalledWith(-1)
+    u.value(4)
+    expect(g).toHaveBeenLastCalledWith(3, 4)
     expect(valueSpy).toHaveBeenCalledTimes(4)
-    expect(valueSpy).toHaveBeenLastCalledWith(2)
+    expect(valueSpy).toHaveBeenLastCalledWith(1)
   })
 
   it('emits an error when either signal emits an error', () => {

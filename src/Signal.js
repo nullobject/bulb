@@ -1,6 +1,7 @@
 import { empty, head, tail } from 'fkit'
 
 import Subscription from './Subscription'
+import apply from './combinators/apply'
 import concat from './combinators/concat'
 import dedupe from './combinators/dedupe'
 import encode from './combinators/encode'
@@ -10,7 +11,6 @@ import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
 import { always } from './combinators/always'
 import { append } from './combinators/append'
-import { apply } from './combinators/apply'
 import { asap } from './scheduler'
 import { buffer } from './combinators/buffer'
 import { concatMap } from './combinators/concatMap'
@@ -420,24 +420,35 @@ export default class Signal {
   }
 
   /**
-   * Applies the latest function emitted by the signal to latest value emitted by
-   * the signal `t`. The returned signal will complete when either of the given
-   * signals have completed.
+   * Applies the latest function emitted by the signal to latest values emitted
+   * by the signals `ts`. The returned signal will complete when *any* of the
+   * given signals have completed.
    *
-   * @param {Signal} t The signal of values.
+   * The latest function will be applied with a number of arguments equal to the
+   * number of signals in `ts`. For example, if the latest function is `(a, b) =>
+   * a + b`, then `ts` will need to contain two signals.
+   *
+   * @param {Signal} s The function signal.
+   * @param {Array} ts The value signals.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([a => a + 1])
+   * const s = Signal.fromArray([(a, b) => a + b])
    * const t = Signal.fromArray([1, 2, 3])
-   * const u = s.apply(t)
+   * const u = Signal.fromArray([4, 5, 6])
+   * const v = s.apply(t, u)
    *
-   * u.subscribe(console.log) // 2, 3, 4
+   * v.subscribe(console.log) // 5, 7, 9
    */
-  apply (t) {
-    return apply(this, t)
+  apply (...ts) {
+    // Allow the signals to be given as an array.
+    if (ts.length === 1 && Array.isArray(ts[0])) {
+      ts = ts[0]
+    }
+
+    return apply(this, ts)
   }
 
   /**

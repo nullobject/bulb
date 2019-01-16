@@ -2,6 +2,7 @@ import events from 'events'
 import { range } from 'fkit'
 
 import Signal from './Signal'
+import apply from './combinators/apply'
 import concat from './combinators/concat'
 import merge from './combinators/merge'
 import mockSignal from './internal/mockSignal'
@@ -12,6 +13,7 @@ import { asap } from './scheduler'
 import { prepend } from './combinators/prepend'
 
 jest.mock('./combinators/append')
+jest.mock('./combinators/apply')
 jest.mock('./combinators/concat')
 jest.mock('./combinators/merge')
 jest.mock('./combinators/prepend')
@@ -247,6 +249,22 @@ describe('Signal', () => {
       expect(completeSpy).not.toHaveBeenCalled()
       s.complete()
       expect(completeSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('#apply', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.apply([t, u])
+      expect(apply).toHaveBeenCalledWith(s, [t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.apply(t, u)
+      expect(apply).toHaveBeenCalledWith(s, [t, u])
     })
   })
 
