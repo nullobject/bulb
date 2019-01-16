@@ -60,7 +60,7 @@ describe('Signal', () => {
   })
 
   describe('.of', () => {
-    it('returns a signal with a single value', () => {
+    it('returns a signal that emits a single value', () => {
       const s = Signal.of(1)
 
       s.subscribe(valueSpy, errorSpy, completeSpy)
@@ -71,7 +71,7 @@ describe('Signal', () => {
   })
 
   describe('.fromArray', () => {
-    it('returns a signal of values from an array', () => {
+    it('returns a signal that emits values from an array', () => {
       const s = Signal.fromArray(range(1, 3))
 
       s.subscribe(valueSpy, errorSpy, completeSpy)
@@ -85,7 +85,7 @@ describe('Signal', () => {
   })
 
   describe('.fromCallback', () => {
-    it('returns a signal of values from the callback function', () => {
+    it('returns a signal that wraps a callback', () => {
       let value
       const s = Signal.fromCallback(callback => {
         value = a => { callback(null, a) }
@@ -103,7 +103,7 @@ describe('Signal', () => {
   })
 
   describe('.fromEvent', () => {
-    it('returns a signal of values from an event', () => {
+    it('returns a signal that emits events', () => {
       const emitter = new events.EventEmitter()
       const s = Signal.fromEvent('lol', emitter)
 
@@ -119,7 +119,7 @@ describe('Signal', () => {
   })
 
   describe('.fromPromise', () => {
-    it('returns a signal of values from the promise', () => {
+    it('returns a signal that wraps a promise', () => {
       let value, complete
 
       const s = Signal.fromPromise({
@@ -145,7 +145,7 @@ describe('Signal', () => {
   })
 
   describe('.periodic', () => {
-    it('periodically emits a value', () => {
+    it('returns a signal that periodically emits a value', () => {
       jest.useFakeTimers()
 
       const spy = jest.fn()
@@ -165,7 +165,7 @@ describe('Signal', () => {
   })
 
   describe('.sequential', () => {
-    it('periodically emits values from an array', () => {
+    it('returns a signal that sequentially emits values from an array', () => {
       jest.useFakeTimers()
 
       const s = Signal.sequential(1000, range(1, 3))
