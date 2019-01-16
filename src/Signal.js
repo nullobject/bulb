@@ -1102,7 +1102,7 @@ export default class Signal {
   }
 
   /**
-   * Applies a function `f`, which returns a `Signal`, to each value emitted by
+   * Applies a function `f` that returns a `Signal`, to each value emitted by
    * the signal. The returned signal will emit values from the most recent
    * signal returned by the function.
    *
