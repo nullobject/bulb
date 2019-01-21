@@ -1,22 +1,22 @@
 import events from 'events'
-import { range } from 'fkit'
+import { id, range } from 'fkit'
 
 import Signal from './Signal'
 import apply from './combinators/apply'
 import concat from './combinators/concat'
+import map from './combinators/map'
 import merge from './combinators/merge'
 import mockSignal from './internal/mockSignal'
+import switchMap from './combinators/switchMap'
 import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
-import { append } from './combinators/append'
 import { asap } from './scheduler'
-import { prepend } from './combinators/prepend'
 
-jest.mock('./combinators/append')
 jest.mock('./combinators/apply')
 jest.mock('./combinators/concat')
+jest.mock('./combinators/map')
 jest.mock('./combinators/merge')
-jest.mock('./combinators/prepend')
+jest.mock('./combinators/switchMap')
 jest.mock('./combinators/zip')
 jest.mock('./combinators/zipWith')
 jest.mock('./scheduler')
@@ -43,40 +43,6 @@ describe('Signal', () => {
 
       expect(valueSpy).not.toHaveBeenCalled()
       expect(errorSpy).not.toHaveBeenCalled()
-      expect(completeSpy).toHaveBeenCalled()
-    })
-  })
-
-  describe('.never', () => {
-    it('returns a signal that never completes', () => {
-      const s = Signal.never()
-
-      s.subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(valueSpy).not.toHaveBeenCalled()
-      expect(errorSpy).not.toHaveBeenCalled()
-      expect(completeSpy).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('.of', () => {
-    it('returns a signal that emits a single value', () => {
-      const s = Signal.of(1)
-
-      s.subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(valueSpy).toHaveBeenCalledWith(1)
-      expect(completeSpy).toHaveBeenCalled()
-    })
-  })
-
-  describe('.throwError', () => {
-    it('returns a signal that throws an error', () => {
-      const s = Signal.throwError('foo')
-
-      s.subscribe(valueSpy, errorSpy, completeSpy)
-
-      expect(errorSpy).toHaveBeenCalledWith('foo')
       expect(completeSpy).toHaveBeenCalled()
     })
   })
@@ -155,6 +121,29 @@ describe('Signal', () => {
     })
   })
 
+  describe('.never', () => {
+    it('returns a signal that never completes', () => {
+      const s = Signal.never()
+
+      s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(valueSpy).not.toHaveBeenCalled()
+      expect(errorSpy).not.toHaveBeenCalled()
+      expect(completeSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('.of', () => {
+    it('returns a signal that emits a single value', () => {
+      const s = Signal.of(1)
+
+      s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(valueSpy).toHaveBeenCalledWith(1)
+      expect(completeSpy).toHaveBeenCalled()
+    })
+  })
+
   describe('.periodic', () => {
     it('returns a signal that periodically emits a value', () => {
       jest.useFakeTimers()
@@ -172,6 +161,146 @@ describe('Signal', () => {
       expect(spy).toHaveBeenCalledWith(undefined)
 
       jest.useRealTimers()
+    })
+  })
+
+  describe('.throwError', () => {
+    it('returns a signal that throws an error', () => {
+      const s = Signal.throwError('foo')
+
+      s.subscribe(valueSpy, errorSpy, completeSpy)
+
+      expect(errorSpy).toHaveBeenCalledWith('foo')
+      expect(completeSpy).toHaveBeenCalled()
+    })
+  })
+
+  describe('#append', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    let spy
+
+    beforeEach(() => {
+      spy = jest.spyOn(Signal, 'fromArray').mockReturnValue(t)
+    })
+
+    afterEach(() => {
+      spy.mockRestore()
+    })
+
+    it('handles an array', () => {
+      s.append([1, 2, 3])
+      expect(concat).toHaveBeenCalledWith(s, t)
+      expect(spy).toHaveBeenCalledWith([1, 2, 3])
+    })
+
+    it('handles multiple arguments', () => {
+      s.append(1, 2, 3)
+      expect(concat).toHaveBeenCalledWith(s, t)
+      expect(spy).toHaveBeenCalledWith([1, 2, 3])
+    })
+  })
+
+  describe('#apply', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.apply([t, u])
+      expect(apply).toHaveBeenCalledWith(s, [t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.apply(t, u)
+      expect(apply).toHaveBeenCalledWith(s, [t, u])
+    })
+  })
+
+  describe('#concat', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.concat([t, u])
+      expect(concat).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.concat(t, u)
+      expect(concat).toHaveBeenCalledWith([s, t, u])
+    })
+  })
+
+  describe('#encode', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+    let spy
+
+    beforeEach(() => {
+      spy = map.mockImplementation((f, s) => f(0))
+    })
+
+    afterEach(() => {
+      spy.mockRestore()
+    })
+
+    it('handles an array', () => {
+      s.encode([t, u])
+
+      expect(spy).toHaveBeenCalledWith(expect.any(Function), s)
+      expect(switchMap).toHaveBeenCalledWith(id, t)
+    })
+
+    it('handles multiple arguments', () => {
+      s.encode(t, u)
+
+      expect(spy).toHaveBeenCalledWith(expect.any(Function), s)
+      expect(switchMap).toHaveBeenCalledWith(id, t)
+    })
+  })
+
+  describe('#merge', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      s.merge([t, u])
+      expect(merge).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      s.merge(t, u)
+      expect(merge).toHaveBeenCalledWith([s, t, u])
+    })
+  })
+
+  describe('#prepend', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    let spy
+
+    beforeEach(() => {
+      spy = jest.spyOn(Signal, 'fromArray').mockReturnValue(t)
+    })
+
+    afterEach(() => {
+      spy.mockRestore()
+    })
+
+    it('handles an array', () => {
+      s.prepend([1, 2, 3])
+      expect(spy).toHaveBeenCalledWith([1, 2, 3])
+      expect(concat).toHaveBeenCalledWith(t, s)
+    })
+
+    it('handles multiple arguments', () => {
+      s.prepend(1, 2, 3)
+      expect(spy).toHaveBeenCalledWith([1, 2, 3])
+      expect(concat).toHaveBeenCalledWith(t, s)
     })
   })
 
@@ -239,98 +368,11 @@ describe('Signal', () => {
     })
   })
 
-  describe('#apply', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
-
-    it('handles an array', () => {
-      s.apply([t, u])
-      expect(apply).toHaveBeenCalledWith(s, [t, u])
-    })
-
-    it('handles multiple arguments', () => {
-      s.apply(t, u)
-      expect(apply).toHaveBeenCalledWith(s, [t, u])
-    })
-  })
-
-  describe('#append', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
-
-    it('handles an array', () => {
-      s.append([t, u])
-      expect(append).toHaveBeenCalledWith([t, u], s)
-    })
-
-    it('handles multiple arguments', () => {
-      s.append(t, u)
-      expect(append).toHaveBeenCalledWith([t, u], s)
-    })
-  })
-
-  describe('#prepend', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
-
-    it('handles an array', () => {
-      s.prepend([t, u])
-      expect(prepend).toHaveBeenCalledWith([t, u], s)
-    })
-
-    it('handles multiple arguments', () => {
-      s.prepend(t, u)
-      expect(prepend).toHaveBeenCalledWith([t, u], s)
-    })
-  })
-
-  describe('#startWith', () => {
-    it('calls concat', () => {
+  describe('#switchLatest', () => {
+    it('calls switchMap', () => {
       const s = mockSignal()
-      const t = mockSignal()
-      const spy = jest.spyOn(Signal, 'of').mockReturnValue(t)
-
-      s.startWith(0)
-
-      expect(spy).toHaveBeenCalledWith(0)
-      expect(concat).toHaveBeenCalledWith(t, s)
-
-      spy.mockRestore()
-    })
-  })
-
-  describe('#concat', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
-
-    it('handles an array', () => {
-      s.concat([t, u])
-      expect(concat).toHaveBeenCalledWith([s, t, u])
-    })
-
-    it('handles multiple arguments', () => {
-      s.concat(t, u)
-      expect(concat).toHaveBeenCalledWith([s, t, u])
-    })
-  })
-
-  describe('#merge', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
-
-    it('handles an array', () => {
-      s.merge([t, u])
-      expect(merge).toHaveBeenCalledWith([s, t, u])
-    })
-
-    it('handles multiple arguments', () => {
-      s.merge(t, u)
-      expect(merge).toHaveBeenCalledWith([s, t, u])
+      s.switchLatest()
+      expect(switchMap).toHaveBeenCalledWith(id, s)
     })
   })
 

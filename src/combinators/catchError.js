@@ -1,5 +1,3 @@
-import { curry } from 'fkit'
-
 import Signal from '../Signal'
 
 /**
@@ -7,20 +5,9 @@ import Signal from '../Signal'
  * by the signal `s`. The returned signal will emit values from the signal
  * returned by the function.
  *
- * @param {Function} f The function to apply to the first error emitted by the
- * signal. It must also return a `Signal`.
- * @param {Signal} s The signal.
- * @returns {Signal} A new signal.
- * @example
- *
- * import { Signal, catchError } from 'bulb'
- *
- * const s = Signal.throwError()
- * const t = catchError(e => Signal.of(1), s)
- *
- * t.subscribe(console.log) // 1
+ * @private
  */
-export function catchError (f, s) {
+export default function catchError (f, s) {
   return new Signal(emit => {
     let outerSubscription
     let innerSubscription
@@ -43,5 +30,3 @@ export function catchError (f, s) {
     }
   })
 }
-
-export default curry(catchError)

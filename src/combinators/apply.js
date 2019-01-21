@@ -7,23 +7,7 @@ import Signal from '../Signal'
  * emitted by the signals `ts`. The returned signal will complete when *any* of
  * the given signals have completed.
  *
- * The latest function will be applied with a number of arguments equal to the
- * number of signals in `ts`. For example, if the latest function is `(a, b) =>
- * a + b`, then `ts` will need to contain two signals.
- *
- * @param {Signal} s The function signal.
- * @param {Array} ts The value signals.
- * @returns {Signal} A new signal.
- * @example
- *
- * import { Signal, apply } from 'bulb'
- *
- * const s = Signal.fromArray([(a, b) => a + b])
- * const t = Signal.fromArray([1, 2, 3])
- * const u = Signal.fromArray([4, 5, 6])
- * const v = apply(s, t, u)
- *
- * v.subscribe(console.log) // 5, 7, 9
+ * @private
  */
 export default function apply (s, ...ts) {
   // Allow the signals to be given as an array.

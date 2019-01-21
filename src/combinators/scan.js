@@ -1,5 +1,3 @@
-import { curry } from 'fkit'
-
 import Signal from '../Signal'
 import { asap } from '../scheduler'
 
@@ -7,21 +5,9 @@ import { asap } from '../scheduler'
  * Applies an accumulator function `f` to each value emitted by the signal `s`.
  * The accumulated value will be emitted for each value emitted by the signal.
  *
- * @param {Function} f The accumulator function to apply to each value emitted
- * by the signal.
- * @param a The starting value.
- * @param {Signal} s The signal.
- * @returns {Signal} A new signal.
- * @example
- *
- * import { Signal, scan } from 'bulb'
- *
- * const s = Signal.fromArray([1, 2, 3])
- * const t = scan((a, b) => a + b, 0, s)
- *
- * t.subscribe(console.log) // 1, 3, 6
+ * @private
  */
-export function scan (f, a, s) {
+export default function scan (f, a, s) {
   return new Signal(emit => {
     // Emit the starting value.
     asap(() => { emit.value(a) })
@@ -37,5 +23,3 @@ export function scan (f, a, s) {
     return () => subscription.unsubscribe()
   })
 }
-
-export default curry(scan)

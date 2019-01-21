@@ -1,5 +1,3 @@
-import { curry } from 'fkit'
-
 import Signal from '../Signal'
 
 /**
@@ -7,20 +5,9 @@ import Signal from '../Signal'
  * it is full. The buffer contents will be emitted when the signal completes,
  * regardless of whether the buffer is full.
  *
- * @param {Number} [n=Infinity] The size of the buffer. If the size is set to
- * `Infinity`, then the signal will be buffered until it completes.
- * @param {Signal} s The signal to buffer.
- * @returns {Signal} A new signal.
- * @example
- *
- * import { Signal, buffer } from 'bulb'
- *
- * const s = Signal.fromArray([1, 2, 3, 4])
- * const t = buffer(2, s)
- *
- * u.subscribe(console.log) // [1, 2], [2, 4], ...
+ * @private
  */
-export function buffer (n = Infinity, s) {
+export default function buffer (n = Infinity, s) {
   return new Signal(emit => {
     const buffer = []
 
@@ -44,5 +31,3 @@ export function buffer (n = Infinity, s) {
     return () => subscription.unsubscribe()
   })
 }
-
-export default curry(buffer)
