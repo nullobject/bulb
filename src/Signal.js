@@ -414,41 +414,6 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that sequentially emits the next value from an array `as`
-   * every `n` milliseconds. The returned signal will complete immediately
-   * after the last value has been emitted.
-   *
-   * @deprecated
-   * @param {Number} n The number of milliseconds to wait between emitting each
-   * value.
-   * @param {Array} as The values to emit.
-   * @returns {Signal} A new signal.
-   * @example
-   *
-   * import { Signal } from 'bulb'
-   *
-   * const s = Signal.sequential(1000, [1, 2, 3])
-   *
-   * s.subscribe(console.log) // 1, 2, 3
-   */
-  static sequential (n, as) {
-    return new Signal(emit => {
-      const id = setInterval(() => {
-        emit.value(head(as))
-
-        as = tail(as)
-
-        if (empty(as)) {
-          clearInterval(id)
-          emit.complete()
-        }
-      }, n)
-
-      return () => clearInterval(id)
-    })
-  }
-
-  /**
    * Applies the latest function emitted by the signal to latest values emitted
    * by the signals `ts`. The returned signal will complete when *any* of the
    * given signals have completed.

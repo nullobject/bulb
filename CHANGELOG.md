@@ -1,3 +1,7 @@
+## Unreleased
+
+* Remove `Signal.sequential` static method
+
 ## 2.2.0 (2019-01-17)
 
 * Add `apply` function

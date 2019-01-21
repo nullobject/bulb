@@ -175,30 +175,6 @@ describe('Signal', () => {
     })
   })
 
-  describe('.sequential', () => {
-    it('returns a signal that sequentially emits values from an array', () => {
-      jest.useFakeTimers()
-
-      const s = Signal.sequential(1000, range(1, 3))
-
-      s.subscribe(valueSpy, errorSpy, completeSpy)
-
-      jest.advanceTimersByTime(1000)
-      expect(valueSpy).toHaveBeenCalledWith(1)
-      expect(completeSpy).not.toHaveBeenCalled()
-
-      jest.advanceTimersByTime(1000)
-      expect(valueSpy).toHaveBeenCalledWith(2)
-      expect(completeSpy).not.toHaveBeenCalled()
-
-      jest.advanceTimersByTime(1000)
-      expect(valueSpy).toHaveBeenCalledWith(3)
-      expect(completeSpy).toHaveBeenCalled()
-
-      jest.useRealTimers()
-    })
-  })
-
   describe('#subscribe', () => {
     it('calls the mount function when the first observer subscribes', () => {
       const mount = jest.fn()
