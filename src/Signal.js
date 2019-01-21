@@ -141,9 +141,9 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that sequentially emits the values from an array `as`.
-   * The returned signal will complete immediately after the last value in the
-   * array has been emitted.
+   * Creates a signal that immediately emits the values from an array `as`. The
+   * returned signal will complete after the last value in the array has been
+   * emitted.
    *
    * @param {Array} as The values to emit.
    * @returns {Signal} A new signal.
@@ -295,7 +295,7 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that periodically emits a value every `n` milliseconds.
+   * Creates a signal that sequentially emits a number every `n` milliseconds.
    *
    * @param {Number} n The number of milliseconds to wait between emitting each
    * value.
@@ -305,13 +305,13 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal.periodic(1000)
-   * const t = s.always(1)
    *
-   * t.subscribe(console.log) // 1, 1, ...
+   * s.subscribe(console.log) // 0, 1, 2, ...
    */
   static periodic (n) {
     return new Signal(emit => {
-      const id = setInterval(() => emit.value(), n)
+      let count = 0
+      const id = setInterval(() => emit.value(count++), n)
       return () => clearInterval(id)
     })
   }
@@ -623,11 +623,11 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * const s = Signal.periodic(1000).sequential([1, 2, 3])
+   * const s = Signal.periodic(1000)
    * const t = Signal.of().delay(1000)
    * const u = s.dropUntil(t)
    *
-   * u.subscribe(console.log) // 2, 3
+   * u.subscribe(console.log) // 1, 2
    */
   dropUntil (s) {
     return dropUntil(s, this)
@@ -864,10 +864,9 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.periodic(1000)
-   * const t = s.sequential([1, 2, 3])
+   * const s = Signal.periodic(1000).sequential([1, 2, 3])
    *
-   * t.subscribe(console.log) // 1, 2, 3
+   * s.subscribe(console.log) // 1, 2, 3
    */
   sequential (as) {
     return sequential(as, this)
@@ -1036,11 +1035,11 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * const s = Signal.periodic(1000).sequential([1, 2, 3])
+   * const s = Signal.periodic(1000)
    * const t = Signal.of().delay(1000)
    * const u = s.takeUntil(t)
    *
-   * u.subscribe(console.log) // 1
+   * u.subscribe(console.log) // 0
    */
   takeUntil (s) {
     return takeUntil(s, this)

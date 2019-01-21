@@ -154,11 +154,11 @@ describe('Signal', () => {
       s.subscribe(spy)
 
       jest.advanceTimersByTime(1000)
+      expect(spy).toHaveBeenLastCalledWith(0)
       jest.advanceTimersByTime(1000)
+      expect(spy).toHaveBeenLastCalledWith(1)
       jest.advanceTimersByTime(1000)
-
-      expect(spy).toHaveBeenCalledTimes(3)
-      expect(spy).toHaveBeenCalledWith(undefined)
+      expect(spy).toHaveBeenLastCalledWith(2)
 
       jest.useRealTimers()
     })

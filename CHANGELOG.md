@@ -1,6 +1,7 @@
 ## Unreleased
 
 * Remove `Signal.sequential` static method
+* Change `Signal.periodic` to emit sequential numbers
 
 ## 2.2.0 (2019-01-17)
 
