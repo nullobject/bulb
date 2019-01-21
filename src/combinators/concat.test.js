@@ -15,7 +15,7 @@ describe('concat', () => {
   })
 
   it('emits a value when the current signal emits a value', () => {
-    concat(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    concat([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(valueSpy).not.toHaveBeenCalled()
     s.value(1)
@@ -31,7 +31,7 @@ describe('concat', () => {
   })
 
   it('emits an error when the current signal emit an error', () => {
-    concat(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    concat([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -44,7 +44,7 @@ describe('concat', () => {
   })
 
   it('completes when all of the given signals are completed', () => {
-    concat(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    concat([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
 
     s.complete()
     expect(completeSpy).not.toHaveBeenCalled()
@@ -53,7 +53,7 @@ describe('concat', () => {
   })
 
   it('unmounts the given signals when the returned signal is unsubscribed', () => {
-    const a = concat(s, t).subscribe()
+    const a = concat([s, t]).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     s.complete()

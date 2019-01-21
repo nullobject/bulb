@@ -4,6 +4,10 @@
 * Change `Signal.periodic` to emit sequential numbers
 * Add `Signal#first` method
 * Add `Signal#last` method
+* Add index to `map`, `filter`, `fold`, and `scan` methods
+* Add `Signal.merge` static method
+* Add `Signal.zip` static method
+* Add `Signal.zipWith` static method
 
 ## 2.2.0 (2019-01-17)
 

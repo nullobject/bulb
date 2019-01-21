@@ -20,7 +20,7 @@ describe('zipWith', () => {
   it('zips the corresponding signal values using a function', () => {
     const f = (a, b, c) => a + b + c
 
-    zipWith(f, s, t, u).subscribe(valueSpy, errorSpy, completeSpy)
+    zipWith(f, [s, t, u]).subscribe(valueSpy, errorSpy, completeSpy)
 
     s.value(1)
     t.value(2)
@@ -31,7 +31,7 @@ describe('zipWith', () => {
   })
 
   it('emits an error when any of the given signals emit an error', () => {
-    zipWith(always(), s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    zipWith(always(), [s, t]).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -43,7 +43,7 @@ describe('zipWith', () => {
   })
 
   it('completes when any of the given signals are completed', () => {
-    zipWith(always(), s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    zipWith(always(), [s, t]).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -52,7 +52,7 @@ describe('zipWith', () => {
   })
 
   it('unmounts the given signals when the returned signal is unsubscribed', () => {
-    const a = zipWith(always(), s, t).subscribe()
+    const a = zipWith(always(), [s, t]).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     expect(t.unmount).not.toHaveBeenCalled()

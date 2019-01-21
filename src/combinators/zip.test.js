@@ -18,7 +18,7 @@ describe('zip', () => {
     const t = mockSignal()
     const u = mockSignal()
 
-    zip(s, t, u)
+    zip([s, t, u])
 
     expect(zipWith).toHaveBeenCalledWith(tuple, [s, t, u])
   })

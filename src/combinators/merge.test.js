@@ -15,7 +15,7 @@ describe('merge', () => {
   })
 
   it('merges the given signals', () => {
-    merge(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    merge([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(valueSpy).not.toHaveBeenCalled()
     s.value('foo')
@@ -27,7 +27,7 @@ describe('merge', () => {
   })
 
   it('emits an error when any of the given signals emit an error', () => {
-    merge(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    merge([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -39,7 +39,7 @@ describe('merge', () => {
   })
 
   it('completes when all of the given signals are completed', () => {
-    merge(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    merge([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
 
     s.complete()
     expect(completeSpy).not.toHaveBeenCalled()
@@ -48,7 +48,7 @@ describe('merge', () => {
   })
 
   it('unmounts the given signals when the returned signal is unsubscribed', () => {
-    const a = merge(s, t).subscribe()
+    const a = merge([s, t]).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     expect(t.unmount).not.toHaveBeenCalled()

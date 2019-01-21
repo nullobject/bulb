@@ -7,26 +7,9 @@ import Signal from '../Signal'
  * `ss`. The returned signal will complete when *any* of the given signals have
  * completed.
  *
- * @param {Function} f The function to apply to the corresponding values
- * emitted by the signals.
- * @param {Array} ss The signals to zip.
- * @returns {Signal} A new signal.
- * @example
- *
- * import { Signal, zipWith } from 'bulb'
- *
- * const s = Signal.fromArray([1, 2, 3])
- * const t = Signal.fromArray([4, 5, 6])
- * const u = zipWith((a, b) => a + b, s, t)
- *
- * u.subscribe(console.log) // 5, 7, 9
+ * @private
  */
-export default function zipWith (f, ...ss) {
-  // Allow the signals to be given as an array.
-  if (ss.length === 1 && Array.isArray(ss[0])) {
-    ss = ss[0]
-  }
-
+export default function zipWith (f, ss) {
   return new Signal(emit => {
     const buffers = replicate(ss.length, [])
 

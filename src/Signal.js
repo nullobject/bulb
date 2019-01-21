@@ -127,6 +127,32 @@ export default class Signal {
   }
 
   /**
+   * Concatenates the signals `ss` and emits their values. The returned signal
+   * will join the given signals, waiting for each one to complete before joining
+   * the next, and will complete once *all* of the given signals have completed.
+   *
+   * @param {Array} ss The signals to concatenate.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = Signal.fromArray([4, 5, 6])
+   * const u = Signal.concat(s, t)
+   *
+   * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
+   */
+  static concat (...ss) {
+    // Allow the signals to be given as an array.
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
+    }
+
+    return concat(ss)
+  }
+
+  /**
    * Creates a signal that never emits any values and has already completed.
    *
    * This method is not very useful on its own, but it can be used with other
@@ -260,6 +286,31 @@ export default class Signal {
   }
 
   /**
+   * Merges the signals `ss` and emits their values. The returned signal will
+   * complete once *all* of the given signals have completed.
+   *
+   * @param {Array} ss The signals to merge.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = Signal.fromArray([4, 5, 6])
+   * const u = Signal.merge(s, t)
+   *
+   * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
+   */
+  static merge (...ss) {
+    // Allow the signals to be given as an array.
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
+    }
+
+    return merge(ss)
+  }
+
+  /**
    * Creates a signal that never emits any values or completes.
    *
    * This method is not very useful on its own, but it can be used with other
@@ -337,6 +388,60 @@ export default class Signal {
         emit.complete()
       })
     })
+  }
+
+  /**
+   * Combines the corresponding values emitted by the signals `ss` into tuples.
+   * The returned signal will complete when *any* of the given signals have
+   * completed.
+   *
+   * @param {Array} ss The signals to zip.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = Signal.fromArray([4, 5, 6])
+   * const u = Signal.zip(s, t)
+   *
+   * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
+   */
+  static zip (...ss) {
+    // Allow the signals to be given as an array.
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
+    }
+
+    return zip(ss)
+  }
+
+  /**
+   * Applies the function `f` to the corresponding values emitted by the signals
+   * `ss`. The returned signal will complete when *any* of the given signals have
+   * completed.
+   *
+   * @param {Function} f The function to apply to the corresponding values
+   * emitted by the signals.
+   * @param {Array} ss The signals to zip.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = Signal.fromArray([4, 5, 6])
+   * const u = Signal.zipWith((a, b) => a + b, s, t)
+   *
+   * u.subscribe(console.log) // 5, 7, 9
+   */
+  static zipWith (f, ...ss) {
+    // Allow the signals to be given as an array.
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
+    }
+
+    return zipWith(f, ss)
   }
 
   /**

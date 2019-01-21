@@ -5,24 +5,9 @@ import Signal from '../Signal'
  * will join the given signals, waiting for each one to complete before joining
  * the next, and will complete once *all* of the given signals have completed.
  *
- * @param {Array} ss The signals to concatenate.
- * @returns {Signal} A new signal.
- * @example
- *
- * import { Signal, concat } from 'bulb'
- *
- * const s = Signal.fromArray([1, 2, 3])
- * const t = Signal.fromArray([4, 5, 6])
- * const u = concat(s, t)
- *
- * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
+ * @private
  */
-export default function concat (...ss) {
-  // Allow the signals to be given as an array.
-  if (ss.length === 1 && Array.isArray(ss[0])) {
-    ss = ss[0].slice(0)
-  }
-
+export default function concat (ss) {
   return new Signal(emit => {
     let subscription
 

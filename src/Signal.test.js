@@ -4,7 +4,6 @@ import { id, range } from 'fkit'
 import Signal from './Signal'
 import apply from './combinators/apply'
 import concat from './combinators/concat'
-import drop from './combinators/drop'
 import map from './combinators/map'
 import merge from './combinators/merge'
 import mockSignal from './internal/mockSignal'
@@ -37,6 +36,22 @@ describe('Signal', () => {
 
   afterEach(() => {
     asap.mockRestore()
+  })
+
+  describe('.concat', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      Signal.concat([s, t, u])
+      expect(concat).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      Signal.concat(s, t, u)
+      expect(concat).toHaveBeenCalledWith([s, t, u])
+    })
   })
 
   describe('.empty', () => {
@@ -125,6 +140,22 @@ describe('Signal', () => {
     })
   })
 
+  describe('.merge', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      Signal.merge([s, t, u])
+      expect(merge).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      Signal.merge(s, t, u)
+      expect(merge).toHaveBeenCalledWith([s, t, u])
+    })
+  })
+
   describe('.never', () => {
     it('returns a signal that never completes', () => {
       const s = Signal.never()
@@ -176,6 +207,39 @@ describe('Signal', () => {
 
       expect(errorSpy).toHaveBeenCalledWith('foo')
       expect(completeSpy).toHaveBeenCalled()
+    })
+  })
+
+  describe('.zip', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+
+    it('handles an array', () => {
+      Signal.zip([s, t, u])
+      expect(zip).toHaveBeenCalledWith([s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      Signal.zip(s, t, u)
+      expect(zip).toHaveBeenCalledWith([s, t, u])
+    })
+  })
+
+  describe('.zipWith', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    const u = mockSignal()
+    const f = jest.fn()
+
+    it('handles an array', () => {
+      Signal.zipWith(f, [s, t, u])
+      expect(zipWith).toHaveBeenCalledWith(f, [s, t, u])
+    })
+
+    it('handles multiple arguments', () => {
+      Signal.zipWith(f, s, t, u)
+      expect(zipWith).toHaveBeenCalledWith(f, [s, t, u])
     })
   })
 
