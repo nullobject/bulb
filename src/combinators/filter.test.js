@@ -16,14 +16,19 @@ describe('filter', () => {
   })
 
   it('filters the signal values with a predicate function', () => {
-    filter(gt(1), s).subscribe(valueSpy, errorSpy, completeSpy)
+    const f = jest.fn(gt(1))
+
+    filter(f, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     s.value(1)
+    expect(f).toHaveBeenLastCalledWith(1, 0)
     expect(valueSpy).not.toHaveBeenCalled()
     s.value(2)
+    expect(f).toHaveBeenLastCalledWith(2, 1)
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenLastCalledWith(2)
     s.value(3)
+    expect(f).toHaveBeenLastCalledWith(3, 2)
     expect(valueSpy).toHaveBeenCalledTimes(2)
     expect(valueSpy).toHaveBeenLastCalledWith(3)
   })

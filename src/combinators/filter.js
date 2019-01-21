@@ -8,7 +8,8 @@ import Signal from '../Signal'
  */
 export default function filter (p, s) {
   return new Signal(emit => {
-    const value = a => { if (p(a)) { emit.value(a) } }
+    let index = 0
+    const value = a => { if (p(a, index++)) { emit.value(a) } }
     const subscription = s.subscribe({ ...emit, value })
     return () => subscription.unsubscribe()
   })
