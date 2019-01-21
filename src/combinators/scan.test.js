@@ -25,17 +25,22 @@ describe('scan', () => {
   })
 
   it('scans a function over the signal values', () => {
-    scan(add, 0, s).subscribe(valueSpy, errorSpy, completeSpy)
+    const f = jest.fn(add)
+
+    scan(f, 0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenLastCalledWith(0)
     s.value(1)
+    expect(f).toHaveBeenLastCalledWith(0, 1, 0)
     expect(valueSpy).toHaveBeenCalledTimes(2)
     expect(valueSpy).toHaveBeenLastCalledWith(1)
     s.value(2)
+    expect(f).toHaveBeenLastCalledWith(1, 2, 1)
     expect(valueSpy).toHaveBeenCalledTimes(3)
     expect(valueSpy).toHaveBeenLastCalledWith(3)
     s.value(3)
+    expect(f).toHaveBeenLastCalledWith(3, 3, 2)
     expect(valueSpy).toHaveBeenCalledTimes(4)
     expect(valueSpy).toHaveBeenLastCalledWith(6)
   })

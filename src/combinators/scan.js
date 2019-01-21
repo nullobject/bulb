@@ -9,12 +9,16 @@ import { asap } from '../scheduler'
  */
 export default function scan (f, a, s) {
   return new Signal(emit => {
+    let index = 0
+
     // Emit the starting value.
     asap(() => { emit.value(a) })
 
     const value = b => {
       // Fold the current value with the previous value.
-      a = f(a, b)
+      a = f(a, b, index++)
+
+      // Emit the accumulated value.
       emit.value(a)
     }
 
