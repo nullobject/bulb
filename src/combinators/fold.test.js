@@ -16,11 +16,16 @@ describe('fold', () => {
   })
 
   it('folds a function over the signal values', () => {
-    fold(add, 0, s).subscribe(valueSpy, errorSpy, completeSpy)
+    const f = jest.fn(add)
+
+    fold(f, 0, s).subscribe(valueSpy, errorSpy, completeSpy)
 
     s.value(1)
+    expect(f).toHaveBeenLastCalledWith(0, 1, 0)
     s.value(2)
+    expect(f).toHaveBeenLastCalledWith(1, 2, 1)
     s.value(3)
+    expect(f).toHaveBeenLastCalledWith(3, 3, 2)
     expect(valueSpy).not.toHaveBeenCalled()
     s.complete(1)
     expect(valueSpy).toHaveBeenCalledTimes(1)

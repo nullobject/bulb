@@ -8,8 +8,10 @@ import Signal from '../Signal'
  */
 export default function fold (f, a, s) {
   return new Signal(emit => {
+    let index = 0
+
     // Fold the current value with the previous value.
-    const value = b => { a = f(a, b) }
+    const value = b => { a = f(a, b, index++) }
 
     const complete = () => {
       // Emit the final value.
