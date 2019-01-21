@@ -4,19 +4,23 @@ import { id, range } from 'fkit'
 import Signal from './Signal'
 import apply from './combinators/apply'
 import concat from './combinators/concat'
+import drop from './combinators/drop'
 import map from './combinators/map'
 import merge from './combinators/merge'
 import mockSignal from './internal/mockSignal'
 import switchMap from './combinators/switchMap'
+import take from './combinators/take'
 import zip from './combinators/zip'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
 
 jest.mock('./combinators/apply')
 jest.mock('./combinators/concat')
+jest.mock('./combinators/drop')
 jest.mock('./combinators/map')
 jest.mock('./combinators/merge')
 jest.mock('./combinators/switchMap')
+jest.mock('./combinators/take')
 jest.mock('./combinators/zip')
 jest.mock('./combinators/zipWith')
 jest.mock('./scheduler')
@@ -259,6 +263,29 @@ describe('Signal', () => {
 
       expect(spy).toHaveBeenCalledWith(expect.any(Function), s)
       expect(switchMap).toHaveBeenCalledWith(id, t)
+    })
+  })
+
+  describe('#first', () => {
+    it('calls take', () => {
+      const s = mockSignal()
+      s.first()
+      expect(take).toHaveBeenCalledWith(1, s)
+    })
+  })
+
+  describe('#last', () => {
+    it('emits the last value', () => {
+      const s = mockSignal()
+
+      s.last().subscribe(valueSpy, errorSpy, completeSpy)
+
+      s.value(1)
+      s.value(2)
+      s.value(3)
+      s.complete()
+      expect(valueSpy).toHaveBeenCalledTimes(1)
+      expect(valueSpy).toHaveBeenCalledWith(3)
     })
   })
 

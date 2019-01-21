@@ -2,6 +2,8 @@
 
 * Remove `Signal.sequential` static method
 * Change `Signal.periodic` to emit sequential numbers
+* Add `Signal#first` method
+* Add `Signal#last` method
 
 ## 2.2.0 (2019-01-17)
 

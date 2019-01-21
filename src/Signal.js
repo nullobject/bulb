@@ -703,6 +703,23 @@ export default class Signal {
   }
 
   /**
+   * Emits the first value from the signal, and then completes.
+   *
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = s.first()
+   *
+   * t.subscribe(console.log) // 1
+   */
+  first () {
+    return take(1, this)
+  }
+
+  /**
    * Applies an accumulator function `f` to each value emitted by the signal.
    * The accumulated value will be emitted when the signal has completed.
    *
@@ -741,6 +758,23 @@ export default class Signal {
    */
   hold (s) {
     return hold(s, this)
+  }
+
+  /**
+   * Emits the last value from the signal, and then completes.
+   *
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = s.last()
+   *
+   * t.subscribe(console.log) // 3
+   */
+  last () {
+    return fold((a, b) => b, null, this)
   }
 
   /**
