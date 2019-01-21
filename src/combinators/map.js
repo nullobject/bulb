@@ -1,5 +1,3 @@
-import { compose } from 'fkit'
-
 import Signal from '../Signal'
 
 /**
@@ -9,7 +7,8 @@ import Signal from '../Signal'
  */
 export default function map (f, s) {
   return new Signal(emit => {
-    const value = compose(emit.value, f)
+    let index = 0
+    const value = a => emit.value(f(a, index++))
     const subscription = s.subscribe({ ...emit, value })
     return () => subscription.unsubscribe()
   })
