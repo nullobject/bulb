@@ -8,6 +8,7 @@
 * Add `Signal.merge` static method
 * Add `Signal.zip` static method
 * Add `Signal.zipWith` static method
+* Remove combinator functions from exports
 
 ## 2.2.0 (2019-01-17)
 
