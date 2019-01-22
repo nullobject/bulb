@@ -28,7 +28,7 @@ import take from './combinators/take'
 import takeUntil from './combinators/takeUntil'
 import takeWhile from './combinators/takeWhile'
 import throttle from './combinators/throttle'
-import zip from './combinators/zip'
+import tuple from './internal/tuple'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
 
@@ -413,7 +413,7 @@ export default class Signal {
       ss = ss[0]
     }
 
-    return zip(ss)
+    return zipWith(tuple, ss)
   }
 
   /**
@@ -1247,7 +1247,7 @@ export default class Signal {
       ss = ss[0]
     }
 
-    return zip([this].concat(ss))
+    return zipWith(tuple, [this].concat(ss))
   }
 
   /**

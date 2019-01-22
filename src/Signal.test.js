@@ -9,7 +9,7 @@ import merge from './combinators/merge'
 import mockSignal from './internal/mockSignal'
 import switchMap from './combinators/switchMap'
 import take from './combinators/take'
-import zip from './combinators/zip'
+import tuple from './internal/tuple'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
 
@@ -20,7 +20,6 @@ jest.mock('./combinators/map')
 jest.mock('./combinators/merge')
 jest.mock('./combinators/switchMap')
 jest.mock('./combinators/take')
-jest.mock('./combinators/zip')
 jest.mock('./combinators/zipWith')
 jest.mock('./scheduler')
 
@@ -217,12 +216,12 @@ describe('Signal', () => {
 
     it('handles an array', () => {
       Signal.zip([s, t, u])
-      expect(zip).toHaveBeenCalledWith([s, t, u])
+      expect(zipWith).toHaveBeenCalledWith(tuple, [s, t, u])
     })
 
     it('handles multiple arguments', () => {
       Signal.zip(s, t, u)
-      expect(zip).toHaveBeenCalledWith([s, t, u])
+      expect(zipWith).toHaveBeenCalledWith(tuple, [s, t, u])
     })
   })
 
@@ -474,12 +473,12 @@ describe('Signal', () => {
 
     it('handles an array', () => {
       s.zip([t, u])
-      expect(zip).toHaveBeenCalledWith([s, t, u])
+      expect(zipWith).toHaveBeenCalledWith(tuple, [s, t, u])
     })
 
     it('handles multiple arguments', () => {
       s.zip(t, u)
-      expect(zip).toHaveBeenCalledWith([s, t, u])
+      expect(zipWith).toHaveBeenCalledWith(tuple, [s, t, u])
     })
   })
 
