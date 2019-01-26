@@ -1,4 +1,4 @@
-## Unreleased
+## 3.0.2 (2019-01-26)
 
 * Fix issue with array arguments passed to `startWith`, `endWith`, `append`, and `prepend` methods
 
