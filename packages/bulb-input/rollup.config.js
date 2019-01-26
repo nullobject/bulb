@@ -17,14 +17,14 @@ export default [
   {
     input: 'src/index.js',
     output: [
-      { file: pkg.main, format: 'cjs', name: 'bulb' },
+      { file: pkg.main, format: 'cjs' },
       { file: pkg.module, format: 'es' }
     ],
     plugins
   }, {
     input: 'src/index.js',
     output: [
-      { file: pkg.unpkg, format: 'iife', name: 'bulb' }
+      { file: pkg.unpkg, format: 'iife', name: 'bulb', extend: 'bulb' }
     ],
     plugins: plugins.concat([uglify()])
   }

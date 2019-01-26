@@ -21,8 +21,8 @@ describe('state', () => {
 
     expect(spy).toHaveBeenCalledWith({
       buttons: 0,
-      x: 1,
-      y: 2,
+      clientX: 1,
+      clientY: 2,
       ctrlKey: 3,
       shiftKey: 4,
       altKey: 5,
