@@ -329,6 +329,26 @@ describe('Signal', () => {
     })
   })
 
+  describe('#endWith', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    let spy
+
+    beforeEach(() => {
+      spy = jest.spyOn(Signal, 'of').mockReturnValue(t)
+    })
+
+    afterEach(() => {
+      spy.mockRestore()
+    })
+
+    it('appends the given value', () => {
+      s.endWith(1)
+      expect(spy).toHaveBeenCalledWith(1)
+      expect(concat).toHaveBeenCalledWith(s, t)
+    })
+  })
+
   describe('#first', () => {
     it('calls take', () => {
       const s = mockSignal()
@@ -390,6 +410,26 @@ describe('Signal', () => {
     it('handles multiple arguments', () => {
       s.prepend(1, 2, 3)
       expect(spy).toHaveBeenCalledWith([1, 2, 3])
+      expect(concat).toHaveBeenCalledWith(t, s)
+    })
+  })
+
+  describe('#startWith', () => {
+    const s = mockSignal()
+    const t = mockSignal()
+    let spy
+
+    beforeEach(() => {
+      spy = jest.spyOn(Signal, 'of').mockReturnValue(t)
+    })
+
+    afterEach(() => {
+      spy.mockRestore()
+    })
+
+    it('prepends the given value', () => {
+      s.startWith(1)
+      expect(spy).toHaveBeenCalledWith(1)
       expect(concat).toHaveBeenCalledWith(t, s)
     })
   })

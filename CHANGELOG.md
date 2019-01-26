@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add `Signal#startWith` and `Signal#endWith` methods
+
 ## 3.0.0 (2019-01-26)
 
 * Remove `Signal.sequential` static method

@@ -787,6 +787,24 @@ export default class Signal {
   }
 
   /**
+   * Emits a value `a` after all other values are emitted by the signal.
+   *
+   * @param a The value to emit.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray[1, 2, 3]
+   * const t = s.endWith(4)
+   *
+   * t.subscribe(console.log) // 1, 2, 3, 4
+   */
+  endWith (a) {
+    return concat(this, Signal.of(a))
+  }
+
+  /**
    * Filters the signal by only emitting values that satisfy a predicate
    * function `p`.
    *
@@ -1009,6 +1027,24 @@ export default class Signal {
    */
   sequential (as) {
     return sequential(as, this)
+  }
+
+  /**
+   * Emits a value `a` before any other values are emitted by the signal.
+   *
+   * @param a The value to emit.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.fromArray[1, 2, 3]
+   * const t = s.startWith(0)
+   *
+   * t.subscribe(console.log) // 0, 1, 2, 3
+   */
+  startWith (a) {
+    return concat(Signal.of(a), this)
   }
 
   /**
