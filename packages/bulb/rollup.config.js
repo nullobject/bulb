@@ -25,8 +25,8 @@ export default [
       {
         file: pkg.unpkg,
         format: 'iife',
-        name: 'bulb',
-        extend: 'bulb'
+        name: 'Bulb',
+        extend: 'Bulb'
       }
     ],
     plugins: plugins.concat([uglify()])
