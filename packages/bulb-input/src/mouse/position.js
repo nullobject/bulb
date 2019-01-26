@@ -1,4 +1,4 @@
-import Signal from '../Signal'
+import { Signal } from 'bulb'
 
 /**
  * Creates a signal that emits a value if the mouse is moved.

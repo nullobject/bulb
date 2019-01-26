@@ -1,4 +1,3 @@
-export { default as Signal } from './Signal'
 export { default as keyboardKeys } from './keyboard/keys'
 export { default as keyboardState } from './keyboard/state'
 export { default as mouseButtons } from './mouse/buttons'
