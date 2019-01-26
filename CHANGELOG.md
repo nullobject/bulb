@@ -1,4 +1,4 @@
-## Unreleased
+## 3.0.0 (2019-01-26)
 
 * Remove `Signal.sequential` static method
 * Change `Signal.periodic` to emit sequential numbers
@@ -9,6 +9,7 @@
 * Add `Signal.zip` static method
 * Add `Signal.zipWith` static method
 * Remove combinator functions from exports
+* Extract keyboard and mouse signals into `bulb-input` package
 
 ## 2.2.0 (2019-01-17)
 

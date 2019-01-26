@@ -1,6 +1,6 @@
 {
   "name": "bulb-input",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Bulb package for working with the keyboard and mouse.",
   "homepage": "https://github.com/nullobject/bulb",
   "author": "Josh Bassett <josh.bassett@gmail.com> (http://joshbassett.info)",
