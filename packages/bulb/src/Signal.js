@@ -634,9 +634,9 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { mousePosition } from 'bulb'
+   * import { Mouse } from 'bulb-input'
    *
-   * const s = mousePosition(document)
+   * const s = Mouse.position(document)
    * const t = s.debounce(1000)
    *
    * t.subscribe(console.log) // [1, 1], [2, 2], ...
@@ -691,9 +691,9 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { mousePosition } from 'bulb'
+   * import { Mouse } from 'bulb-input'
    *
-   * const s = mousePosition(document)
+   * const s = Mouse.position(document)
    * const t = s.delay(1000)
    *
    * t.subscribe(console.log) // [1, 1], [2, 2], ...
@@ -871,10 +871,10 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { mouseButton, mousePosition } from 'bulb'
+   * import { Mouse } from 'bulb-input'
    *
-   * const s = mousePosition(document)
-   * const t = mouseButton(document)
+   * const s = Mouse.position(document)
+   * const t = Mouse.button(document)
    * const u = s.hold(t)
    *
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
@@ -976,9 +976,10 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { Signal, mousePosition } from 'bulb'
+   * import { Mouse } from 'bulb-input'
+   * import { Signal } from 'bulb'
    *
-   * const s = mousePosition()
+   * const s = Mouse.position(document)
    * const t = Signal.periodic(1000)
    * const u = s.sample(t)
    *
@@ -1249,9 +1250,9 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * import { mousePosition } from 'bulb'
+   * import { Mouse } from 'bulb-input'
    *
-   * const s = mousePosition(document)
+   * const s = Mouse.position(document)
    * const t = s.throttle(1000)
    *
    * t.subscribe(console.log) // [1, 1], [2, 2], ...
