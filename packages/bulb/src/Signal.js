@@ -482,7 +482,7 @@ export default class Signal {
       as = as[0]
     }
 
-    return concat(this, Signal.fromArray(as))
+    return concat([this, Signal.fromArray(as)])
   }
 
   /**
@@ -801,7 +801,7 @@ export default class Signal {
    * t.subscribe(console.log) // 1, 2, 3, 4
    */
   endWith (a) {
-    return concat(this, Signal.of(a))
+    return concat([this, Signal.of(a)])
   }
 
   /**
@@ -965,7 +965,7 @@ export default class Signal {
       as = as[0]
     }
 
-    return concat(Signal.fromArray(as), this)
+    return concat([Signal.fromArray(as), this])
   }
 
   /**
@@ -1044,7 +1044,7 @@ export default class Signal {
    * t.subscribe(console.log) // 0, 1, 2, 3
    */
   startWith (a) {
-    return concat(Signal.of(a), this)
+    return concat([Signal.of(a), this])
   }
 
   /**

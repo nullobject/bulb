@@ -257,13 +257,13 @@ describe('Signal', () => {
 
     it('handles an array', () => {
       s.append([1, 2, 3])
-      expect(concat).toHaveBeenCalledWith(s, t)
+      expect(concat).toHaveBeenCalledWith([s, t])
       expect(spy).toHaveBeenCalledWith([1, 2, 3])
     })
 
     it('handles multiple arguments', () => {
       s.append(1, 2, 3)
-      expect(concat).toHaveBeenCalledWith(s, t)
+      expect(concat).toHaveBeenCalledWith([s, t])
       expect(spy).toHaveBeenCalledWith([1, 2, 3])
     })
   })
@@ -345,7 +345,7 @@ describe('Signal', () => {
     it('appends the given value', () => {
       s.endWith(1)
       expect(spy).toHaveBeenCalledWith(1)
-      expect(concat).toHaveBeenCalledWith(s, t)
+      expect(concat).toHaveBeenCalledWith([s, t])
     })
   })
 
@@ -404,13 +404,13 @@ describe('Signal', () => {
     it('handles an array', () => {
       s.prepend([1, 2, 3])
       expect(spy).toHaveBeenCalledWith([1, 2, 3])
-      expect(concat).toHaveBeenCalledWith(t, s)
+      expect(concat).toHaveBeenCalledWith([t, s])
     })
 
     it('handles multiple arguments', () => {
       s.prepend(1, 2, 3)
       expect(spy).toHaveBeenCalledWith([1, 2, 3])
-      expect(concat).toHaveBeenCalledWith(t, s)
+      expect(concat).toHaveBeenCalledWith([t, s])
     })
   })
 
@@ -430,7 +430,7 @@ describe('Signal', () => {
     it('prepends the given value', () => {
       s.startWith(1)
       expect(spy).toHaveBeenCalledWith(1)
-      expect(concat).toHaveBeenCalledWith(t, s)
+      expect(concat).toHaveBeenCalledWith([t, s])
     })
   })
 

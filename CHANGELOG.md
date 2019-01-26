@@ -1,3 +1,7 @@
+## Unreleased
+
+* Fix issue with array arguments passed to `startWith`, `endWith`, `append`, and `prepend` methods
+
 ## 3.0.1 (2019-01-26)
 
 * Add `Signal#startWith` and `Signal#endWith` methods
