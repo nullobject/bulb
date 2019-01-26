@@ -41,6 +41,6 @@
     "standard": "^12.0.1"
   },
   "peerDependencies": {
-    "bulb": "~2.2.0"
+    "bulb": "~3.0"
   }
 }
