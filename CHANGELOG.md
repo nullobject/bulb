@@ -1,4 +1,4 @@
-## Unreleased
+## 3.0.1 (2019-01-26)
 
 * Add `Signal#startWith` and `Signal#endWith` methods
 
