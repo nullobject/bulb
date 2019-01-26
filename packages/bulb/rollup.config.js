@@ -22,7 +22,12 @@ export default [
   }, {
     input: 'src/index.js',
     output: [
-      { file: pkg.unpkg, format: 'iife', name: 'bulb', extend: 'bulb' }
+      {
+        file: pkg.unpkg,
+        format: 'iife',
+        name: 'bulb',
+        extend: 'bulb'
+      }
     ],
     plugins: plugins.concat([uglify()])
   }
