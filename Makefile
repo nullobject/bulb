@@ -1,33 +1,37 @@
 .PHONY: clean dev dist doc lint node_modules publish-api publish-npm release test
 
 node_modules:
-	@npm install
+	@cd packages/bulb; npm install
+	@cd packages/bulb-input; npm install
 
 dev:
-	@node_modules/.bin/rollup -c -w
+	@cd packages/bulb; npx rollup -c -w
 
 dist:
-	@node_modules/.bin/rollup -c
+	@cd packages/bulb; npx rollup -c
+	@cd packages/bulb-input; npx rollup -c
 
 test:
-	@node_modules/.bin/jest
+	@cd packages/bulb; npx jest
 
 watch:
-	@node_modules/.bin/jest --watch
+	@cd packages/bulb; npx jest --watch
 
 lint:
-	@node_modules/.bin/standard
+	@cd packages/bulb; npx standard "src/**/*.js"
+	@cd packages/bulb-input; npx standard "src/**/*.js"
 
 release: dist doc publish-api publish-npm
 
 doc:
-	@node_modules/.bin/documentation build src/** -f html -o doc
+	@cd packages/bulb; npx documentation build src/** -f html -o doc
 
 publish-api:
-	@aws s3 sync ./doc/ s3://bulb.joshbassett.info/ --acl public-read --delete --cache-control 'max-age=300'
+	@aws s3 sync ./packages/bulb/doc/ s3://bulb.joshbassett.info/ --acl public-read --delete --cache-control 'max-age=300'
 
 publish-npm:
-	@npm publish
+	@cd packages/bulb; npm publish
+	@cd packages/bulb-input; npm publish
 
 clean:
 	@rm -rf dist doc node_modules
