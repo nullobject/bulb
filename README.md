@@ -55,19 +55,11 @@ const s = Signal.of(1)
 
 ### Browser
 
-The quickest and easiest way to start using Bulb is to include a reference to
-the minified file in the head of your HTML file.
-
-You can always grab the latest version with:
+The easiest way to start using Bulb in your browser is to include it with a
+`<script>` tag in your HTML file:
 
 ```html
 <script src="https://unpkg.com/bulb/dist/bulb.min.js"></script>
-```
-
-You can also use a specific version with:
-
-```html
-<script src="https://unpkg.com/bulb@1.0.0/dist/bulb.min.js"></script>
 ```
 
 ## Documentation
@@ -76,6 +68,17 @@ You can also use a specific version with:
 * Article by Josh Bassett: [Bulb: A Reactive Programming Library for JavaScript](https://joshbassett.info/2018/bulb/)
 
 ## Examples
+
+Print a random number to the console every second:
+
+```js
+import { Signal } from 'bulb'
+
+Signal
+  .periodic(1000)
+  .map(Math.random)
+  .subscribe(console.log)
+```
 
 * [Timer](https://codepen.io/nullobject/pen/wpjQoM)
 * [Mouse Position](https://codepen.io/nullobject/pen/eyGQdY)
