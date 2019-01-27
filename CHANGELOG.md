@@ -1,6 +1,7 @@
 ## Unreleased
 
 * Add `Signal#all` method
+* Add `Signal#any` method
 
 ## 3.0.2 (2019-01-26)
 

@@ -3,6 +3,7 @@ import { eq, id } from 'fkit'
 import Subscription from './Subscription'
 import all from './combinators/all'
 import always from './combinators/always'
+import any from './combinators/any'
 import apply from './combinators/apply'
 import buffer from './combinators/buffer'
 import catchError from './combinators/catchError'
@@ -446,7 +447,7 @@ export default class Signal {
   }
 
   /**
-   * Emits `true` if all the values emitted by the signal satisfy a predicate
+   * Emits `true` if *all* the values emitted by the signal satisfy a predicate
    * function `p`. The returned signal will complete if the signal emits *any*
    * value that doesn't satisfy the predictate function.
    *
@@ -484,6 +485,28 @@ export default class Signal {
    */
   always (c) {
     return always(c, this)
+  }
+
+  /**
+   * Emits `true` if *any* of the values emitted by the signal satisfy a
+   * predicate function `p`. The returned signal will complete if the signal
+   * emits *any* value that satisfies the predictate function.
+   *
+   * @param {Function} p The predicate function to apply to each value emitted
+   * by the signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .any(a => a < 0)
+   *
+   * s.subscribe(console.log) // false
+   */
+  any (p) {
+    return any(p, this)
   }
 
   /**
