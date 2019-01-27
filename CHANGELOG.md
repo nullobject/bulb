@@ -1,4 +1,4 @@
-## Unreleased
+## 3.1.0 (2019-01-27)
 
 * Add `Signal#all` method
 * Add `Signal#any` method
