@@ -346,10 +346,10 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that sequentially emits a number every `n` milliseconds.
+   * Creates a signal that emits a value every `n` milliseconds. The value
+   * emitted starts at zero and increments indefinitely.
    *
-   * @param {Number} n The number of milliseconds to wait between emitting each
-   * value.
+   * @param {Number} n The number of milliseconds to wait between each value.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -453,10 +453,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray[1, 2, 3]
-   * const t = s.always(1)
+   * const s = Signal
+   *   .periodic(1000)
+   *   .always(1)
    *
-   * t.subscribe(console.log) // 1, 1, 1
+   * s.subscribe(console.log) // 1, 1, 1, ...
    */
   always (c) {
     return always(c, this)
@@ -471,10 +472,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray[1, 2, 3]
-   * const t = s.append([4, 5, 6])
+   * const s = Signal
+   *   .fromArray[1, 2, 3]
+   *   .append([4, 5, 6])
    *
-   * t.subscribe(console.log) // 1, 2, 3, 4, 5, 6
+   * s.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   append (...as) {
     // Allow the values to be given as an array.
@@ -501,12 +503,13 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([(a, b) => a + b])
-   * const t = Signal.fromArray([1, 2, 3])
-   * const u = Signal.fromArray([4, 5, 6])
-   * const v = s.apply(t, u)
+   * const s = Signal.fromArray([1, 2, 3])
+   * const t = Signal.fromArray([4, 5, 6])
+   * const u = Signal
+   *   .fromArray([(a, b) => a + b])
+   *   .apply(s, t)
    *
-   * v.subscribe(console.log) // 5, 7, 9
+   * u.subscribe(console.log) // 5, 7, 9
    */
   apply (...ts) {
     // Allow the signals to be given as an array.
@@ -529,10 +532,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3, 4])
-   * const t = s.buffer(2)
+   * const s = Signal
+   *   .fromArray([1, 2, 3, 4])
+   *   .buffer(2)
    *
-   * u.subscribe(console.log) // [1, 2], [2, 4], ...
+   * s.subscribe(console.log) // [1, 2], [2, 4], ...
    */
   buffer (n = Infinity) {
     return buffer(n, this)
@@ -551,10 +555,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.throwError()
-   * const t = s.catchError(e => Signal.of(1))
+   * const s = Signal
+   *   .throwError()
+   *   .catchError(e => Signal.of(1))
    *
-   * t.subscribe(console.log) // 1
+   * s.subscribe(console.log) // 1
    */
   catchError (f) {
     return catchError(f, this)
@@ -598,10 +603,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.concatMap(a => Signal.of(a + 1))
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .concatMap(a => Signal.of(a + 1))
    *
-   * t.subscribe(console.log) // 2, 3, 4
+   * s.subscribe(console.log) // 2, 3, 4
    */
   concatMap (f) {
     return concatMap(f, this)
@@ -617,10 +623,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.periodic(1000)
-   * const t = s.cycle([1, 2, 3])
+   * const s = Signal
+   *   .periodic(1000)
+   *   .cycle([1, 2, 3])
    *
-   * t.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
+   * s.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
   cycle (as) {
     return cycle(as, this)
@@ -630,16 +637,18 @@ export default class Signal {
    * Waits until `n` milliseconds after the last burst of values before
    * emitting the most recent value from the signal.
    *
-   * @param {Number} n The number of milliseconds to wait.
+   * @param {Number} n The number of milliseconds to wait between each burst of
+   * values.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Mouse } from 'bulb-input'
    *
-   * const s = Mouse.position(document)
-   * const t = s.debounce(1000)
+   * const s = Mouse
+   *   .position(document)
+   *   .debounce(1000)
    *
-   * t.subscribe(console.log) // [1, 1], [2, 2], ...
+   * s.subscribe(console.log) // [1, 1], [2, 2], ...
    */
   debounce (n) {
     return debounce(n, this)
@@ -653,10 +662,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 2, 3, 3, 3])
-   * const t = s.dedupe()
+   * const s = Signal
+   *   .fromArray([1, 2, 2, 3, 3, 3])
+   *   .dedupe()
    *
-   * t.subscribe(console.log) // 1, 2, 3
+   * s.subscribe(console.log) // 1, 2, 3
    */
   dedupe () {
     return dedupeWith(eq, this)
@@ -675,10 +685,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 2, 3, 3, 3])
-   * const t = s.dedupeWith((a, b) => a === b)
+   * const s = Signal
+   *   .fromArray([1, 2, 2, 3, 3, 3])
+   *   .dedupeWith((a, b) => a === b)
    *
-   * t.subscribe(console.log) // 1, 2, 3
+   * s.subscribe(console.log) // 1, 2, 3
    */
   dedupeWith (f) {
     return dedupeWith(f, this)
@@ -693,10 +704,11 @@ export default class Signal {
    *
    * import { Mouse } from 'bulb-input'
    *
-   * const s = Mouse.position(document)
-   * const t = s.delay(1000)
+   * const s = Mouse
+   *   .position(document)
+   *   .delay(1000)
    *
-   * t.subscribe(console.log) // [1, 1], [2, 2], ...
+   * s.subscribe(console.log) // [1, 1], [2, 2], ...
    */
   delay (n) {
     return delay(n, this)
@@ -711,10 +723,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.drop(2)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .drop(2)
    *
-   * t.subscribe(console.log) // 3
+   * s.subscribe(console.log) // 3
    */
   drop (n) {
     return drop(n, this)
@@ -751,10 +764,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.dropWhile(a => a < 2)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .dropWhile(a => a < 2)
    *
-   * t.subscribe(console.log) // 2, 3
+   * s.subscribe(console.log) // 2, 3
    */
   dropWhile (p) {
     return dropWhile(p, this)
@@ -773,9 +787,12 @@ export default class Signal {
    *
    * const s = Signal.of(1)
    * const t = Signal.of(2)
-   * const u = Signal.periodic(1000).sequential([1, 2])
+   * const u = Signal
+   *   .periodic(1000)
+   *   .sequential([1, 2])
+   *   .encode(s, t)
    *
-   * u.encode(s, t).subscribe(console.log) // 1, 2
+   * u.subscribe(console.log) // 1, 2
    */
   encode (...ts) {
     // Allow the signals to be given as an array.
@@ -787,7 +804,7 @@ export default class Signal {
   }
 
   /**
-   * Emits a value `a` after all other values are emitted by the signal.
+   * Emits a value `a` when the signal has completed.
    *
    * @param a The value to emit.
    * @returns {Signal} A new signal.
@@ -795,10 +812,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray[1, 2, 3]
-   * const t = s.endWith(4)
+   * const s = Signal
+   *   .fromArray[1, 2, 3]
+   *   .endWith(4)
    *
-   * t.subscribe(console.log) // 1, 2, 3, 4
+   * s.subscribe(console.log) // 1, 2, 3, 4
    */
   endWith (a) {
     return concat([this, Signal.of(a)])
@@ -816,10 +834,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.filter(a => a > 1)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .filter(a => a > 1)
    *
-   * t.subscribe(console.log) // 2, 3
+   * s.subscribe(console.log) // 2, 3
    */
   filter (p) {
     return filter(p, this)
@@ -833,10 +852,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.first()
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .first()
    *
-   * t.subscribe(console.log) // 1
+   * s.subscribe(console.log) // 1
    */
   first () {
     return take(1, this)
@@ -854,10 +874,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.fold((a, b) => a + b, 0)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .fold((a, b) => a + b, 0)
    *
-   * t.subscribe(console.log) // 6
+   * s.subscribe(console.log) // 6
    */
   fold (f, a) {
     return fold(f, a, this)
@@ -891,10 +912,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.last()
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .last()
    *
-   * t.subscribe(console.log) // 3
+   * s.subscribe(console.log) // 3
    */
   last () {
     return fold((a, b) => b, null, this)
@@ -910,10 +932,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.map(a => a + 1)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .map(a => a + 1)
    *
-   * t.subscribe(console.log) // 2, 3, 4
+   * s.subscribe(console.log) // 2, 3, 4
    */
   map (f) {
     return map(f, this)
@@ -954,10 +977,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray[1, 2, 3]
-   * const t = s.prepend([4, 5, 6])
+   * const s = Signal
+   *   .fromArray[1, 2, 3]
+   *   .prepend([4, 5, 6])
    *
-   * t.subscribe(console.log) // 4, 5, 6, 1, 2, 3
+   * s.subscribe(console.log) // 4, 5, 6, 1, 2, 3
    */
   prepend (...as) {
     // Allow the values to be given as an array.
@@ -1002,10 +1026,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.scan((a, b) => a + b, 0)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .scan((a, b) => a + b, 0)
    *
-   * t.subscribe(console.log) // 1, 3, 6
+   * s.subscribe(console.log) // 1, 3, 6
    */
   scan (f, a) {
     return scan(f, a, this)
@@ -1022,7 +1047,9 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.periodic(1000).sequential([1, 2, 3])
+   * const s = Signal
+   *   .periodic(1000)
+   *   .sequential([1, 2, 3])
    *
    * s.subscribe(console.log) // 1, 2, 3
    */
@@ -1039,10 +1066,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray[1, 2, 3]
-   * const t = s.startWith(0)
+   * const s = Signal
+   *   .fromArray[1, 2, 3]
+   *   .startWith(0)
    *
-   * t.subscribe(console.log) // 0, 1, 2, 3
+   * s.subscribe(console.log) // 0, 1, 2, 3
    */
   startWith (a) {
     return concat([Signal.of(a), this])
@@ -1062,13 +1090,14 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.stateMachine((a, b, emit) => {
-   *   emit.value(a + b)
-   *   return a * b
-   * }, 1)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .stateMachine((a, b, emit) => {
+   *     emit.value(a + b)
+   *     return a * b
+   *   }, 1)
    *
-   * t.subscribe(console.log) // 1, 3, 5
+   * s.subscribe(console.log) // 1, 3, 5
    */
   stateMachine (f, a) {
     return stateMachine(f, a, this)
@@ -1155,10 +1184,12 @@ export default class Signal {
    *
    * const s = Signal.of(1)
    * const t = Signal.of(2)
-   * const u = Signal.periodic(1000).sequential([s, t])
-   * const v = u.switchLatest()
+   * const u = Signal
+   *   .periodic(1000)
+   *   .sequential([s, t])
+   *   .switchLatest()
    *
-   * v.subscribe(console.log) // 1, 2
+   * u.subscribe(console.log) // 1, 2
    */
   switchLatest () {
     return switchMap(id, this)
@@ -1176,10 +1207,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.switchMap(a => Signal.of(a + 1))
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .switchMap(a => Signal.of(a + 1))
    *
-   * t.subscribe(console.log) // 2, 3, 4
+   * s.subscribe(console.log) // 2, 3, 4
    */
   switchMap (f) {
     return switchMap(f, this)
@@ -1194,10 +1226,11 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.take(2)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .take(2)
    *
-   * t.subscribe(console.log) // 1, 2
+   * s.subscribe(console.log) // 1, 2
    */
   take (n) {
     return take(n, this)
@@ -1232,30 +1265,31 @@ export default class Signal {
    * @returns {Signal} A new signal.
    * @example
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = s.takeWhile(a => a < 2)
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .takeWhile(a => a < 2)
    *
-   * t.subscribe(console.log) // 1
+   * s.subscribe(console.log) // 1
    */
   takeWhile (p) {
     return takeWhile(p, this)
   }
 
   /**
-   * Limits the rate at which values are emitted by the signal. Values are
-   * dropped when the rate limit is exceeded.
+   * Limits the rate at which values are emitted by the signal to one every `n`
+   * milliseconds. Values will be dropped when the rate limit is exceeded.
    *
-   * @param {Number} n The number of milliseconds to wait between emitted
-   * values.
+   * @param {Number} n The number of milliseconds to wait between each value.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Mouse } from 'bulb-input'
    *
-   * const s = Mouse.position(document)
-   * const t = s.throttle(1000)
+   * const s = Mouse
+   *   .position(document)
+   *   .throttle(1000)
    *
-   * t.subscribe(console.log) // [1, 1], [2, 2], ...
+   * s.subscribe(console.log) // [1, 1], [2, 2], ...
    */
   throttle (n) {
     return throttle(n, this)
