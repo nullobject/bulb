@@ -80,6 +80,8 @@ function broadcast (subscriptions, type) {
  *
  * @example
  *
+ * import { Signal } from 'bulb'
+ *
  * // Create a signal that emits the value 'foo' every second.
  * const s = new Signal(emit => {
  *   // Start the timer and emit a value whenever the timer fires.
