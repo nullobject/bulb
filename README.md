@@ -81,7 +81,7 @@ You can also use a specific version with:
 * [Mouse Position](https://codepen.io/nullobject/pen/eyGQdY)
 * [Keyboard State](https://codepen.io/nullobject/pen/qpYoMw)
 * [Book Search](https://codepen.io/nullobject/pen/QarojE)
-* [Random Numbers](https://codepen.io/nullobject/pen/rpvaeg)
+* [Random Strings](https://codepen.io/nullobject/pen/rpvaeg)
 * [PIN Pad](https://codepen.io/nullobject/pen/jYxzda)
 
 ## Licence
