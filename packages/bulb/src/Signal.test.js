@@ -2,6 +2,7 @@ import events from 'events'
 import { id, range } from 'fkit'
 
 import Signal from './Signal'
+import all from './combinators/all'
 import apply from './combinators/apply'
 import concat from './combinators/concat'
 import map from './combinators/map'
@@ -13,6 +14,7 @@ import tuple from './internal/tuple'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
 
+jest.mock('./combinators/all')
 jest.mock('./combinators/apply')
 jest.mock('./combinators/concat')
 jest.mock('./combinators/drop')
@@ -265,6 +267,15 @@ describe('Signal', () => {
       s.append(1, 2, 3)
       expect(concat).toHaveBeenCalledWith([s, t])
       expect(spy).toHaveBeenCalledWith([1, 2, 3])
+    })
+  })
+
+  describe('#all', () => {
+    it('calls the combinator', () => {
+      const p = jest.fn()
+      const s = mockSignal()
+      s.all(p)
+      expect(all).toHaveBeenCalledWith(p, s)
     })
   })
 

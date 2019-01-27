@@ -1,6 +1,7 @@
 import { eq, id } from 'fkit'
 
 import Subscription from './Subscription'
+import all from './combinators/all'
 import always from './combinators/always'
 import apply from './combinators/apply'
 import buffer from './combinators/buffer'
@@ -442,6 +443,28 @@ export default class Signal {
     }
 
     return zipWith(f, ss)
+  }
+
+  /**
+   * Emits `true` if all the values emitted by the signal satisfy a predicate
+   * function `p`. The returned signal will complete if the signal emits *any*
+   * value that doesn't satisfy the predictate function.
+   *
+   * @param {Function} p The predicate function to apply to each value emitted
+   * by the signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal
+   *   .fromArray([1, 2, 3])
+   *   .all(a => a > 0)
+   *
+   * s.subscribe(console.log) // true
+   */
+  all (p) {
+    return all(p, this)
   }
 
   /**

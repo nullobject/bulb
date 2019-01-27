@@ -15,7 +15,7 @@ describe('filter', () => {
     completeSpy = jest.fn()
   })
 
-  it('filters the signal values with a predicate function', () => {
+  it('emits values from the given signal that satisfy a predicate function', () => {
     const f = jest.fn(gt(1))
 
     filter(f, s).subscribe(valueSpy, errorSpy, completeSpy)
