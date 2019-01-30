@@ -18,7 +18,7 @@ describe('zipWith', () => {
   })
 
   it('zips the corresponding signal values using a function', () => {
-    const f = (a, b, c) => a + b + c
+    const f = jest.fn((a, b, c) => a + b + c)
 
     zipWith(f, [s, t, u]).subscribe(valueSpy, errorSpy, completeSpy)
 
@@ -26,6 +26,8 @@ describe('zipWith', () => {
     t.value(2)
     expect(valueSpy).not.toHaveBeenCalled()
     u.value(3)
+    expect(f).toHaveBeenCalledTimes(1)
+    expect(f).toHaveBeenCalledWith(1, 2, 3)
     expect(valueSpy).toHaveBeenCalledTimes(1)
     expect(valueSpy).toHaveBeenCalledWith(6)
   })

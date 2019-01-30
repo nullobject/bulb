@@ -677,7 +677,12 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
-  cycle (as) {
+  cycle (...as) {
+    // Allow the signals to be given as an array.
+    if (as.length === 1 && Array.isArray(as[0])) {
+      as = as[0]
+    }
+
     return cycle(as, this)
   }
 
@@ -1101,7 +1106,12 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 2, 3
    */
-  sequential (as) {
+  sequential (...as) {
+    // Allow the values to be given as an array.
+    if (as.length === 1 && Array.isArray(as[0])) {
+      as = as[0]
+    }
+
     return sequential(as, this)
   }
 
