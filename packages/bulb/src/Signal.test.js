@@ -691,7 +691,7 @@ describe('Signal', () => {
       expect(errorSpy).toHaveBeenLastCalledWith('foo')
     })
 
-    it('calls the complete callback when the signal is complete', () => {
+    it('calls the complete callback when the signal has completed', () => {
       const s = mockSignal()
 
       s.subscribe(valueSpy, errorSpy, completeSpy)

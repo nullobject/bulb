@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add `Bus` class
+
 ## 3.1.0 (2019-01-27)
 
 * Add `Signal#all` method
