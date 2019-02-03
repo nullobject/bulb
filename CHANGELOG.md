@@ -1,4 +1,4 @@
-## Unreleased
+## 4.0.0 (2019-02-04)
 
 * Add `Bus` class
 
