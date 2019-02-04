@@ -1,4 +1,4 @@
-## Unreleased
+## 4.0.1 (2019-02-04)
 
 * Fix peer dependencies for bulb-input
 
