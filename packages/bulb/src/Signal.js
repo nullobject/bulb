@@ -537,15 +537,14 @@ export default class Signal {
 
   /**
    * Applies the latest function emitted by the signal to latest values emitted
-   * by the signals `ts`. The returned signal will complete when *any* of the
+   * by the signals `ss`. The returned signal will complete when *any* of the
    * given signals have completed.
    *
-   * The latest function will be applied with a number of arguments equal to the
-   * number of signals in `ts`. For example, if the latest function is `(a, b) =>
-   * a + b`, then `ts` will need to contain two signals.
+   * The latest function will be called with a number of arguments equal to the
+   * number of signals in `ss`. For example, if the latest function is `(a, b)
+   * => a + b`, then `ss` will need to contain two signals.
    *
-   * @param {Signal} s The function signal.
-   * @param {Array} ts The value signals.
+   * @param {Array} ss The value signals.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -559,13 +558,13 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 5, 7, 9
    */
-  apply (...ts) {
+  apply (...ss) {
     // Allow the signals to be given as an array.
-    if (ts.length === 1 && Array.isArray(ts[0])) {
-      ts = ts[0]
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
     }
 
-    return apply(this, ts)
+    return apply(this, ss)
   }
 
   /**
@@ -595,9 +594,8 @@ export default class Signal {
    * emitted by the signal. The returned signal will emit values from the
    * signal returned by the function.
    *
-   * @param {Function} f The function to apply to the first error emitted by the
+   * @param {Function} f The function to apply to an error emitted by the
    * signal. It must also return a `Signal`.
-   * @param {Signal} s The signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -828,11 +826,11 @@ export default class Signal {
   }
 
   /**
-   * Switches between the target signals `ts` based on the most recent value
-   * emitted by the signal. The values emitted by the control signal represent
-   * the index of the target signal to switch to.
+   * Switches between the target signals `ss` based on the most recent value
+   * emitted by the signal. The values emitted by the signal represent the
+   * index of the target signal to switch to.
    *
-   * @param {Array} ts The target signals.
+   * @param {Array} ss The target signals.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -842,18 +840,18 @@ export default class Signal {
    * const t = Signal.of(2)
    * const u = Signal
    *   .periodic(1000)
-   *   .sequential([1, 2])
+   *   .sequential([0, 1])
    *   .encode(s, t)
    *
    * u.subscribe(console.log) // 1, 2
    */
-  encode (...ts) {
+  encode (...ss) {
     // Allow the signals to be given as an array.
-    if (ts.length === 1 && Array.isArray(ts[0])) {
-      ts = ts[0]
+    if (ss.length === 1 && Array.isArray(ss[0])) {
+      ss = ss[0]
     }
 
-    return switchMap(id, map(a => ts[a], this))
+    return switchMap(id, map(a => ss[a], this))
   }
 
   /**
