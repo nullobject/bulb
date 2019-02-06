@@ -3,7 +3,7 @@
   "version": "4.0.1",
   "description": "A reactive programming library for JavaScript.",
   "homepage": "https://github.com/nullobject/bulb",
-  "author": "Josh Bassett <josh.bassett@gmail.com> (http://joshbassett.info)",
+  "author": "Josh Bassett <josh.bassett@gmail.com> (https://joshbassett.info)",
   "license": "MIT",
   "keywords": [
     "functional",
