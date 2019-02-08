@@ -1,6 +1,7 @@
 ## Unreleased
 
 * Rename `value` -> `next` to match the [observable proposal](https://github.com/tc39/proposal-observable)
+* Remove runtime dependency on [Fkit](https://github.com/nullobject/fkit)
 
 ## 4.0.1 (2019-02-04)
 

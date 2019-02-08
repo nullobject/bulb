@@ -1,5 +1,3 @@
-import { all, replicate } from 'fkit'
-
 import Signal from '../Signal'
 
 /**
@@ -11,11 +9,14 @@ import Signal from '../Signal'
  */
 export default function zipWith (f, ss) {
   return new Signal(emit => {
-    const buffers = replicate(ss.length, [])
+    // Build the empty buffers.
+    const buffers = Array.from({ length: ss.length }, () => [])
+
+    // Checks each of the signals have at least one buffered value.
+    const bufferIsFull = () => buffers.every(buffer => buffer.length > 0)
 
     const flush = () => {
-      // Check if each of the signals have at least one buffered value.
-      if (all(buffer => buffer.length > 0, buffers)) {
+      if (bufferIsFull()) {
         // Get the next buffered value for each of the signals.
         const as = buffers.reduce((as, buffer) => {
           as.push(buffer.shift())

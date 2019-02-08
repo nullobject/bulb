@@ -1,5 +1,3 @@
-import { all, id } from 'fkit'
-
 import Signal from '../Signal'
 
 /**
@@ -12,27 +10,37 @@ import Signal from '../Signal'
 export default function apply (s, ts) {
   return new Signal(emit => {
     let f
+    let mask = 0
 
-    const values = new Array(ts.length)
+    const buffer = new Array(ts.length)
+
+    // Checks the bitmask bits are all set.
+    const isBufferFull = () => mask === (2 ** ts.length) - 1
 
     const flush = () => {
-      // Check if each of the signals have a buffered value.
-      if (f && all(id, values)) {
-        emit.next(f(...values))
+      if (f && isBufferFull()) {
+        emit.next(f(...buffer))
       }
     }
 
     const subscriptions = ts.map((t, i) =>
       t.subscribe({ ...emit,
         next (a) {
-          values[i] = a
+          // Set the buffered value.
+          buffer[i] = a
+
+          // Set the bit mask for the index.
+          mask |= 2 ** i
+
           flush()
         }
       })
     ).concat(
       s.subscribe({ ...emit,
         next (a) {
+          // Set the function.
           f = a
+
           flush()
         }
       })
