@@ -1,3 +1,7 @@
+## Unreleased
+
+* Rename `value` -> `next` to match the [observable proposal](https://github.com/tc39/proposal-observable)
+
 ## 4.0.1 (2019-02-04)
 
 * Fix peer dependencies for bulb-input

@@ -12,17 +12,17 @@ export default function scan (f, a, s) {
     let index = 0
 
     // Emit the starting value.
-    asap(() => { emit.value(a) })
+    asap(() => { emit.next(a) })
 
-    const value = b => {
+    const next = b => {
       // Fold the current value with the previous value.
       a = f(a, b, index++)
 
       // Emit the accumulated value.
-      emit.value(a)
+      emit.next(a)
     }
 
-    const subscription = s.subscribe({ ...emit, value })
+    const subscription = s.subscribe({ ...emit, next })
 
     return () => subscription.unsubscribe()
   })

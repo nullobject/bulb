@@ -15,7 +15,7 @@ import Signal from './Signal'
  * bus.subscribe(console.log)
  *
  * // Emit a value on the bus.
- * bus.value(0)
+ * bus.next(0)
  *
  * // Connect a signal to the bus.
  * const s = Signal.fromArray([1, 2, 3])
@@ -32,9 +32,9 @@ export default class Bus extends Signal {
   /**
    * Emits the value `a` to the observers.
    */
-  value (a) {
+  next (a) {
     if (this.emit) {
-      this.emit.value(a)
+      this.emit.next(a)
     }
   }
 
@@ -49,7 +49,7 @@ export default class Bus extends Signal {
 
   /**
    * Completes the bus. All observers will be completed, and any further calls
-   * to `value` or `error` will be ignored.
+   * to `next` or `error` will be ignored.
    */
   complete () {
     if (this.emit) {
@@ -65,7 +65,7 @@ export default class Bus extends Signal {
    */
   connect (s) {
     return s.subscribe(
-      a => this.value(a),
+      a => this.next(a),
       e => this.error(e)
     )
   }

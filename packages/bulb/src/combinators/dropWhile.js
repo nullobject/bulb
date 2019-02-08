@@ -10,7 +10,7 @@ import stateMachine from './stateMachine'
 export default function dropWhile (p, s) {
   return stateMachine((a, b, emit) => {
     if (a || !p(b)) {
-      emit.value(b)
+      emit.next(b)
       a = true
     }
     return a

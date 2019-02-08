@@ -8,7 +8,7 @@ import stateMachine from './stateMachine'
  */
 export default function dedupeWith (f, s) {
   return stateMachine((a, b, emit) => {
-    if (!f(a, b)) { emit.value(b) }
+    if (!f(a, b)) { emit.next(b) }
     return b
   }, null, s)
 }

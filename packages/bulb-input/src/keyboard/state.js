@@ -13,7 +13,7 @@ export default function state (target, options) {
 
       if (!state.has(key)) {
         state.add(key)
-        emit.value(Array.from(state))
+        emit.next(Array.from(state))
       }
     }
 
@@ -24,7 +24,7 @@ export default function state (target, options) {
 
       if (state.has(key)) {
         state.delete(key)
-        emit.value(Array.from(state))
+        emit.next(Array.from(state))
       }
     }
 

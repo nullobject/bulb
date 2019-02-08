@@ -37,7 +37,7 @@ export default function concatMap (f, s) {
       if (!innerSubscription) { subscribeNext() }
     }
 
-    const outerSubscription = s.subscribe({ ...emit, value: enqueueSignal })
+    const outerSubscription = s.subscribe({ ...emit, next: enqueueSignal })
 
     return () => {
       if (innerSubscription) { innerSubscription.unsubscribe() }

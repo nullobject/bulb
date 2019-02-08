@@ -11,15 +11,15 @@ export default function fold (f, a, s) {
     let index = 0
 
     // Fold the current value with the previous value.
-    const value = b => { a = f(a, b, index++) }
+    const next = b => { a = f(a, b, index++) }
 
     const complete = () => {
       // Emit the final value.
-      emit.value(a)
+      emit.next(a)
       emit.complete()
     }
 
-    const subscription = s.subscribe({ ...emit, value, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
 
     return () => subscription.unsubscribe()
   })

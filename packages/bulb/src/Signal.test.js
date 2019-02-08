@@ -62,11 +62,11 @@ jest.mock('./combinators/throttle')
 jest.mock('./combinators/zipWith')
 jest.mock('./scheduler')
 
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('Signal', () => {
   beforeEach(() => {
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
     asap.mockImplementation(f => f())
@@ -92,9 +92,9 @@ describe('Signal', () => {
     it('returns a signal that has already completed', () => {
       const s = Signal.empty()
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      expect(valueSpy).not.toHaveBeenCalled()
+      expect(nextSpy).not.toHaveBeenCalled()
       expect(errorSpy).not.toHaveBeenCalled()
       expect(completeSpy).toHaveBeenCalled()
     })
@@ -104,10 +104,10 @@ describe('Signal', () => {
     it('returns a signal that emits values from an array', () => {
       const s = Signal.fromArray(range(1, 3))
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
       range(1, 3).forEach((n, index) => {
-        expect(valueSpy.mock.calls[index][0]).toBe(n)
+        expect(nextSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
       expect(completeSpy).toHaveBeenCalled()
@@ -116,16 +116,16 @@ describe('Signal', () => {
 
   describe('.fromCallback', () => {
     it('returns a signal that wraps a callback', () => {
-      let value
+      let next
       const s = Signal.fromCallback(callback => {
-        value = a => { callback(null, a) }
+        next = a => { callback(null, a) }
       })
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
       range(1, 3).forEach((n, index) => {
-        value(n)
-        expect(valueSpy.mock.calls[index][0]).toBe(n)
+        next(n)
+        expect(nextSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
       expect(completeSpy).not.toHaveBeenCalled()
@@ -137,11 +137,11 @@ describe('Signal', () => {
       const emitter = new events.EventEmitter()
       const s = Signal.fromEvent('lol', emitter)
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
       range(1, 3).forEach((n, index) => {
         emitter.emit('lol', n)
-        expect(valueSpy.mock.calls[index][0]).toBe(n)
+        expect(nextSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
       expect(completeSpy).not.toHaveBeenCalled()
@@ -150,22 +150,22 @@ describe('Signal', () => {
 
   describe('.fromPromise', () => {
     it('returns a signal that wraps a promise', () => {
-      let value, complete
+      let next, complete
 
       const s = Signal.fromPromise({
         then: onFulfilled => {
-          value = onFulfilled
+          next = onFulfilled
           return {
             finally: onFinally => { complete = onFinally }
           }
         }
       })
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
       range(1, 3).forEach((n, index) => {
-        value(n)
-        expect(valueSpy.mock.calls[index][0]).toBe(n)
+        next(n)
+        expect(nextSpy.mock.calls[index][0]).toBe(n)
       }, this)
 
       complete()
@@ -194,9 +194,9 @@ describe('Signal', () => {
     it('returns a signal that never completes', () => {
       const s = Signal.never()
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      expect(valueSpy).not.toHaveBeenCalled()
+      expect(nextSpy).not.toHaveBeenCalled()
       expect(errorSpy).not.toHaveBeenCalled()
       expect(completeSpy).not.toHaveBeenCalled()
     })
@@ -206,9 +206,9 @@ describe('Signal', () => {
     it('returns a signal that emits a single value', () => {
       const s = Signal.of(1)
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      expect(valueSpy).toHaveBeenLastCalledWith(1)
+      expect(nextSpy).toHaveBeenLastCalledWith(1)
       expect(completeSpy).toHaveBeenCalled()
     })
   })
@@ -237,7 +237,7 @@ describe('Signal', () => {
     it('returns a signal that throws an error', () => {
       const s = Signal.throwError('foo')
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
       expect(errorSpy).toHaveBeenLastCalledWith('foo')
       expect(completeSpy).toHaveBeenCalled()
@@ -528,14 +528,14 @@ describe('Signal', () => {
     it('emits the last value', () => {
       const s = mockSignal()
 
-      s.last().subscribe(valueSpy, errorSpy, completeSpy)
+      s.last().subscribe(nextSpy, errorSpy, completeSpy)
 
-      s.value(1)
-      s.value(2)
-      s.value(3)
+      s.next(1)
+      s.next(2)
+      s.next(3)
       s.complete()
-      expect(valueSpy).toHaveBeenCalledTimes(1)
-      expect(valueSpy).toHaveBeenLastCalledWith(3)
+      expect(nextSpy).toHaveBeenCalledTimes(1)
+      expect(nextSpy).toHaveBeenLastCalledWith(3)
     })
   })
 
@@ -674,17 +674,17 @@ describe('Signal', () => {
     it('calls the value callback when the signal emits a value', () => {
       const s = mockSignal()
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      expect(valueSpy).not.toHaveBeenCalled()
-      s.value('foo')
-      expect(valueSpy).toHaveBeenLastCalledWith('foo')
+      expect(nextSpy).not.toHaveBeenCalled()
+      s.next('foo')
+      expect(nextSpy).toHaveBeenLastCalledWith('foo')
     })
 
     it('calls the error callback when the signal emits an error', () => {
       const s = mockSignal()
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
       expect(errorSpy).not.toHaveBeenCalled()
       s.error('foo')
@@ -694,7 +694,7 @@ describe('Signal', () => {
     it('calls the complete callback when the signal has completed', () => {
       const s = mockSignal()
 
-      s.subscribe(valueSpy, errorSpy, completeSpy)
+      s.subscribe(nextSpy, errorSpy, completeSpy)
 
       expect(completeSpy).not.toHaveBeenCalled()
       s.complete()

@@ -4,32 +4,32 @@ import dropWhile from './dropWhile'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('dropWhile', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('drops values from the target signal until the predicate is false', () => {
-    dropWhile(lt(2), s).subscribe(valueSpy, errorSpy, completeSpy)
+    dropWhile(lt(2), s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value(1)
-    expect(valueSpy).not.toHaveBeenCalled()
-    s.value(2)
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith(2)
-    s.value(3)
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith(3)
+    s.next(1)
+    expect(nextSpy).not.toHaveBeenCalled()
+    s.next(2)
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith(2)
+    s.next(3)
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenLastCalledWith(3)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    dropWhile(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    dropWhile(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -38,7 +38,7 @@ describe('dropWhile', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    dropWhile(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    dropWhile(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

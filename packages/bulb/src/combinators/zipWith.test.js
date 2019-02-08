@@ -4,7 +4,7 @@ import mockSignal from '../internal/mockSignal'
 import zipWith from './zipWith'
 
 let s, t, u
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('zipWith', () => {
   beforeEach(() => {
@@ -12,7 +12,7 @@ describe('zipWith', () => {
     t = mockSignal()
     u = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
@@ -20,20 +20,20 @@ describe('zipWith', () => {
   it('zips the corresponding signal values using a function', () => {
     const f = jest.fn((a, b, c) => a + b + c)
 
-    zipWith(f, [s, t, u]).subscribe(valueSpy, errorSpy, completeSpy)
+    zipWith(f, [s, t, u]).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value(1)
-    t.value(2)
-    expect(valueSpy).not.toHaveBeenCalled()
-    u.value(3)
+    s.next(1)
+    t.next(2)
+    expect(nextSpy).not.toHaveBeenCalled()
+    u.next(3)
     expect(f).toHaveBeenCalledTimes(1)
     expect(f).toHaveBeenCalledWith(1, 2, 3)
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenCalledWith(6)
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenCalledWith(6)
   })
 
   it('emits an error when any of the given signals emit an error', () => {
-    zipWith(always(), [s, t]).subscribe(valueSpy, errorSpy, completeSpy)
+    zipWith(always(), [s, t]).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -45,7 +45,7 @@ describe('zipWith', () => {
   })
 
   it('completes when any of the given signals are completed', () => {
-    zipWith(always(), [s, t]).subscribe(valueSpy, errorSpy, completeSpy)
+    zipWith(always(), [s, t]).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

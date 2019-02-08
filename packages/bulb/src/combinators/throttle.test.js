@@ -2,34 +2,34 @@ import mockSignal from '../internal/mockSignal'
 import throttle from './throttle'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('throttle', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('throttle the signal values', () => {
-    throttle(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+    throttle(1000, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    expect(valueSpy).not.toHaveBeenCalled()
+    expect(nextSpy).not.toHaveBeenCalled()
     Date.now = jest.fn(() => 0)
-    s.value('foo')
-    s.value('bar')
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith('foo')
+    s.next('foo')
+    s.next('bar')
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith('foo')
     Date.now = jest.fn(() => 1000)
-    s.value('bar')
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith('bar')
+    s.next('bar')
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenLastCalledWith('bar')
   })
 
   it('emits an error when the given signal emits an error', () => {
-    throttle(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+    throttle(1000, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -38,7 +38,7 @@ describe('throttle', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    throttle(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+    throttle(1000, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

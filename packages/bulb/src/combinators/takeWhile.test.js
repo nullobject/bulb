@@ -4,33 +4,33 @@ import mockSignal from '../internal/mockSignal'
 import takeWhile from './takeWhile'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('takeWhile', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('emits values from the target signal while the predicate is true', () => {
-    takeWhile(lt(3), s).subscribe(valueSpy, errorSpy, completeSpy)
+    takeWhile(lt(3), s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    expect(valueSpy).not.toHaveBeenCalled()
-    s.value(1)
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith(1)
-    s.value(2)
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith(2)
-    s.value(3)
-    expect(valueSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).not.toHaveBeenCalled()
+    s.next(1)
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith(1)
+    s.next(2)
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenLastCalledWith(2)
+    s.next(3)
+    expect(nextSpy).toHaveBeenCalledTimes(2)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    takeWhile(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    takeWhile(always(), s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -39,17 +39,17 @@ describe('takeWhile', () => {
   })
 
   it('completes when the predicate is false', () => {
-    takeWhile(lt(3), s).subscribe(valueSpy, errorSpy, completeSpy)
+    takeWhile(lt(3), s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value(1)
-    s.value(2)
+    s.next(1)
+    s.next(2)
     expect(completeSpy).not.toHaveBeenCalled()
-    s.value(3)
+    s.next(3)
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
   it('completes when the given signal is completed', () => {
-    takeWhile(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    takeWhile(always(), s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

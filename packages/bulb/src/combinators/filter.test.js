@@ -4,13 +4,13 @@ import filter from './filter'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('filter', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
@@ -18,23 +18,23 @@ describe('filter', () => {
   it('emits values from the given signal that satisfy a predicate function', () => {
     const f = jest.fn(gt(1))
 
-    filter(f, s).subscribe(valueSpy, errorSpy, completeSpy)
+    filter(f, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value(1)
+    s.next(1)
     expect(f).toHaveBeenLastCalledWith(1, 0)
-    expect(valueSpy).not.toHaveBeenCalled()
-    s.value(2)
+    expect(nextSpy).not.toHaveBeenCalled()
+    s.next(2)
     expect(f).toHaveBeenLastCalledWith(2, 1)
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith(2)
-    s.value(3)
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith(2)
+    s.next(3)
     expect(f).toHaveBeenLastCalledWith(3, 2)
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith(3)
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenLastCalledWith(3)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    filter(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    filter(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -43,7 +43,7 @@ describe('filter', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    filter(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    filter(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

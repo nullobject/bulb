@@ -8,7 +8,7 @@ import stateMachine from './stateMachine'
  */
 export default function cycle (as, s) {
   return stateMachine((a, b, emit) => {
-    emit.value(as[a])
+    emit.next(as[a])
     return (a + 1) % as.length
   }, 0, s)
 }

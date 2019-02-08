@@ -7,7 +7,7 @@ import stateMachine from './stateMachine'
  */
 export default function drop (n, s) {
   return stateMachine((a, b, emit) => {
-    if (a >= n) { emit.value(b) }
+    if (a >= n) { emit.next(b) }
     return a + 1
   }, 0, s)
 }

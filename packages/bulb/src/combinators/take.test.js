@@ -2,33 +2,33 @@ import mockSignal from '../internal/mockSignal'
 import take from './take'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('take', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('takes the given number of values', () => {
-    take(2, s).subscribe(valueSpy, errorSpy, completeSpy)
+    take(2, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    expect(valueSpy).not.toHaveBeenCalled()
-    s.value(1)
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith(1)
-    s.value(2)
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith(2)
-    s.value(3)
-    expect(valueSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).not.toHaveBeenCalled()
+    s.next(1)
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith(1)
+    s.next(2)
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenLastCalledWith(2)
+    s.next(3)
+    expect(nextSpy).toHaveBeenCalledTimes(2)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    take(1, s).subscribe(valueSpy, errorSpy, completeSpy)
+    take(1, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -37,17 +37,17 @@ describe('take', () => {
   })
 
   it('completes after the given number of values', () => {
-    take(2, s).subscribe(valueSpy, errorSpy, completeSpy)
+    take(2, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value()
+    s.next()
     expect(completeSpy).not.toHaveBeenCalled()
-    s.value()
-    s.value()
+    s.next()
+    s.next()
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 
   it('completes when the given signal is completed', () => {
-    take(1, s).subscribe(valueSpy, errorSpy, completeSpy)
+    take(1, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

@@ -1,23 +1,23 @@
 import Bus from './Bus'
 import mockSignal from './internal/mockSignal'
 
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 let bus
 
 describe('Bus', () => {
   beforeEach(() => {
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
 
     bus = new Bus()
-    bus.subscribe(valueSpy, errorSpy, completeSpy)
+    bus.subscribe(nextSpy, errorSpy, completeSpy)
   })
 
   describe('#value', () => {
     it('emits a given value', () => {
-      bus.value(1)
-      expect(valueSpy).toHaveBeenLastCalledWith(1)
+      bus.next(1)
+      expect(nextSpy).toHaveBeenLastCalledWith(1)
     })
   })
 
@@ -39,8 +39,8 @@ describe('Bus', () => {
     it('forwards values emitted by the given signal to the bus', () => {
       const s = mockSignal()
       bus.connect(s)
-      s.value(1)
-      expect(valueSpy).toHaveBeenLastCalledWith(1)
+      s.next(1)
+      expect(nextSpy).toHaveBeenLastCalledWith(1)
     })
 
     it('forwards errors emitted by the given signal to the bus', () => {

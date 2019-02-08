@@ -2,34 +2,34 @@ import hold from './hold'
 import mockSignal from '../internal/mockSignal'
 
 let s, t
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('hold', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('stops emitting values from the target signal while the control signal is truthy', () => {
-    hold(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
 
-    expect(valueSpy).not.toHaveBeenCalled()
-    s.value(false)
-    t.value('foo')
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith('foo')
-    s.value(true)
-    t.value('bar')
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith('foo')
+    expect(nextSpy).not.toHaveBeenCalled()
+    s.next(false)
+    t.next('foo')
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith('foo')
+    s.next(true)
+    t.next('bar')
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith('foo')
   })
 
   it('emits an error when either signal emits an error', () => {
-    hold(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -41,7 +41,7 @@ describe('hold', () => {
   })
 
   it('completes when the target signal is completed', () => {
-    hold(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     t.complete()
@@ -49,7 +49,7 @@ describe('hold', () => {
   })
 
   it('completes when the control signal is completed', () => {
-    hold(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

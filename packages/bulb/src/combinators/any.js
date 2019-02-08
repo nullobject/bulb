@@ -4,7 +4,7 @@ export default function any (p, s) {
   return new Signal(emit => {
     let result = false
 
-    const value = a => {
+    const next = a => {
       result = result || p(a)
 
       // Bail out if the predicate is satisfied.
@@ -12,11 +12,11 @@ export default function any (p, s) {
     }
 
     const complete = () => {
-      emit.value(result)
+      emit.next(result)
       emit.complete()
     }
 
-    const subscription = s.subscribe({ ...emit, value, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
 
     return () => subscription.unsubscribe()
   })

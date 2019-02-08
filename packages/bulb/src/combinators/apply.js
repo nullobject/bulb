@@ -20,7 +20,7 @@ export default function apply (s, ...ts) {
     const values = new Array(ts.length)
 
     const flush = () => {
-      if (f && all(id, values)) { emit.value(f(...values)) }
+      if (f && all(id, values)) { emit.next(f(...values)) }
     }
 
     const functionHandler = a => {
@@ -28,15 +28,15 @@ export default function apply (s, ...ts) {
       flush()
     }
 
-    const valueHandler = index => a => {
+    const nextHandler = index => a => {
       values[index] = a
       flush()
     }
 
     const subscriptions = ts.map((t, i) =>
-      t.subscribe({ ...emit, value: valueHandler(i) })
+      t.subscribe({ ...emit, next: nextHandler(i) })
     ).concat(
-      s.subscribe({ ...emit, value: functionHandler })
+      s.subscribe({ ...emit, next: functionHandler })
     )
 
     return () => subscriptions.forEach(s => s.unsubscribe())

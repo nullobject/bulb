@@ -10,7 +10,7 @@ import stateMachine from './stateMachine'
 export default function takeWhile (p, s) {
   return stateMachine((a, b, emit) => {
     if (p(b)) {
-      emit.value(b)
+      emit.next(b)
     } else {
       emit.complete()
     }

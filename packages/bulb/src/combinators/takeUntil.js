@@ -9,13 +9,13 @@ import Signal from '../Signal'
  */
 export default function takeUntil (s, t) {
   return new Signal(emit => {
-    const value = a => {
+    const next = a => {
       emit.complete()
     }
 
     const subscriptions = [
       t.subscribe(emit),
-      s.subscribe({ ...emit, value })
+      s.subscribe({ ...emit, next })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())

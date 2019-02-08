@@ -66,7 +66,7 @@ function broadcast (subscriptions, type) {
  * The `mount` function takes an `emit` object as its only argument. This
  * allows the signal to emit values:
  *
- * * `emit.value(a)` - Emits the value `a`.
+ * * `emit.next(a)` - Emits the value `a`.
  * * `emit.error(e)` - Emits the error `e`.
  * * `emit.complete()` - Marks the signal as complete.
  *
@@ -85,7 +85,7 @@ function broadcast (subscriptions, type) {
  * // Create a signal that emits the value 'foo' every second.
  * const s = new Signal(emit => {
  *   // Start the timer and emit a value whenever the timer fires.
- *   const id = setInterval(() => emit.value('foo'), 1000)
+ *   const id = setInterval(() => emit.next('foo'), 1000)
  *
  *   // Return a function to be called when the signal is unmounted.
  *   return () => clearInterval(id)
@@ -188,7 +188,7 @@ export default class Signal {
   static fromArray (as) {
     return new Signal(emit => {
       asap(() => {
-        as.map(a => emit.value(a))
+        as.map(a => emit.next(a))
         emit.complete()
       })
     })
@@ -223,7 +223,7 @@ export default class Signal {
         if (e !== 'undefined' && e !== null) {
           emit.error(e)
         } else {
-          emit.value(a)
+          emit.next(a)
         }
       })
     })
@@ -251,16 +251,16 @@ export default class Signal {
 
     return new Signal(emit => {
       if (target.addListener) {
-        target.addListener(type, emit.value)
+        target.addListener(type, emit.next)
       } else if (target.addEventListener) {
-        target.addEventListener(type, emit.value, options.useCapture)
+        target.addEventListener(type, emit.next, options.useCapture)
       }
 
       return () => {
         if (target.addListener) {
-          target.removeListener(type, emit.value)
+          target.removeListener(type, emit.next)
         } else {
-          target.removeEventListener('type', emit.value, options.useCapture)
+          target.removeEventListener('type', emit.next, options.useCapture)
         }
       }
     })
@@ -285,7 +285,7 @@ export default class Signal {
    */
   static fromPromise (p) {
     return new Signal(emit => {
-      p.then(emit.value, emit.error).finally(emit.complete)
+      p.then(emit.next, emit.error).finally(emit.complete)
     })
   }
 
@@ -343,7 +343,7 @@ export default class Signal {
   static of (a) {
     return new Signal(emit => {
       asap(() => {
-        emit.value(a)
+        emit.next(a)
         emit.complete()
       })
     })
@@ -366,7 +366,7 @@ export default class Signal {
   static periodic (n) {
     return new Signal(emit => {
       let count = 0
-      const id = setInterval(() => emit.value(count++), n)
+      const id = setInterval(() => emit.next(count++), n)
       return () => clearInterval(id)
     })
   }
@@ -1149,7 +1149,7 @@ export default class Signal {
    * const s = Signal
    *   .fromArray([1, 2, 3])
    *   .stateMachine((a, b, emit) => {
-   *     emit.value(a + b)
+   *     emit.next(a + b)
    *     return a * b
    *   }, 1)
    *
@@ -1184,13 +1184,13 @@ export default class Signal {
    * // When we are done, we can unsubscribe from the signal.
    * subscription.unsubscribe()
    */
-  subscribe (onValue, onError, onComplete) {
+  subscribe (onNext, onError, onComplete) {
     let emit = {}
 
-    if (typeof onValue === 'function') {
-      emit = { value: onValue, error: onError, complete: onComplete }
-    } else if (typeof onValue === 'object') {
-      emit = onValue
+    if (typeof onNext === 'function') {
+      emit = { next: onNext, error: onError, complete: onComplete }
+    } else if (typeof onNext === 'object') {
+      emit = onNext
     }
 
     // Create a new subscription to the signal.
@@ -1208,7 +1208,7 @@ export default class Signal {
     this._subscriptions.add(subscription)
 
     // Notifies the observers that a value was emitted.
-    const value = broadcast(this._subscriptions, 'value')
+    const next = broadcast(this._subscriptions, 'next')
 
     // Notifies the observers that an error was emitted.
     const error = broadcast(this._subscriptions, 'error')
@@ -1222,7 +1222,7 @@ export default class Signal {
 
     // Call the mount function if we're adding the first subscription.
     if (this._subscriptions.size === 1) {
-      this.tryMount({ value, error, complete })
+      this.tryMount({ next, error, complete })
     }
 
     return subscription

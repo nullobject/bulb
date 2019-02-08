@@ -12,11 +12,11 @@ export default function debounce (n, s) {
     let id
 
     const flush = () => {
-      if (buffer) { emit.value(buffer) }
+      if (buffer) { emit.next(buffer) }
       buffer = null
     }
 
-    const value = a => {
+    const next = a => {
       clearTimeout(id)
       buffer = a
       id = setTimeout(flush, n)
@@ -28,7 +28,7 @@ export default function debounce (n, s) {
       emit.complete()
     }
 
-    const subscription = s.subscribe({ ...emit, value, complete })
+    const subscription = s.subscribe({ ...emit, next, complete })
 
     return () => {
       clearTimeout(id)

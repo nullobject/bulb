@@ -4,13 +4,13 @@ import cycle from './cycle'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('cycle', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
@@ -18,16 +18,16 @@ describe('cycle', () => {
   it('cycles through the values of an array', () => {
     const t = cycle(range(1, 3), s)
 
-    t.subscribe(valueSpy, errorSpy, completeSpy)
+    t.subscribe(nextSpy, errorSpy, completeSpy)
 
     range(0, 6).forEach(n => {
-      s.value()
-      expect(valueSpy).toHaveBeenNthCalledWith(n + 1, (n % 3) + 1)
+      s.next()
+      expect(nextSpy).toHaveBeenNthCalledWith(n + 1, (n % 3) + 1)
     })
   })
 
   it('emits an error when the given signal emits an error', () => {
-    cycle([], s).subscribe(valueSpy, errorSpy, completeSpy)
+    cycle([], s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -36,7 +36,7 @@ describe('cycle', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    cycle([], s).subscribe(valueSpy, errorSpy, completeSpy)
+    cycle([], s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
