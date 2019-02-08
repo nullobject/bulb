@@ -1,4 +1,4 @@
-import { id, lt } from 'fkit'
+import { id } from 'fkit'
 
 import any from './any'
 import mockSignal from '../internal/mockSignal'
@@ -15,33 +15,24 @@ describe('any', () => {
     completeSpy = jest.fn()
   })
 
-  it('emits true if any of the values emitted by the given signal satisfy a predicate function', () => {
-    const f = jest.fn(lt(1))
+  it('emits true when any value emitted by the given signal satisfies the predicate function', () => {
+    const f = jest.fn(id)
 
     any(f, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.next(1)
-    expect(f).toHaveBeenLastCalledWith(1)
-    s.next(2)
-    expect(f).toHaveBeenLastCalledWith(2)
+    s.next(false)
     expect(nextSpy).not.toHaveBeenCalled()
-    s.next(0)
-    expect(f).toHaveBeenLastCalledWith(0)
+    s.next(true)
     expect(nextSpy).toHaveBeenCalledTimes(1)
     expect(nextSpy).toHaveBeenCalledWith(true)
   })
 
-  it('emits false if none of the values emitted by the given signal don\'t satisfy a predicate function', () => {
-    const f = jest.fn(lt(1))
+  it('emits false when none of the values emitted by the given signal satisfy the predicate function', () => {
+    const f = jest.fn(id)
 
     any(f, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.next(1)
-    expect(f).toHaveBeenLastCalledWith(1)
-    s.next(2)
-    expect(f).toHaveBeenLastCalledWith(2)
-    s.next(3)
-    expect(f).toHaveBeenLastCalledWith(3)
+    s.next(false)
     expect(nextSpy).not.toHaveBeenCalled()
     s.complete()
     expect(nextSpy).toHaveBeenCalledTimes(1)
@@ -62,6 +53,16 @@ describe('any', () => {
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
+    expect(completeSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('completes when the predicate function is satisfied', () => {
+    const f = jest.fn(id)
+
+    any(f, s).subscribe(nextSpy, errorSpy, completeSpy)
+
+    expect(completeSpy).not.toHaveBeenCalled()
+    s.next(true)
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 

@@ -1,4 +1,4 @@
-import { id, gte } from 'fkit'
+import { id } from 'fkit'
 
 import all from './all'
 import mockSignal from '../internal/mockSignal'
@@ -15,35 +15,25 @@ describe('all', () => {
     completeSpy = jest.fn()
   })
 
-  it('emits true if all the values emitted by the given signal satisfy a predicate function', () => {
-    const f = jest.fn(gte(1))
+  it('emits true when all the values emitted by the given signal satisfy the predicate function', () => {
+    const f = jest.fn(id)
 
     all(f, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.next(1)
-    expect(f).toHaveBeenLastCalledWith(1)
-    s.next(2)
-    expect(f).toHaveBeenLastCalledWith(2)
-    s.next(3)
-    expect(f).toHaveBeenLastCalledWith(3)
+    s.next(true)
     expect(nextSpy).not.toHaveBeenCalled()
     s.complete()
     expect(nextSpy).toHaveBeenCalledTimes(1)
     expect(nextSpy).toHaveBeenCalledWith(true)
   })
 
-  it('emits false if any of the values emitted by the given signal don\'t satisfy a predicate function', () => {
-    const f = jest.fn(gte(1))
+  it('emits false when any value emitted by the given signal doesn\'t satisfy the predicate function', () => {
+    const f = jest.fn(id)
 
     all(f, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.next(1)
-    expect(f).toHaveBeenLastCalledWith(1)
-    s.next(2)
-    expect(f).toHaveBeenLastCalledWith(2)
     expect(nextSpy).not.toHaveBeenCalled()
-    s.next(0)
-    expect(f).toHaveBeenLastCalledWith(0)
+    s.next(false)
     expect(nextSpy).toHaveBeenCalledTimes(1)
     expect(nextSpy).toHaveBeenCalledWith(false)
   })
@@ -62,6 +52,16 @@ describe('all', () => {
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
+    expect(completeSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('completes when the predicate function is unsatisfied', () => {
+    const f = jest.fn(id)
+
+    all(f, s).subscribe(nextSpy, errorSpy, completeSpy)
+
+    expect(completeSpy).not.toHaveBeenCalled()
+    s.next(false)
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 

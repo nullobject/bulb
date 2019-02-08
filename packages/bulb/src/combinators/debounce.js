@@ -16,19 +16,18 @@ export default function debounce (n, s) {
       buffer = null
     }
 
-    const next = a => {
-      clearTimeout(id)
-      buffer = a
-      id = setTimeout(flush, n)
-    }
-
-    const complete = () => {
-      clearTimeout(id)
-      flush()
-      emit.complete()
-    }
-
-    const subscription = s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit,
+      next (a) {
+        clearTimeout(id)
+        buffer = a
+        id = setTimeout(flush, n)
+      },
+      complete  () {
+        clearTimeout(id)
+        flush()
+        emit.complete()
+      }
+    })
 
     return () => {
       clearTimeout(id)

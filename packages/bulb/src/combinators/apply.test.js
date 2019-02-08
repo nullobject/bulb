@@ -19,7 +19,7 @@ describe('apply', () => {
     const f = jest.fn((a, b) => b + a)
     const g = jest.fn((a, b) => b - a)
 
-    apply(s, t, u).subscribe(nextSpy, errorSpy, completeSpy)
+    apply(s, [t, u]).subscribe(nextSpy, errorSpy, completeSpy)
 
     s.next(f)
     t.next(1)
@@ -44,7 +44,7 @@ describe('apply', () => {
   })
 
   it('emits an error when either signal emits an error', () => {
-    apply(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+    apply(s, [t]).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -56,7 +56,7 @@ describe('apply', () => {
   })
 
   it('completes when the function signal is completed', () => {
-    apply(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+    apply(s, [t]).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     t.complete()
@@ -64,7 +64,7 @@ describe('apply', () => {
   })
 
   it('completes when the value signal is completed', () => {
-    apply(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+    apply(s, [t]).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -72,7 +72,7 @@ describe('apply', () => {
   })
 
   it('unmounts the control signal when the returned signal is unsubscribed', () => {
-    const a = apply(s, t).subscribe()
+    const a = apply(s, [t]).subscribe()
 
     expect(s.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
@@ -80,7 +80,7 @@ describe('apply', () => {
   })
 
   it('unmounts the target signal when the returned signal is unsubscribed', () => {
-    const a = apply(s, t).subscribe()
+    const a = apply(s, [t]).subscribe()
 
     expect(t.unmount).not.toHaveBeenCalled()
     a.unsubscribe()

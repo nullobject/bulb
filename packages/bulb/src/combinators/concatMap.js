@@ -10,6 +10,7 @@ import Signal from '../Signal'
 export default function concatMap (f, s) {
   return new Signal(emit => {
     let innerSubscription
+
     const queue = []
 
     // Subscribes to the next signal in the queue.

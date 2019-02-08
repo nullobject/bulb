@@ -13,10 +13,7 @@ export default function zipWith (f, ss) {
   return new Signal(emit => {
     const buffers = replicate(ss.length, [])
 
-    const next = index => a => {
-      // Buffer the value.
-      buffers[index].push(a)
-
+    const flush = () => {
       // Check if each of the signals have at least one buffered value.
       if (all(buffer => buffer.length > 0, buffers)) {
         // Get the next buffered value for each of the signals.
@@ -31,7 +28,12 @@ export default function zipWith (f, ss) {
     }
 
     const subscriptions = ss.map((s, i) =>
-      s.subscribe({ ...emit, next: next(i) })
+      s.subscribe({ ...emit,
+        next (a) {
+          buffers[i].push(a)
+          flush()
+        }
+      })
     )
 
     return () => subscriptions.forEach(s => s.unsubscribe())

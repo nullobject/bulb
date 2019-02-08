@@ -9,8 +9,11 @@ import Signal from '../Signal'
 export default function filter (p, s) {
   return new Signal(emit => {
     let index = 0
-    const next = a => { if (p(a, index++)) { emit.next(a) } }
-    const subscription = s.subscribe({ ...emit, next })
+
+    const subscription = s.subscribe({ ...emit,
+      next (a) { if (p(a, index++)) { emit.next(a) } }
+    })
+
     return () => subscription.unsubscribe()
   })
 }

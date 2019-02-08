@@ -10,13 +10,11 @@ export default function sample (s, t) {
   return new Signal(emit => {
     let buffer
 
-    const next = () => {
-      if (buffer !== undefined) { emit.next(buffer) }
-    }
-
     const subscriptions = [
-      t.subscribe({ ...emit, next: a => { buffer = a } }),
-      s.subscribe({ ...emit, next })
+      t.subscribe({ ...emit, next (a) { buffer = a } }),
+      s.subscribe({ ...emit,
+        next (a) { if (buffer !== undefined) { emit.next(buffer) } }
+      })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())

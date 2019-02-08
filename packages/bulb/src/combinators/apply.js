@@ -9,34 +9,33 @@ import Signal from '../Signal'
  *
  * @private
  */
-export default function apply (s, ...ts) {
-  // Allow the signals to be given as an array.
-  if (ts.length === 1 && Array.isArray(ts[0])) {
-    ts = ts[0]
-  }
-
+export default function apply (s, ts) {
   return new Signal(emit => {
     let f
+
     const values = new Array(ts.length)
 
     const flush = () => {
-      if (f && all(id, values)) { emit.next(f(...values)) }
-    }
-
-    const functionHandler = a => {
-      f = a
-      flush()
-    }
-
-    const nextHandler = index => a => {
-      values[index] = a
-      flush()
+      // Check if each of the signals have a buffered value.
+      if (f && all(id, values)) {
+        emit.next(f(...values))
+      }
     }
 
     const subscriptions = ts.map((t, i) =>
-      t.subscribe({ ...emit, next: nextHandler(i) })
+      t.subscribe({ ...emit,
+        next (a) {
+          values[i] = a
+          flush()
+        }
+      })
     ).concat(
-      s.subscribe({ ...emit, next: functionHandler })
+      s.subscribe({ ...emit,
+        next (a) {
+          f = a
+          flush()
+        }
+      })
     )
 
     return () => subscriptions.forEach(s => s.unsubscribe())

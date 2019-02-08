@@ -7,12 +7,9 @@ import Signal from '../Signal'
  */
 export default function stateMachine (f, a, s) {
   return new Signal(emit => {
-    const next = b => {
-      // Fold the current value with the previous value.
-      a = f(a, b, emit)
-    }
-
-    const subscription = s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit,
+      next (b) { a = f(a, b, emit) }
+    })
 
     return () => subscription.unsubscribe()
   })

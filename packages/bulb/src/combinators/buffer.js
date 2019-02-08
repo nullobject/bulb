@@ -16,17 +16,16 @@ export default function buffer (n = Infinity, s) {
       if (as.length > 0) { emit.next(as) }
     }
 
-    const next = a => {
-      buffer.push(a)
-      if (buffer.length === n) { flush() }
-    }
-
-    const complete = () => {
-      flush()
-      emit.complete()
-    }
-
-    const subscription = s.subscribe({ ...emit, next, complete })
+    const subscription = s.subscribe({ ...emit,
+      next (a) {
+        buffer.push(a)
+        if (buffer.length === n) { flush() }
+      },
+      complete () {
+        flush()
+        emit.complete()
+      }
+    })
 
     return () => subscription.unsubscribe()
   })

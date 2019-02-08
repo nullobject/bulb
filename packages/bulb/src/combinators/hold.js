@@ -10,13 +10,15 @@ export default function hold (s, t) {
   return new Signal(emit => {
     let enabled = true
 
-    const next = a => {
-      if (enabled) { emit.next(a) }
-    }
-
     const subscriptions = [
-      s.subscribe({ ...emit, next: a => { enabled = !a } }),
-      t.subscribe({ ...emit, next })
+      s.subscribe({ ...emit,
+        next (a) { enabled = !a }
+      }),
+      t.subscribe({ ...emit,
+        next (a) {
+          if (enabled) { emit.next(a) }
+        }
+      })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())

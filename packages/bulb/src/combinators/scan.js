@@ -14,15 +14,12 @@ export default function scan (f, a, s) {
     // Emit the starting value.
     asap(() => { emit.next(a) })
 
-    const next = b => {
-      // Fold the current value with the previous value.
-      a = f(a, b, index++)
-
-      // Emit the accumulated value.
-      emit.next(a)
-    }
-
-    const subscription = s.subscribe({ ...emit, next })
+    const subscription = s.subscribe({ ...emit,
+      next (b) {
+        a = f(a, b, index++)
+        emit.next(a)
+      }
+    })
 
     return () => subscription.unsubscribe()
   })

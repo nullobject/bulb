@@ -12,17 +12,17 @@ export default function catchError (f, s) {
     let outerSubscription
     let innerSubscription
 
-    const error = e => {
-      outerSubscription.unsubscribe()
-      outerSubscription = null
-      const a = f(e)
-      if (!(a instanceof Signal)) {
-        throw new Error('Signal value must be a signal')
+    outerSubscription = s.subscribe({ ...emit,
+      error (e) {
+        outerSubscription.unsubscribe()
+        outerSubscription = null
+        const a = f(e)
+        if (!(a instanceof Signal)) {
+          throw new Error('Signal value must be a signal')
+        }
+        innerSubscription = a.subscribe({ ...emit })
       }
-      innerSubscription = a.subscribe({ ...emit })
-    }
-
-    outerSubscription = s.subscribe({ ...emit, error })
+    })
 
     return () => {
       if (innerSubscription) { innerSubscription.unsubscribe() }
