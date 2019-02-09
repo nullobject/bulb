@@ -24,10 +24,10 @@ lint:
 release: dist doc publish-api publish-npm
 
 doc:
-	@cd packages/bulb; npx documentation build src/** -f html -o doc
+	@cd packages/bulb; npx documentation build src/** -f html -o docs
 
 publish-api:
-	@aws s3 sync ./packages/bulb/doc/ s3://bulb.joshbassett.info/ --acl public-read --delete --cache-control 'max-age=300'
+	@aws s3 sync ./packages/bulb/docs/ s3://bulb.joshbassett.info/ --acl public-read --delete --cache-control 'max-age=300'
 
 publish-npm:
 	@cd packages/bulb; npm publish
