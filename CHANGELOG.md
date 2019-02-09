@@ -5,6 +5,7 @@
 * Mark subscriptions as closed when an observer unsubscribes
 * Allow `Signal.of` to take multiple arguments
 * Don't allow functions which take multiple arguments to an array (use the array spread syntax instead)
+* Rename fromArray -> from
 
 ## 4.0.1 (2019-02-04)
 

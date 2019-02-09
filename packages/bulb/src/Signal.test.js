@@ -97,16 +97,28 @@ describe('Signal', () => {
     })
   })
 
-  describe('.fromArray', () => {
+  describe('.from', () => {
     it('returns a signal that emits values from an array', () => {
-      const s = Signal.fromArray(range(1, 3))
+      const s = Signal.from([1, 2, 3])
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        expect(nextSpy.mock.calls[index][0]).toBe(n)
-      }, this)
+      expect(nextSpy).toHaveBeenCalledTimes(3)
+      expect(nextSpy).toHaveBeenNthCalledWith(1, 1)
+      expect(nextSpy).toHaveBeenNthCalledWith(2, 2)
+      expect(nextSpy).toHaveBeenNthCalledWith(3, 3)
+      expect(completeSpy).toHaveBeenCalled()
+    })
 
+    it('returns a signal that emits values from a string', () => {
+      const s = Signal.from('foo')
+
+      s.subscribe(nextSpy, errorSpy, completeSpy)
+
+      expect(nextSpy).toHaveBeenCalledTimes(3)
+      expect(nextSpy).toHaveBeenNthCalledWith(1, 'f')
+      expect(nextSpy).toHaveBeenNthCalledWith(2, 'o')
+      expect(nextSpy).toHaveBeenNthCalledWith(3, 'o')
       expect(completeSpy).toHaveBeenCalled()
     })
   })

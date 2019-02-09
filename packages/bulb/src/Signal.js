@@ -166,25 +166,26 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that immediately emits the values from an array `as`. The
-   * returned signal will complete after the last value in the array has been
-   * emitted.
+   * Creates a signal that immediately emits the values from an `iterable`.
+   * The returned signal will complete after the last value in the iterable has
+   * been emitted.
    *
-   * @deprecated
-   * @param {Array} as The values to emit.
+   * @param iterable The iterable that contains the values to be emitted.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
+   * const s = Signal.from([1, 2, 3])
    *
    * s.subscribe(console.log) // 1, 2, 3
    */
-  static fromArray (as) {
+  static from (iterable) {
     return new Signal(emit => {
       asap(() => {
-        as.map(a => emit.next(a))
+        for (let a of iterable) {
+          emit.next(a)
+        }
         emit.complete()
       })
     })
@@ -508,7 +509,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   append (...as) {
-    return concat([this, Signal.fromArray(as)])
+    return concat([this, Signal.from(as)])
   }
 
   /**
@@ -986,7 +987,7 @@ export default class Signal {
    * s.subscribe(console.log) // 4, 5, 6, 1, 2, 3
    */
   prepend (...as) {
-    return concat([Signal.fromArray(as), this])
+    return concat([Signal.from(as), this])
   }
 
   /**

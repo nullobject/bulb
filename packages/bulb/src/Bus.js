@@ -18,7 +18,7 @@ import Signal from './Signal'
  * bus.next(0)
  *
  * // Connect a signal to the bus.
- * const s = Signal.fromArray([1, 2, 3])
+ * const s = Signal.of(1, 2, 3)
  * bus.connect(s)
  */
 export default class Bus extends Signal {
