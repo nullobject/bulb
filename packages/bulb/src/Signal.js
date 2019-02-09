@@ -131,11 +131,11 @@ export default class Signal {
   }
 
   /**
-   * Concatenates the signals `ss` and emits their values. The returned signal
-   * will join the given signals, waiting for each one to complete before joining
-   * the next, and will complete once *all* of the given signals have completed.
+   * Concatenates the given signals and emits their values. The returned signal
+   * will join the signals, waiting for each one to complete before joining the
+   * next, and will complete once *all* of the signals have completed.
    *
-   * @param {...Signal} ss The signals to concatenate.
+   * @param {...Signal} signals The signals to concatenate.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -147,8 +147,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
-  static concat (...ss) {
-    return concat(ss)
+  static concat (...signals) {
+    return concat(signals)
   }
 
   /**
@@ -287,10 +287,10 @@ export default class Signal {
   }
 
   /**
-   * Merges the signals `ss` and emits their values. The returned signal will
-   * complete once *all* of the given signals have completed.
+   * Merges the given signals and emits their values. The returned signal will
+   * complete once *all* of the signals have completed.
    *
-   * @param {...Signal} ss The signals to merge.
+   * @param {...Signal} signals The signals to merge.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -302,8 +302,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
-  static merge (...ss) {
-    return merge(ss)
+  static merge (...signals) {
+    return merge(signals)
   }
 
   /**
@@ -319,10 +319,10 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that immediately emits the values `as`. The returned
-   * signal will complete immediately after the values have been emited.
+   * Creates a signal that immediately emits the `values`. The returned signal
+   * will complete immediately after the values have been emited.
    *
-   * @param as The values to emit.
+   * @param values The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -332,10 +332,10 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 2, 3
    */
-  static of (...as) {
+  static of (...values) {
     return new Signal(emit => {
       asap(() => {
-        as.map(a => emit.next(a))
+        values.map(a => emit.next(a))
         emit.complete()
       })
     })
@@ -364,8 +364,8 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that emits an error `e`. The returned signal will
-   * complete immediately after the error has been emited.
+   * Creates a signal that emits an error. The returned signal will complete
+   * immediately after the error has been emited.
    *
    * @param e The error to emit.
    * @returns {Signal} A new signal.
@@ -387,11 +387,11 @@ export default class Signal {
   }
 
   /**
-   * Combines the corresponding values emitted by the signals `ss` into tuples.
-   * The returned signal will complete when *any* of the given signals have
+   * Combines the corresponding values emitted by the given signals into
+   * tuples. The returned signal will complete when *any* of the signals have
    * completed.
    *
-   * @param {...Signal} ss The signals to zip.
+   * @param {...Signal} signals The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -403,18 +403,18 @@ export default class Signal {
    *
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
-  static zip (...ss) {
-    return zipWith(tuple, ss)
+  static zip (...signals) {
+    return zipWith(tuple, signals)
   }
 
   /**
-   * Applies the function `f` to the corresponding values emitted by the signals
-   * `ss`. The returned signal will complete when *any* of the given signals have
+   * Applies the function `f` to the corresponding values emitted by the given
+   * signals. The returned signal will complete when *any* of the signals have
    * completed.
    *
    * @param {Function} f The function to apply to the corresponding values
    * emitted by the signals.
-   * @param {...Signal} ss The signals to zip.
+   * @param {...Signal} signals The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -426,8 +426,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 5, 7, 9
    */
-  static zipWith (f, ...ss) {
-    return zipWith(f, ss)
+  static zipWith (f, ...signals) {
+    return zipWith(f, signals)
   }
 
   /**
@@ -453,9 +453,9 @@ export default class Signal {
   }
 
   /**
-   * Replaces the values of the signal with a constant `c`.
+   * Replaces the values of the signal with a constant value
    *
-   * @param c The constant value.
+   * @param value The constant value.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -467,8 +467,8 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 1, 1, ...
    */
-  always (c) {
-    return always(c, this)
+  always (value) {
+    return always(value, this)
   }
 
   /**
@@ -494,9 +494,9 @@ export default class Signal {
   }
 
   /**
-   * Emits the values from an array `as` after the signal has completed.
+   * Emits the given values after the signal has completed.
    *
-   * @param as The values to append.
+   * @param values The values to append.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -508,20 +508,20 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
-  append (...as) {
-    return concat([this, Signal.from(as)])
+  append (...values) {
+    return concat([this, Signal.from(values)])
   }
 
   /**
    * Applies the latest function emitted by the signal to latest values emitted
-   * by the signals `ss`. The returned signal will complete when *any* of the
-   * given signals have completed.
+   * by the given signals. The returned signal will complete when *any* of the
+   * signals have completed.
    *
    * The latest function will be called with a number of arguments equal to the
-   * number of signals in `ss`. For example, if the latest function is `(a, b)
-   * => a + b`, then `ss` will need to contain two signals.
+   * number of signals. For example, if the latest function is `(a, b) => a + b`,
+   * then you will need to supply two signals.
    *
-   * @param {...Signal} ss The value signals.
+   * @param {...Signal} signals The value signals.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -535,8 +535,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 5, 7, 9
    */
-  apply (...ss) {
-    return apply(this, ss)
+  apply (...signals) {
+    return apply(this, signals)
   }
 
   /**
@@ -584,11 +584,11 @@ export default class Signal {
   }
 
   /**
-   * Concatenates the signals `ss` and emits their values. The returned signal
-   * will join the given signals, waiting for each one to complete before joining
-   * the next, and will complete once *all* of the given signals have completed.
+   * Concatenates the given signals and emits their values. The returned signal
+   * will join the signals, waiting for each one to complete before joining the
+   * next, and will complete once *all* of the signals have completed.
    *
-   * @param {...Signal} ss The signals to concatenate.
+   * @param {...Signal} signals The signals to concatenate.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -600,8 +600,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
-  concat (...ss) {
-    return concat([this].concat(ss))
+  concat (...signals) {
+    return concat([this].concat(signals))
   }
 
   /**
@@ -627,10 +627,9 @@ export default class Signal {
   }
 
   /**
-   * Cycles through the values of an array `as` for every value emitted by the
-   * signal.
+   * Cycles through the given values as values are emitted by the signal.
    *
-   * @param as The values to emit.
+   * @param values The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -642,8 +641,8 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
-  cycle (...as) {
-    return cycle(as, this)
+  cycle (...values) {
+    return cycle(values, this)
   }
 
   /**
@@ -747,10 +746,10 @@ export default class Signal {
   }
 
   /**
-   * Drops values emitted by the signal until the control signal `s` emits a
+   * Drops values emitted by the signal until the given control signal emits a
    * value.
    *
-   * @param {Signal} s The control signal.
+   * @param {Signal} signal The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -760,8 +759,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 1, 2
    */
-  dropUntil (s) {
-    return dropUntil(s, this)
+  dropUntil (signal) {
+    return dropUntil(signal, this)
   }
 
   /**
@@ -788,11 +787,11 @@ export default class Signal {
   }
 
   /**
-   * Switches between the target signals `ss` based on the most recent value
-   * emitted by the signal. The values emitted by the signal represent the
-   * index of the target signal to switch to.
+   * Switches between the given signals based on the most recent value emitted
+   * by the signal. The values emitted by the signal represent the index of the
+   * signal to switch to.
    *
-   * @param {...Signal} ss The target signals.
+   * @param {...Signal} signals The signals to encode.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -807,14 +806,14 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 1, 2
    */
-  encode (...ss) {
-    return switchMap(id, map(a => ss[a], this))
+  encode (...signals) {
+    return switchMap(id, map(a => signals[a], this))
   }
 
   /**
-   * Emits a value `a` when the signal has completed.
+   * Emits a value when the signal has completed.
    *
-   * @param a The value to emit.
+   * @param value The value to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -826,8 +825,8 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 2, 3, 4
    */
-  endWith (a) {
-    return concat([this, Signal.of(a)])
+  endWith (value) {
+    return concat([this, Signal.of(value)])
   }
 
   /**
@@ -876,7 +875,7 @@ export default class Signal {
    *
    * @param {Function} f The accumulator function to apply to each value
    * emitted by the signal.
-   * @param a The starting value.
+   * @param initialValue The initial value.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -888,15 +887,15 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 6
    */
-  fold (f, a) {
-    return fold(f, a, this)
+  fold (f, initialValue) {
+    return fold(f, initialValue, this)
   }
 
   /**
-   * Stops emitting values from the signal while the control signal `s` is
+   * Stops emitting values from the signal while the given control signal is
    * truthy.
    *
-   * @param {Signal} s The control signal.
+   * @param {Signal} signal The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -908,8 +907,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
    */
-  hold (s) {
-    return hold(s, this)
+  hold (signal) {
+    return hold(signal, this)
   }
 
   /**
@@ -951,10 +950,10 @@ export default class Signal {
   }
 
   /**
-   * Merges the signals `ss` and emits their values. The returned signal will
-   * complete once *all* of the given signals have completed.
+   * Merges the given signals and emits their values. The returned signal will
+   * complete once *all* of the signals have completed.
    *
-   * @param {...Signal} ss The signals to merge.
+   * @param {...Signal} signals The signals to merge.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -966,15 +965,14 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
-  merge (...ss) {
-    return merge([this].concat(ss))
+  merge (...signals) {
+    return merge([this].concat(signals))
   }
 
   /**
-   * Emits the values from an array `as` before any other values are emitted by
-   * the signal.
+   * Emits the given values before any other values are emitted by the signal.
    *
-   * @param as The values to prepend.
+   * @param values The values to prepend.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -986,15 +984,15 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 4, 5, 6, 1, 2, 3
    */
-  prepend (...as) {
-    return concat([Signal.from(as), this])
+  prepend (...values) {
+    return concat([Signal.from(values), this])
   }
 
   /**
    * Emits the most recent value from the signal whenever there is an event on
-   * the control signal `s`.
+   * the given control signal.
    *
-   * @param {Signal} s The control signal.
+   * @param {Signal} signal The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1007,8 +1005,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
    */
-  sample (s) {
-    return sample(s, this)
+  sample (signal) {
+    return sample(signal, this)
   }
 
   /**
@@ -1018,7 +1016,7 @@ export default class Signal {
    *
    * @param {Function} f The accumulator function to apply to each value
    * emitted by the signal.
-   * @param a The starting value.
+   * @param initialValue The initial value.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1030,16 +1028,16 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 3, 6
    */
-  scan (f, a) {
-    return scan(f, a, this)
+  scan (f, initialValue) {
+    return scan(f, initialValue, this)
   }
 
   /**
-   * Emits the next value from an array `as` for every value emitted by the
+   * Emits the next value from the given values for every value emitted by the
    * signal. The returned signal will complete immediately after the last value
    * has been emitted.
    *
-   * @param as The values to emit.
+   * @param values The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1051,14 +1049,14 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 2, 3
    */
-  sequential (...as) {
-    return sequential(as, this)
+  sequential (...values) {
+    return sequential(values, this)
   }
 
   /**
-   * Emits a value `a` before any other values are emitted by the signal.
+   * Emits a value before any other values are emitted by the signal.
    *
-   * @param a The value to emit.
+   * @param value The value to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1070,8 +1068,8 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 0, 1, 2, 3
    */
-  startWith (a) {
-    return concat([Signal.of(a), this])
+  startWith (value) {
+    return concat([Signal.of(value), this])
   }
 
   /**
@@ -1082,7 +1080,7 @@ export default class Signal {
    *
    * @param {Function} f The transform function to apply to each value emitted
    * by the signal.
-   * @param a The initial state.
+   * @param initialState The initial state.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1097,8 +1095,8 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 3, 5
    */
-  stateMachine (f, a) {
-    return stateMachine(f, a, this)
+  stateMachine (f, initialState) {
+    return stateMachine(f, initialState, this)
   }
 
   /**
@@ -1107,7 +1105,7 @@ export default class Signal {
    * The `subscribe` method returns a subscription handle, which can be used to
    * unsubscribe from the signal.
    *
-   * @param {Function} [onValue] The callback function called when the signal
+   * @param {Function} [onNext] The callback function called when the signal
    * emits a value.
    * @param {Function} [onError] The callback function called when the signal
    * emits an error.
@@ -1238,10 +1236,10 @@ export default class Signal {
   }
 
   /**
-   * Emits values from the signal until the control signal `s` emits a value.
+   * Emits values from the signal until the given control signal emits a value.
    * The returned signal will complete once the control signal emits a value.
    *
-   * @param {Signal} s The control signal.
+   * @param {Signal} signal The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1251,8 +1249,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 0
    */
-  takeUntil (s) {
-    return takeUntil(s, this)
+  takeUntil (signal) {
+    return takeUntil(signal, this)
   }
 
   /**
@@ -1297,11 +1295,11 @@ export default class Signal {
   }
 
   /**
-   * Combines the corresponding values emitted by the signals `ss` into tuples.
-   * The returned signal will complete when *any* of the given signals have
+   * Combines the corresponding values emitted by the given signals into
+   * tuples. The returned signal will complete when *any* of the signals have
    * completed.
    *
-   * @param {...Signal} ss The signals to zip.
+   * @param {...Signal} signals The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1313,18 +1311,18 @@ export default class Signal {
    *
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
-  zip (...ss) {
-    return zipWith(tuple, [this].concat(ss))
+  zip (...signals) {
+    return zipWith(tuple, [this].concat(signals))
   }
 
   /**
-   * Applies the function `f` to the corresponding values emitted by the
-   * signals `ss`. The returned signal will complete when *any* of the given
-   * signals have completed.
+   * Applies the function `f` to the corresponding values emitted by the given
+   * signals. The returned signal will complete when *any* of the signals have
+   * completed.
    *
    * @param {Function} f The function to apply to the corresponding values
    * emitted by the signals.
-   * @param {...Signal} ss The signals to zip.
+   * @param {...Signal} signals The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1336,7 +1334,7 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 5, 7, 9
    */
-  zipWith (f, ...ss) {
-    return zipWith(f, [this].concat(ss))
+  zipWith (f, ...signals) {
+    return zipWith(f, [this].concat(signals))
   }
 }
