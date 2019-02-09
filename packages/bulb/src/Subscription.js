@@ -15,6 +15,11 @@ class Subscription {
      * @function
      */
     this.unsubscribe = unsubscribe
+
+    /**
+     * @returns {Boolean} A boolean indicating whether the subscription is closed.
+     */
+    this.closed = false
   }
 }
 

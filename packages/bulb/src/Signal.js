@@ -1195,6 +1195,9 @@ export default class Signal {
 
     // Create a new subscription to the signal.
     const subscription = new Subscription(emit, () => {
+      // Mark the subsciption as closed.
+      subscription.closed = true
+
       // Remove the subscription.
       this._subscriptions.delete(subscription)
 

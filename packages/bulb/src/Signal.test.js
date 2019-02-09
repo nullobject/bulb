@@ -663,6 +663,24 @@ describe('Signal', () => {
       expect(s.unmount).toHaveBeenCalledTimes(1)
     })
 
+    it('only calls the unmount function once', () => {
+      const s = mockSignal()
+      const a = s.subscribe()
+
+      a.unsubscribe()
+      a.unsubscribe()
+      expect(s.unmount).toHaveBeenCalledTimes(1)
+    })
+
+    it('marks the subscriber as closed when they unsubscribe', () => {
+      const s = mockSignal()
+      const a = s.subscribe()
+
+      expect(a.closed).toBe(false)
+      a.unsubscribe()
+      expect(a.closed).toBe(true)
+    })
+
     it('calls the unmount function when the signal is complete', () => {
       const s = mockSignal()
 
