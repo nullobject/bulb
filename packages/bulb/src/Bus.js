@@ -30,16 +30,20 @@ export default class Bus extends Signal {
   }
 
   /**
-   * Emits the value `a` to the observers.
+   * Emits the given value to the observers.
+   *
+   * @param value The value to emit.
    */
-  next (a) {
+  next (value) {
     if (this.emit) {
-      this.emit.next(a)
+      this.emit.next(value)
     }
   }
 
   /**
-   * Emits the error `e` to the observers.
+   * Emits the given error to the observers.
+   *
+   * @param e The error to emit.
    */
   error (e) {
     if (this.emit) {
@@ -58,15 +62,13 @@ export default class Bus extends Signal {
   }
 
   /**
-   * Connects the bus to the signal `s`. Any values emitted by the signal will
-   * be forwarded to the bus.
+   * Connects the bus to the given signal. Any values emitted by the signal
+   * will be forwarded to the bus.
    *
+   * @params {Signal} The signal to connect to the bus.
    * @returns {Subscription} A subscription handle.
    */
-  connect (s) {
-    return s.subscribe(
-      a => this.next(a),
-      e => this.error(e)
-    )
+  connect (signal) {
+    return signal.subscribe(this)
   }
 }
