@@ -12,23 +12,22 @@ export default function debounce (n, s) {
     let id
 
     const flush = () => {
-      if (buffer) { emit.value(buffer) }
+      if (buffer) { emit.next(buffer) }
       buffer = null
     }
 
-    const value = a => {
-      clearTimeout(id)
-      buffer = a
-      id = setTimeout(flush, n)
-    }
-
-    const complete = () => {
-      clearTimeout(id)
-      flush()
-      emit.complete()
-    }
-
-    const subscription = s.subscribe({ ...emit, value, complete })
+    const subscription = s.subscribe({ ...emit,
+      next (a) {
+        clearTimeout(id)
+        buffer = a
+        id = setTimeout(flush, n)
+      },
+      complete  () {
+        clearTimeout(id)
+        flush()
+        emit.complete()
+      }
+    })
 
     return () => {
       clearTimeout(id)

@@ -6,7 +6,7 @@ export default function position (target, options) {
   return new Signal(emit => {
     const handler = e => {
       if (options.preventDefault) { e.preventDefault() }
-      emit.value([e.clientX, e.clientY])
+      emit.next([e.clientX, e.clientY])
     }
 
     target.addEventListener('mousemove', handler, true)

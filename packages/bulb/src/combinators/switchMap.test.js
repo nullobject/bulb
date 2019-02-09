@@ -4,7 +4,7 @@ import mockSignal from '../internal/mockSignal'
 import switchMap from './switchMap'
 
 let s, t, u
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('switchMap', () => {
   beforeEach(() => {
@@ -12,37 +12,37 @@ describe('switchMap', () => {
     t = mockSignal()
     u = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('applies a function to the signal values', () => {
-    switchMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    switchMap(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value(t)
-    expect(valueSpy).not.toHaveBeenCalled()
-    t.value(1)
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith(1)
-    s.value(u)
-    t.value(2)
-    u.value(3)
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith(3)
-    u.value(4)
-    expect(valueSpy).toHaveBeenCalledTimes(3)
-    expect(valueSpy).toHaveBeenLastCalledWith(4)
+    s.next(t)
+    expect(nextSpy).not.toHaveBeenCalled()
+    t.next(1)
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith(1)
+    s.next(u)
+    t.next(2)
+    u.next(3)
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenLastCalledWith(3)
+    u.next(4)
+    expect(nextSpy).toHaveBeenCalledTimes(3)
+    expect(nextSpy).toHaveBeenLastCalledWith(4)
   })
 
   it('throws an error when the given signal emits a non-signal value', () => {
-    switchMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    switchMap(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    expect(() => s.value('foo')).toThrow('Signal value must be a signal')
+    expect(() => s.next('foo')).toThrow('Signal value must be a signal')
   })
 
   it('emits an error when the given signal emits an error', () => {
-    switchMap(always(), s).subscribe(valueSpy, errorSpy, completeSpy)
+    switchMap(always(), s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -51,7 +51,7 @@ describe('switchMap', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    switchMap(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    switchMap(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
@@ -70,7 +70,7 @@ describe('switchMap', () => {
     const t = mockSignal()
     const a = switchMap(id, s).subscribe()
 
-    s.value(t)
+    s.next(t)
     expect(t.unmount).not.toHaveBeenCalled()
     a.unsubscribe()
     expect(t.unmount).toHaveBeenCalledTimes(1)

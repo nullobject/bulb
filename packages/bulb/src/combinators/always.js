@@ -7,8 +7,10 @@ import Signal from '../Signal'
  */
 export default function always (c, s) {
   return new Signal(emit => {
-    const value = () => emit.value(c)
-    const subscription = s.subscribe({ ...emit, value })
+    const subscription = s.subscribe({ ...emit,
+      next () { emit.next(c) }
+    })
+
     return () => subscription.unsubscribe()
   })
 }

@@ -6,15 +6,15 @@ import Signal from '../Signal'
  * @private
  */
 export default function mockSignal () {
-  let value, error, complete
+  let next, error, complete
   const unmount = jest.fn()
   const s = new Signal(emit => {
-    value = emit.value
+    next = emit.next
     error = emit.error
     complete = emit.complete
     return unmount
   })
-  s.value = a => { value && value(a) }
+  s.next = a => { next && next(a) }
   s.error = e => { error && error(e) }
   s.complete = () => { complete && complete() }
   s.unmount = unmount

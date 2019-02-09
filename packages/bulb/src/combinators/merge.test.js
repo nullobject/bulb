@@ -2,32 +2,32 @@ import merge from './merge'
 import mockSignal from '../internal/mockSignal'
 
 let s, t
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('merge', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('merges the given signals', () => {
-    merge([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
+    merge([s, t]).subscribe(nextSpy, errorSpy, completeSpy)
 
-    expect(valueSpy).not.toHaveBeenCalled()
-    s.value('foo')
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith('foo')
-    t.value('bar')
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith('bar')
+    expect(nextSpy).not.toHaveBeenCalled()
+    s.next('foo')
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith('foo')
+    t.next('bar')
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenLastCalledWith('bar')
   })
 
   it('emits an error when any of the given signals emit an error', () => {
-    merge([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
+    merge([s, t]).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -39,7 +39,7 @@ describe('merge', () => {
   })
 
   it('completes when all of the given signals are completed', () => {
-    merge([s, t]).subscribe(valueSpy, errorSpy, completeSpy)
+    merge([s, t]).subscribe(nextSpy, errorSpy, completeSpy)
 
     s.complete()
     expect(completeSpy).not.toHaveBeenCalled()

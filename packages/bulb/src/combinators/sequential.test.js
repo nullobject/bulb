@@ -4,13 +4,13 @@ import mockSignal from '../internal/mockSignal'
 import sequential from './sequential'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('sequential', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
@@ -18,16 +18,16 @@ describe('sequential', () => {
   it('sequentially emits the values of an array', () => {
     const t = sequential(range(1, 3), s)
 
-    t.subscribe(valueSpy, errorSpy, completeSpy)
+    t.subscribe(nextSpy, errorSpy, completeSpy)
 
     range(1, 3).forEach(n => {
-      s.value()
-      expect(valueSpy).toHaveBeenNthCalledWith(n, n)
+      s.next()
+      expect(nextSpy).toHaveBeenNthCalledWith(n, n)
     })
   })
 
   it('emits an error when the given signal emits an error', () => {
-    sequential([], s).subscribe(valueSpy, errorSpy, completeSpy)
+    sequential([], s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -36,7 +36,7 @@ describe('sequential', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    sequential([], s).subscribe(valueSpy, errorSpy, completeSpy)
+    sequential([], s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

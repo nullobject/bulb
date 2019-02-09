@@ -6,7 +6,7 @@ export default function buttons (target, options) {
   return new Signal(emit => {
     const handler = e => {
       if (options.preventDefault) { e.preventDefault() }
-      emit.value(e.buttons)
+      emit.next(e.buttons)
     }
 
     target.addEventListener('mousedown', handler, true)

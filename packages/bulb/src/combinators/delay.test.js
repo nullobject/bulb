@@ -2,13 +2,13 @@ import delay from './delay'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('delay', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
 
@@ -20,24 +20,24 @@ describe('delay', () => {
   })
 
   it('delays the signal values', () => {
-    delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+    delay(1000, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value(1)
-    s.value(2)
+    s.next(1)
+    s.next(2)
     jest.advanceTimersByTime(500)
-    s.value(3)
-    expect(valueSpy).not.toHaveBeenCalled()
+    s.next(3)
+    expect(nextSpy).not.toHaveBeenCalled()
     jest.advanceTimersByTime(500)
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenNthCalledWith(1, 1)
-    expect(valueSpy).toHaveBeenNthCalledWith(2, 2)
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenNthCalledWith(1, 1)
+    expect(nextSpy).toHaveBeenNthCalledWith(2, 2)
     jest.advanceTimersByTime(500)
-    expect(valueSpy).toHaveBeenCalledTimes(3)
-    expect(valueSpy).toHaveBeenNthCalledWith(3, 3)
+    expect(nextSpy).toHaveBeenCalledTimes(3)
+    expect(nextSpy).toHaveBeenNthCalledWith(3, 3)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+    delay(1000, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -46,7 +46,7 @@ describe('delay', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    delay(1000, s).subscribe(valueSpy, errorSpy, completeSpy)
+    delay(1000, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()

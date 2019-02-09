@@ -10,13 +10,13 @@ export default function dropUntil (s, t) {
   return new Signal(emit => {
     let enabled = false
 
-    const value = a => {
-      if (enabled) { emit.value(a) }
-    }
-
     const subscriptions = [
-      t.subscribe({ ...emit, value }),
-      s.subscribe({ ...emit, value: () => { enabled = true } })
+      t.subscribe({ ...emit,
+        next (a) { if (enabled) { emit.next(a) } }
+      }),
+      s.subscribe({ ...emit,
+        next () { enabled = true }
+      })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())

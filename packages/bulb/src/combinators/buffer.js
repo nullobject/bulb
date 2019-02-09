@@ -13,20 +13,19 @@ export default function buffer (n = Infinity, s) {
 
     const flush = () => {
       const as = buffer.splice(0, n)
-      if (as.length > 0) { emit.value(as) }
+      if (as.length > 0) { emit.next(as) }
     }
 
-    const value = a => {
-      buffer.push(a)
-      if (buffer.length === n) { flush() }
-    }
-
-    const complete = () => {
-      flush()
-      emit.complete()
-    }
-
-    const subscription = s.subscribe({ ...emit, value, complete })
+    const subscription = s.subscribe({ ...emit,
+      next (a) {
+        buffer.push(a)
+        if (buffer.length === n) { flush() }
+      },
+      complete () {
+        flush()
+        emit.complete()
+      }
+    })
 
     return () => subscription.unsubscribe()
   })

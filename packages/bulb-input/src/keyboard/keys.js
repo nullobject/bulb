@@ -6,7 +6,7 @@ export default function keys (target, options) {
   return new Signal(emit => {
     const handler = e => {
       if (options.preventDefault) { e.preventDefault() }
-      emit.value(parseInt(e.keyCode))
+      emit.next(parseInt(e.keyCode))
     }
 
     target.addEventListener('keydown', handler, true)

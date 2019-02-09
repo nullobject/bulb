@@ -9,11 +9,9 @@ export default function delay (n, s) {
   return new Signal(emit => {
     let id
 
-    const value = a => {
-      id = setTimeout(() => emit.value(a), n)
-    }
-
-    const subscription = s.subscribe({ ...emit, value })
+    const subscription = s.subscribe({ ...emit,
+      next (a) { id = setTimeout(() => emit.next(a), n) }
+    })
 
     return () => {
       clearTimeout(id)

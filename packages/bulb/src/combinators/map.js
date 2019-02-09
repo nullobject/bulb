@@ -8,8 +8,11 @@ import Signal from '../Signal'
 export default function map (f, s) {
   return new Signal(emit => {
     let index = 0
-    const value = a => emit.value(f(a, index++))
-    const subscription = s.subscribe({ ...emit, value })
+
+    const subscription = s.subscribe({ ...emit,
+      next (a) { emit.next(f(a, index++)) }
+    })
+
     return () => subscription.unsubscribe()
   })
 }

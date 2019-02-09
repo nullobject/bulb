@@ -9,7 +9,7 @@ import stateMachine from './stateMachine'
  */
 export default function sequential (as, s) {
   return stateMachine((a, b, emit) => {
-    emit.value(as[a])
+    emit.next(as[a])
     if (a === as.length - 1) { emit.complete() }
     return a + 1
   }, 0, s)

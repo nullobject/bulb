@@ -1,55 +1,45 @@
-import { id, gte } from 'fkit'
+import { id } from 'fkit'
 
 import all from './all'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('all', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
-  it('emits true if all the values emitted by the given signal satisfy a predicate function', () => {
-    const f = jest.fn(gte(1))
+  it('emits true when all the values emitted by the given signal satisfy the predicate function', () => {
+    const f = jest.fn(id)
 
-    all(f, s).subscribe(valueSpy, errorSpy, completeSpy)
+    all(f, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value(1)
-    expect(f).toHaveBeenLastCalledWith(1)
-    s.value(2)
-    expect(f).toHaveBeenLastCalledWith(2)
-    s.value(3)
-    expect(f).toHaveBeenLastCalledWith(3)
-    expect(valueSpy).not.toHaveBeenCalled()
+    s.next(true)
+    expect(nextSpy).not.toHaveBeenCalled()
     s.complete()
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenCalledWith(true)
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenCalledWith(true)
   })
 
-  it('emits false if any of the values emitted by the given signal don\'t satisfy a predicate function', () => {
-    const f = jest.fn(gte(1))
+  it('emits false when any value emitted by the given signal doesn\'t satisfy the predicate function', () => {
+    const f = jest.fn(id)
 
-    all(f, s).subscribe(valueSpy, errorSpy, completeSpy)
+    all(f, s).subscribe(nextSpy, errorSpy, completeSpy)
 
-    s.value(1)
-    expect(f).toHaveBeenLastCalledWith(1)
-    s.value(2)
-    expect(f).toHaveBeenLastCalledWith(2)
-    expect(valueSpy).not.toHaveBeenCalled()
-    s.value(0)
-    expect(f).toHaveBeenLastCalledWith(0)
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenCalledWith(false)
+    expect(nextSpy).not.toHaveBeenCalled()
+    s.next(false)
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenCalledWith(false)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    all(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    all(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -58,10 +48,20 @@ describe('all', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    all(id, s).subscribe(valueSpy, errorSpy, completeSpy)
+    all(id, s).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
+    expect(completeSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('completes when the predicate function is unsatisfied', () => {
+    const f = jest.fn(id)
+
+    all(f, s).subscribe(nextSpy, errorSpy, completeSpy)
+
+    expect(completeSpy).not.toHaveBeenCalled()
+    s.next(false)
     expect(completeSpy).toHaveBeenCalledTimes(1)
   })
 

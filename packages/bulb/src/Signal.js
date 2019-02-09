@@ -1,5 +1,3 @@
-import { eq, id } from 'fkit'
-
 import Subscription from './Subscription'
 import all from './combinators/all'
 import always from './combinators/always'
@@ -16,9 +14,11 @@ import delay from './combinators/delay'
 import drop from './combinators/drop'
 import dropUntil from './combinators/dropUntil'
 import dropWhile from './combinators/dropWhile'
+import eq from './internal/eq'
 import filter from './combinators/filter'
 import fold from './combinators/fold'
 import hold from './combinators/hold'
+import id from './internal/id'
 import map from './combinators/map'
 import merge from './combinators/merge'
 import sample from './combinators/sample'
@@ -66,7 +66,7 @@ function broadcast (subscriptions, type) {
  * The `mount` function takes an `emit` object as its only argument. This
  * allows the signal to emit values:
  *
- * * `emit.value(a)` - Emits the value `a`.
+ * * `emit.next(a)` - Emits the value `a`.
  * * `emit.error(e)` - Emits the error `e`.
  * * `emit.complete()` - Marks the signal as complete.
  *
@@ -85,7 +85,7 @@ function broadcast (subscriptions, type) {
  * // Create a signal that emits the value 'foo' every second.
  * const s = new Signal(emit => {
  *   // Start the timer and emit a value whenever the timer fires.
- *   const id = setInterval(() => emit.value('foo'), 1000)
+ *   const id = setInterval(() => emit.next('foo'), 1000)
  *
  *   // Return a function to be called when the signal is unmounted.
  *   return () => clearInterval(id)
@@ -131,29 +131,24 @@ export default class Signal {
   }
 
   /**
-   * Concatenates the signals `ss` and emits their values. The returned signal
-   * will join the given signals, waiting for each one to complete before joining
-   * the next, and will complete once *all* of the given signals have completed.
+   * Concatenates the given signals and emits their values. The returned signal
+   * will join the signals, waiting for each one to complete before joining the
+   * next, and will complete once *all* of the signals have completed.
    *
-   * @param {Array} ss The signals to concatenate.
+   * @param {...Signal} signals The signals to concatenate.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal.concat(s, t)
    *
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
-  static concat (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return concat(ss)
+  static concat (...signals) {
+    return concat(signals)
   }
 
   /**
@@ -171,24 +166,26 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that immediately emits the values from an array `as`. The
-   * returned signal will complete after the last value in the array has been
-   * emitted.
+   * Creates a signal that immediately emits the values from an `iterable`.
+   * The returned signal will complete after the last value in the iterable has
+   * been emitted.
    *
-   * @param {Array} as The values to emit.
+   * @param iterable The iterable that contains the values to be emitted.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
+   * const s = Signal.from([1, 2, 3])
    *
    * s.subscribe(console.log) // 1, 2, 3
    */
-  static fromArray (as) {
+  static from (iterable) {
     return new Signal(emit => {
       asap(() => {
-        as.map(a => emit.value(a))
+        for (let a of iterable) {
+          emit.next(a)
+        }
         emit.complete()
       })
     })
@@ -223,7 +220,7 @@ export default class Signal {
         if (e !== 'undefined' && e !== null) {
           emit.error(e)
         } else {
-          emit.value(a)
+          emit.next(a)
         }
       })
     })
@@ -251,16 +248,16 @@ export default class Signal {
 
     return new Signal(emit => {
       if (target.addListener) {
-        target.addListener(type, emit.value)
+        target.addListener(type, emit.next)
       } else if (target.addEventListener) {
-        target.addEventListener(type, emit.value, options.useCapture)
+        target.addEventListener(type, emit.next, options.useCapture)
       }
 
       return () => {
         if (target.addListener) {
-          target.removeListener(type, emit.value)
+          target.removeListener(type, emit.next)
         } else {
-          target.removeEventListener('type', emit.value, options.useCapture)
+          target.removeEventListener('type', emit.next, options.useCapture)
         }
       }
     })
@@ -285,33 +282,28 @@ export default class Signal {
    */
   static fromPromise (p) {
     return new Signal(emit => {
-      p.then(emit.value, emit.error).finally(emit.complete)
+      p.then(emit.next, emit.error).finally(emit.complete)
     })
   }
 
   /**
-   * Merges the signals `ss` and emits their values. The returned signal will
-   * complete once *all* of the given signals have completed.
+   * Merges the given signals and emits their values. The returned signal will
+   * complete once *all* of the signals have completed.
    *
-   * @param {Array} ss The signals to merge.
+   * @param {...Signal} signals The signals to merge.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal.merge(s, t)
    *
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
-  static merge (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return merge(ss)
+  static merge (...signals) {
+    return merge(signals)
   }
 
   /**
@@ -327,23 +319,23 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that emits a value `a`. The returned signal will complete
-   * immediately after the value has been emited.
+   * Creates a signal that immediately emits the `values`. The returned signal
+   * will complete immediately after the values have been emited.
    *
-   * @param a The value to emit.
+   * @param values The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.of(1)
+   * const s = Signal.of(1, 2, 3)
    *
-   * s.subscribe(console.log) // 1
+   * s.subscribe(console.log) // 1, 2, 3
    */
-  static of (a) {
+  static of (...values) {
     return new Signal(emit => {
       asap(() => {
-        emit.value(a)
+        values.map(a => emit.next(a))
         emit.complete()
       })
     })
@@ -366,14 +358,14 @@ export default class Signal {
   static periodic (n) {
     return new Signal(emit => {
       let count = 0
-      const id = setInterval(() => emit.value(count++), n)
+      const id = setInterval(() => emit.next(count++), n)
       return () => clearInterval(id)
     })
   }
 
   /**
-   * Creates a signal that emits an error `e`. The returned signal will
-   * complete immediately after the error has been emited.
+   * Creates a signal that emits an error. The returned signal will complete
+   * immediately after the error has been emited.
    *
    * @param e The error to emit.
    * @returns {Signal} A new signal.
@@ -395,57 +387,47 @@ export default class Signal {
   }
 
   /**
-   * Combines the corresponding values emitted by the signals `ss` into tuples.
-   * The returned signal will complete when *any* of the given signals have
+   * Combines the corresponding values emitted by the given signals into
+   * tuples. The returned signal will complete when *any* of the signals have
    * completed.
    *
-   * @param {Array} ss The signals to zip.
+   * @param {...Signal} signals The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal.zip(s, t)
    *
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
-  static zip (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return zipWith(tuple, ss)
+  static zip (...signals) {
+    return zipWith(tuple, signals)
   }
 
   /**
-   * Applies the function `f` to the corresponding values emitted by the signals
-   * `ss`. The returned signal will complete when *any* of the given signals have
+   * Applies the function `f` to the corresponding values emitted by the given
+   * signals. The returned signal will complete when *any* of the signals have
    * completed.
    *
    * @param {Function} f The function to apply to the corresponding values
    * emitted by the signals.
-   * @param {Array} ss The signals to zip.
+   * @param {...Signal} signals The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal.zipWith((a, b) => a + b, s, t)
    *
    * u.subscribe(console.log) // 5, 7, 9
    */
-  static zipWith (f, ...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return zipWith(f, ss)
+  static zipWith (f, ...signals) {
+    return zipWith(f, signals)
   }
 
   /**
@@ -461,7 +443,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .all(a => a > 0)
    *
    * s.subscribe(console.log) // true
@@ -471,9 +453,9 @@ export default class Signal {
   }
 
   /**
-   * Replaces the values of the signal with a constant `c`.
+   * Replaces the values of the signal with a constant value
    *
-   * @param c The constant value.
+   * @param value The constant value.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -485,8 +467,8 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 1, 1, ...
    */
-  always (c) {
-    return always(c, this)
+  always (value) {
+    return always(value, this)
   }
 
   /**
@@ -502,7 +484,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .any(a => a < 0)
    *
    * s.subscribe(console.log) // false
@@ -512,59 +494,49 @@ export default class Signal {
   }
 
   /**
-   * Emits the values from an array `as` after the signal has completed.
+   * Emits the given values after the signal has completed.
    *
-   * @param {Array} as The values to append.
+   * @param values The values to append.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray[1, 2, 3]
-   *   .append([4, 5, 6])
+   *   .of(1, 2, 3)
+   *   .append(4, 5, 6)
    *
    * s.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
-  append (...as) {
-    // Allow the values to be given as an array.
-    if (as.length === 1 && Array.isArray(as[0])) {
-      as = as[0]
-    }
-
-    return concat([this, Signal.fromArray(as)])
+  append (...values) {
+    return concat([this, Signal.from(values)])
   }
 
   /**
    * Applies the latest function emitted by the signal to latest values emitted
-   * by the signals `ss`. The returned signal will complete when *any* of the
-   * given signals have completed.
+   * by the given signals. The returned signal will complete when *any* of the
+   * signals have completed.
    *
    * The latest function will be called with a number of arguments equal to the
-   * number of signals in `ss`. For example, if the latest function is `(a, b)
-   * => a + b`, then `ss` will need to contain two signals.
+   * number of signals. For example, if the latest function is `(a, b) => a + b`,
+   * then you will need to supply two signals.
    *
-   * @param {Array} ss The value signals.
+   * @param {...Signal} signals The value signals.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal
-   *   .fromArray([(a, b) => a + b])
+   *   .of((a, b) => a + b)
    *   .apply(s, t)
    *
    * u.subscribe(console.log) // 5, 7, 9
    */
-  apply (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return apply(this, ss)
+  apply (...signals) {
+    return apply(this, signals)
   }
 
   /**
@@ -580,7 +552,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3, 4])
+   *   .of(1, 2, 3, 4)
    *   .buffer(2)
    *
    * s.subscribe(console.log) // [1, 2], [2, 4], ...
@@ -612,29 +584,24 @@ export default class Signal {
   }
 
   /**
-   * Concatenates the signals `ss` and emits their values. The returned signal
-   * will join the given signals, waiting for each one to complete before joining
-   * the next, and will complete once *all* of the given signals have completed.
+   * Concatenates the given signals and emits their values. The returned signal
+   * will join the signals, waiting for each one to complete before joining the
+   * next, and will complete once *all* of the signals have completed.
    *
-   * @param {Array} ss The signals to concatenate.
+   * @param {...Signal} signals The signals to concatenate.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = s.concat(t)
    *
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
-  concat (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return concat([this].concat(ss))
+  concat (...signals) {
+    return concat([this].concat(signals))
   }
 
   /**
@@ -650,7 +617,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .concatMap(a => Signal.of(a + 1))
    *
    * s.subscribe(console.log) // 2, 3, 4
@@ -660,10 +627,9 @@ export default class Signal {
   }
 
   /**
-   * Cycles through the values of an array `as` for every value emitted by the
-   * signal.
+   * Cycles through the given values as values are emitted by the signal.
    *
-   * @param {Array} as The values to emit.
+   * @param values The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -675,13 +641,8 @@ export default class Signal {
    *
    * s.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
-  cycle (...as) {
-    // Allow the signals to be given as an array.
-    if (as.length === 1 && Array.isArray(as[0])) {
-      as = as[0]
-    }
-
-    return cycle(as, this)
+  cycle (...values) {
+    return cycle(values, this)
   }
 
   /**
@@ -714,7 +675,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 2, 3, 3, 3])
+   *   .of(1, 2, 2, 3, 3, 3)
    *   .dedupe()
    *
    * s.subscribe(console.log) // 1, 2, 3
@@ -737,7 +698,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 2, 3, 3, 3])
+   *   .of(1, 2, 2, 3, 3, 3)
    *   .dedupeWith((a, b) => a === b)
    *
    * s.subscribe(console.log) // 1, 2, 3
@@ -775,7 +736,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .drop(2)
    *
    * s.subscribe(console.log) // 3
@@ -785,10 +746,10 @@ export default class Signal {
   }
 
   /**
-   * Drops values emitted by the signal until the control signal `s` emits a
+   * Drops values emitted by the signal until the given control signal emits a
    * value.
    *
-   * @param {Signal} s The control signal.
+   * @param {Signal} signal The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -798,8 +759,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 1, 2
    */
-  dropUntil (s) {
-    return dropUntil(s, this)
+  dropUntil (signal) {
+    return dropUntil(signal, this)
   }
 
   /**
@@ -816,7 +777,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .dropWhile(a => a < 2)
    *
    * s.subscribe(console.log) // 2, 3
@@ -826,11 +787,11 @@ export default class Signal {
   }
 
   /**
-   * Switches between the target signals `ss` based on the most recent value
-   * emitted by the signal. The values emitted by the signal represent the
-   * index of the target signal to switch to.
+   * Switches between the given signals based on the most recent value emitted
+   * by the signal. The values emitted by the signal represent the index of the
+   * signal to switch to.
    *
-   * @param {Array} ss The target signals.
+   * @param {...Signal} signals The signals to encode.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -840,37 +801,32 @@ export default class Signal {
    * const t = Signal.of(2)
    * const u = Signal
    *   .periodic(1000)
-   *   .sequential([0, 1])
+   *   .sequential(0, 1)
    *   .encode(s, t)
    *
    * u.subscribe(console.log) // 1, 2
    */
-  encode (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return switchMap(id, map(a => ss[a], this))
+  encode (...signals) {
+    return switchMap(id, map(a => signals[a], this))
   }
 
   /**
-   * Emits a value `a` when the signal has completed.
+   * Emits a value when the signal has completed.
    *
-   * @param a The value to emit.
+   * @param value The value to emit.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray[1, 2, 3]
+   *   .of(1, 2, 3)
    *   .endWith(4)
    *
    * s.subscribe(console.log) // 1, 2, 3, 4
    */
-  endWith (a) {
-    return concat([this, Signal.of(a)])
+  endWith (value) {
+    return concat([this, Signal.of(value)])
   }
 
   /**
@@ -886,7 +842,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .filter(a => a > 1)
    *
    * s.subscribe(console.log) // 2, 3
@@ -904,7 +860,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .first()
    *
    * s.subscribe(console.log) // 1
@@ -919,27 +875,27 @@ export default class Signal {
    *
    * @param {Function} f The accumulator function to apply to each value
    * emitted by the signal.
-   * @param a The starting value.
+   * @param initialValue The initial value.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .fold((a, b) => a + b, 0)
    *
    * s.subscribe(console.log) // 6
    */
-  fold (f, a) {
-    return fold(f, a, this)
+  fold (f, initialValue) {
+    return fold(f, initialValue, this)
   }
 
   /**
-   * Stops emitting values from the signal while the control signal `s` is
+   * Stops emitting values from the signal while the given control signal is
    * truthy.
    *
-   * @param {Signal} s The control signal.
+   * @param {Signal} signal The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -951,8 +907,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
    */
-  hold (s) {
-    return hold(s, this)
+  hold (signal) {
+    return hold(signal, this)
   }
 
   /**
@@ -964,7 +920,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .last()
    *
    * s.subscribe(console.log) // 3
@@ -984,7 +940,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .map(a => a + 1)
    *
    * s.subscribe(console.log) // 2, 3, 4
@@ -994,60 +950,49 @@ export default class Signal {
   }
 
   /**
-   * Merges the signals `ss` and emits their values. The returned signal will
-   * complete once *all* of the given signals have completed.
+   * Merges the given signals and emits their values. The returned signal will
+   * complete once *all* of the signals have completed.
    *
-   * @param {Array} ss The signals to merge.
+   * @param {...Signal} signals The signals to merge.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = s.merge(t)
    *
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
-  merge (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return merge([this].concat(ss))
+  merge (...signals) {
+    return merge([this].concat(signals))
   }
 
   /**
-   * Emits the values from an array `as` before any other values are emitted by
-   * the signal.
+   * Emits the given values before any other values are emitted by the signal.
    *
-   * @param {Array} as The values to prepend.
+   * @param values The values to prepend.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray[1, 2, 3]
+   *   .of(1, 2, 3)
    *   .prepend([4, 5, 6])
    *
    * s.subscribe(console.log) // 4, 5, 6, 1, 2, 3
    */
-  prepend (...as) {
-    // Allow the values to be given as an array.
-    if (as.length === 1 && Array.isArray(as[0])) {
-      as = as[0]
-    }
-
-    return concat([Signal.fromArray(as), this])
+  prepend (...values) {
+    return concat([Signal.from(values), this])
   }
 
   /**
    * Emits the most recent value from the signal whenever there is an event on
-   * the control signal `s`.
+   * the given control signal.
    *
-   * @param {Signal} s The control signal.
+   * @param {Signal} signal The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1060,8 +1005,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
    */
-  sample (s) {
-    return sample(s, this)
+  sample (signal) {
+    return sample(signal, this)
   }
 
   /**
@@ -1071,28 +1016,28 @@ export default class Signal {
    *
    * @param {Function} f The accumulator function to apply to each value
    * emitted by the signal.
-   * @param a The starting value.
+   * @param initialValue The initial value.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .scan((a, b) => a + b, 0)
    *
    * s.subscribe(console.log) // 1, 3, 6
    */
-  scan (f, a) {
-    return scan(f, a, this)
+  scan (f, initialValue) {
+    return scan(f, initialValue, this)
   }
 
   /**
-   * Emits the next value from an array `as` for every value emitted by the
+   * Emits the next value from the given values for every value emitted by the
    * signal. The returned signal will complete immediately after the last value
    * has been emitted.
    *
-   * @param {Array} as The values to emit.
+   * @param values The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1100,36 +1045,31 @@ export default class Signal {
    *
    * const s = Signal
    *   .periodic(1000)
-   *   .sequential([1, 2, 3])
+   *   .sequential(1, 2, 3)
    *
    * s.subscribe(console.log) // 1, 2, 3
    */
-  sequential (...as) {
-    // Allow the values to be given as an array.
-    if (as.length === 1 && Array.isArray(as[0])) {
-      as = as[0]
-    }
-
-    return sequential(as, this)
+  sequential (...values) {
+    return sequential(values, this)
   }
 
   /**
-   * Emits a value `a` before any other values are emitted by the signal.
+   * Emits a value before any other values are emitted by the signal.
    *
-   * @param a The value to emit.
+   * @param value The value to emit.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray[1, 2, 3]
+   *   .of(1, 2, 3)
    *   .startWith(0)
    *
    * s.subscribe(console.log) // 0, 1, 2, 3
    */
-  startWith (a) {
-    return concat([Signal.of(a), this])
+  startWith (value) {
+    return concat([Signal.of(value), this])
   }
 
   /**
@@ -1140,23 +1080,23 @@ export default class Signal {
    *
    * @param {Function} f The transform function to apply to each value emitted
    * by the signal.
-   * @param a The initial state.
+   * @param initialState The initial state.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .stateMachine((a, b, emit) => {
-   *     emit.value(a + b)
+   *     emit.next(a + b)
    *     return a * b
    *   }, 1)
    *
    * s.subscribe(console.log) // 1, 3, 5
    */
-  stateMachine (f, a) {
-    return stateMachine(f, a, this)
+  stateMachine (f, initialState) {
+    return stateMachine(f, initialState, this)
   }
 
   /**
@@ -1165,7 +1105,7 @@ export default class Signal {
    * The `subscribe` method returns a subscription handle, which can be used to
    * unsubscribe from the signal.
    *
-   * @param {Function} [onValue] The callback function called when the signal
+   * @param {Function} [onNext] The callback function called when the signal
    * emits a value.
    * @param {Function} [onError] The callback function called when the signal
    * emits an error.
@@ -1176,7 +1116,7 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
+   * const s = Signal.of(1, 2, 3)
    *
    * // Subscribe to the signal and log emitted values to the console.
    * const subscription = s.subscribe(console.log)
@@ -1184,17 +1124,20 @@ export default class Signal {
    * // When we are done, we can unsubscribe from the signal.
    * subscription.unsubscribe()
    */
-  subscribe (onValue, onError, onComplete) {
+  subscribe (onNext, onError, onComplete) {
     let emit = {}
 
-    if (typeof onValue === 'function') {
-      emit = { value: onValue, error: onError, complete: onComplete }
-    } else if (typeof onValue === 'object') {
-      emit = onValue
+    if (typeof onNext === 'function') {
+      emit = { next: onNext, error: onError, complete: onComplete }
+    } else if (typeof onNext === 'object') {
+      emit = onNext
     }
 
     // Create a new subscription to the signal.
     const subscription = new Subscription(emit, () => {
+      // Mark the subsciption as closed.
+      subscription.closed = true
+
       // Remove the subscription.
       this._subscriptions.delete(subscription)
 
@@ -1208,7 +1151,7 @@ export default class Signal {
     this._subscriptions.add(subscription)
 
     // Notifies the observers that a value was emitted.
-    const value = broadcast(this._subscriptions, 'value')
+    const next = broadcast(this._subscriptions, 'next')
 
     // Notifies the observers that an error was emitted.
     const error = broadcast(this._subscriptions, 'error')
@@ -1222,7 +1165,7 @@ export default class Signal {
 
     // Call the mount function if we're adding the first subscription.
     if (this._subscriptions.size === 1) {
-      this.tryMount({ value, error, complete })
+      this.tryMount({ next, error, complete })
     }
 
     return subscription
@@ -1242,7 +1185,7 @@ export default class Signal {
    * const t = Signal.of(2)
    * const u = Signal
    *   .periodic(1000)
-   *   .sequential([s, t])
+   *   .sequential(s, t)
    *   .switchLatest()
    *
    * u.subscribe(console.log) // 1, 2
@@ -1264,7 +1207,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .switchMap(a => Signal.of(a + 1))
    *
    * s.subscribe(console.log) // 2, 3, 4
@@ -1283,7 +1226,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .take(2)
    *
    * s.subscribe(console.log) // 1, 2
@@ -1293,10 +1236,10 @@ export default class Signal {
   }
 
   /**
-   * Emits values from the signal until the control signal `s` emits a value.
+   * Emits values from the signal until the given control signal emits a value.
    * The returned signal will complete once the control signal emits a value.
    *
-   * @param {Signal} s The control signal.
+   * @param {Signal} signal The control signal.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1306,8 +1249,8 @@ export default class Signal {
    *
    * u.subscribe(console.log) // 0
    */
-  takeUntil (s) {
-    return takeUntil(s, this)
+  takeUntil (signal) {
+    return takeUntil(signal, this)
   }
 
   /**
@@ -1322,7 +1265,7 @@ export default class Signal {
    * @example
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .takeWhile(a => a < 2)
    *
    * s.subscribe(console.log) // 1
@@ -1352,56 +1295,46 @@ export default class Signal {
   }
 
   /**
-   * Combines the corresponding values emitted by the signals `ss` into tuples.
-   * The returned signal will complete when *any* of the given signals have
+   * Combines the corresponding values emitted by the given signals into
+   * tuples. The returned signal will complete when *any* of the signals have
    * completed.
    *
-   * @param {Array} ss The signals to zip.
+   * @param {...Signal} signals The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = s.zip(t)
    *
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
-  zip (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return zipWith(tuple, [this].concat(ss))
+  zip (...signals) {
+    return zipWith(tuple, [this].concat(signals))
   }
 
   /**
-   * Applies the function `f` to the corresponding values emitted by the
-   * signals `ss`. The returned signal will complete when *any* of the given
-   * signals have completed.
+   * Applies the function `f` to the corresponding values emitted by the given
+   * signals. The returned signal will complete when *any* of the signals have
+   * completed.
    *
    * @param {Function} f The function to apply to the corresponding values
    * emitted by the signals.
-   * @param {Array} ss The signals to zip.
+   * @param {...Signal} signals The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = s.zipWith((a, b) => a + b, t)
    *
    * u.subscribe(console.log) // 5, 7, 9
    */
-  zipWith (f, ...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
-    return zipWith(f, [this].concat(ss))
+  zipWith (f, ...signals) {
+    return zipWith(f, [this].concat(signals))
   }
 }

@@ -2,35 +2,35 @@ import mockSignal from '../internal/mockSignal'
 import sample from './sample'
 
 let s, t
-let valueSpy, errorSpy, completeSpy
+let nextSpy, errorSpy, completeSpy
 
 describe('sample', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
 
-    valueSpy = jest.fn()
+    nextSpy = jest.fn()
     errorSpy = jest.fn()
     completeSpy = jest.fn()
   })
 
   it('emits values from the target signal whenever the control signal emits a value', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    sample(s, t).subscribe(nextSpy, errorSpy, completeSpy)
 
-    t.value('foo')
-    expect(valueSpy).not.toHaveBeenCalled()
-    s.value()
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    expect(valueSpy).toHaveBeenLastCalledWith('foo')
-    t.value('bar')
-    expect(valueSpy).toHaveBeenCalledTimes(1)
-    s.value()
-    expect(valueSpy).toHaveBeenCalledTimes(2)
-    expect(valueSpy).toHaveBeenLastCalledWith('bar')
+    t.next('foo')
+    expect(nextSpy).not.toHaveBeenCalled()
+    s.next()
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    expect(nextSpy).toHaveBeenLastCalledWith('foo')
+    t.next('bar')
+    expect(nextSpy).toHaveBeenCalledTimes(1)
+    s.next()
+    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(nextSpy).toHaveBeenLastCalledWith('bar')
   })
 
   it('emits an error when either signal emits an error', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    sample(s, t).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(errorSpy).not.toHaveBeenCalled()
     s.error('foo')
@@ -42,7 +42,7 @@ describe('sample', () => {
   })
 
   it('completes when the target signal is completed', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    sample(s, t).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     t.complete()
@@ -50,7 +50,7 @@ describe('sample', () => {
   })
 
   it('completes when the control signal is completed', () => {
-    sample(s, t).subscribe(valueSpy, errorSpy, completeSpy)
+    sample(s, t).subscribe(nextSpy, errorSpy, completeSpy)
 
     expect(completeSpy).not.toHaveBeenCalled()
     s.complete()
