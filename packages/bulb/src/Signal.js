@@ -135,7 +135,7 @@ export default class Signal {
    * will join the given signals, waiting for each one to complete before joining
    * the next, and will complete once *all* of the given signals have completed.
    *
-   * @param {Array} ss The signals to concatenate.
+   * @param {...Signal} ss The signals to concatenate.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -148,11 +148,6 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   static concat (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return concat(ss)
   }
 
@@ -294,7 +289,7 @@ export default class Signal {
    * Merges the signals `ss` and emits their values. The returned signal will
    * complete once *all* of the given signals have completed.
    *
-   * @param {Array} ss The signals to merge.
+   * @param {...Signal} ss The signals to merge.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -307,11 +302,6 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
   static merge (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return merge(ss)
   }
 
@@ -400,7 +390,7 @@ export default class Signal {
    * The returned signal will complete when *any* of the given signals have
    * completed.
    *
-   * @param {Array} ss The signals to zip.
+   * @param {...Signal} ss The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -413,11 +403,6 @@ export default class Signal {
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
   static zip (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return zipWith(tuple, ss)
   }
 
@@ -428,7 +413,7 @@ export default class Signal {
    *
    * @param {Function} f The function to apply to the corresponding values
    * emitted by the signals.
-   * @param {Array} ss The signals to zip.
+   * @param {...Signal} ss The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -441,11 +426,6 @@ export default class Signal {
    * u.subscribe(console.log) // 5, 7, 9
    */
   static zipWith (f, ...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return zipWith(f, ss)
   }
 
@@ -515,7 +495,7 @@ export default class Signal {
   /**
    * Emits the values from an array `as` after the signal has completed.
    *
-   * @param {Array} as The values to append.
+   * @param as The values to append.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -523,16 +503,11 @@ export default class Signal {
    *
    * const s = Signal
    *   .of(1, 2, 3)
-   *   .append([4, 5, 6])
+   *   .append(4, 5, 6)
    *
    * s.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   append (...as) {
-    // Allow the values to be given as an array.
-    if (as.length === 1 && Array.isArray(as[0])) {
-      as = as[0]
-    }
-
     return concat([this, Signal.fromArray(as)])
   }
 
@@ -545,7 +520,7 @@ export default class Signal {
    * number of signals in `ss`. For example, if the latest function is `(a, b)
    * => a + b`, then `ss` will need to contain two signals.
    *
-   * @param {Array} ss The value signals.
+   * @param {...Signal} ss The value signals.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -560,11 +535,6 @@ export default class Signal {
    * u.subscribe(console.log) // 5, 7, 9
    */
   apply (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return apply(this, ss)
   }
 
@@ -617,7 +587,7 @@ export default class Signal {
    * will join the given signals, waiting for each one to complete before joining
    * the next, and will complete once *all* of the given signals have completed.
    *
-   * @param {Array} ss The signals to concatenate.
+   * @param {...Signal} ss The signals to concatenate.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -630,11 +600,6 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   concat (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return concat([this].concat(ss))
   }
 
@@ -664,7 +629,7 @@ export default class Signal {
    * Cycles through the values of an array `as` for every value emitted by the
    * signal.
    *
-   * @param {Array} as The values to emit.
+   * @param as The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -677,11 +642,6 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
   cycle (...as) {
-    // Allow the signals to be given as an array.
-    if (as.length === 1 && Array.isArray(as[0])) {
-      as = as[0]
-    }
-
     return cycle(as, this)
   }
 
@@ -831,7 +791,7 @@ export default class Signal {
    * emitted by the signal. The values emitted by the signal represent the
    * index of the target signal to switch to.
    *
-   * @param {Array} ss The target signals.
+   * @param {...Signal} ss The target signals.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -841,17 +801,12 @@ export default class Signal {
    * const t = Signal.of(2)
    * const u = Signal
    *   .periodic(1000)
-   *   .sequential([0, 1])
+   *   .sequential(0, 1)
    *   .encode(s, t)
    *
    * u.subscribe(console.log) // 1, 2
    */
   encode (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return switchMap(id, map(a => ss[a], this))
   }
 
@@ -998,7 +953,7 @@ export default class Signal {
    * Merges the signals `ss` and emits their values. The returned signal will
    * complete once *all* of the given signals have completed.
    *
-   * @param {Array} ss The signals to merge.
+   * @param {...Signal} ss The signals to merge.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1011,11 +966,6 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
   merge (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return merge([this].concat(ss))
   }
 
@@ -1023,7 +973,7 @@ export default class Signal {
    * Emits the values from an array `as` before any other values are emitted by
    * the signal.
    *
-   * @param {Array} as The values to prepend.
+   * @param as The values to prepend.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1036,11 +986,6 @@ export default class Signal {
    * s.subscribe(console.log) // 4, 5, 6, 1, 2, 3
    */
   prepend (...as) {
-    // Allow the values to be given as an array.
-    if (as.length === 1 && Array.isArray(as[0])) {
-      as = as[0]
-    }
-
     return concat([Signal.fromArray(as), this])
   }
 
@@ -1093,7 +1038,7 @@ export default class Signal {
    * signal. The returned signal will complete immediately after the last value
    * has been emitted.
    *
-   * @param {Array} as The values to emit.
+   * @param as The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1101,16 +1046,11 @@ export default class Signal {
    *
    * const s = Signal
    *   .periodic(1000)
-   *   .sequential([1, 2, 3])
+   *   .sequential(1, 2, 3)
    *
    * s.subscribe(console.log) // 1, 2, 3
    */
   sequential (...as) {
-    // Allow the values to be given as an array.
-    if (as.length === 1 && Array.isArray(as[0])) {
-      as = as[0]
-    }
-
     return sequential(as, this)
   }
 
@@ -1246,7 +1186,7 @@ export default class Signal {
    * const t = Signal.of(2)
    * const u = Signal
    *   .periodic(1000)
-   *   .sequential([s, t])
+   *   .sequential(s, t)
    *   .switchLatest()
    *
    * u.subscribe(console.log) // 1, 2
@@ -1360,7 +1300,7 @@ export default class Signal {
    * The returned signal will complete when *any* of the given signals have
    * completed.
    *
-   * @param {Array} ss The signals to zip.
+   * @param {...Signal} ss The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1373,11 +1313,6 @@ export default class Signal {
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
   zip (...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return zipWith(tuple, [this].concat(ss))
   }
 
@@ -1388,7 +1323,7 @@ export default class Signal {
    *
    * @param {Function} f The function to apply to the corresponding values
    * emitted by the signals.
-   * @param {Array} ss The signals to zip.
+   * @param {...Signal} ss The signals to zip.
    * @returns {Signal} A new signal.
    * @example
    *
@@ -1401,11 +1336,6 @@ export default class Signal {
    * u.subscribe(console.log) // 5, 7, 9
    */
   zipWith (f, ...ss) {
-    // Allow the signals to be given as an array.
-    if (ss.length === 1 && Array.isArray(ss[0])) {
-      ss = ss[0]
-    }
-
     return zipWith(f, [this].concat(ss))
   }
 }

@@ -1,5 +1,4 @@
 import events from 'events'
-import { range } from 'fkit'
 
 import Signal from './Signal'
 import all from './combinators/all'
@@ -75,17 +74,13 @@ describe('Signal', () => {
   })
 
   describe('.concat', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
 
-    it('calls the combinator when given an array', () => {
-      Signal.concat([s, t, u])
-      expect(concat).toHaveBeenLastCalledWith([s, t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       Signal.concat(s, t, u)
+
       expect(concat).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -125,11 +120,12 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        next(n)
-        expect(nextSpy.mock.calls[index][0]).toBe(n)
-      }, this)
-
+      next(1)
+      expect(nextSpy).toHaveBeenLastCalledWith(1)
+      next(2)
+      expect(nextSpy).toHaveBeenLastCalledWith(2)
+      next(3)
+      expect(nextSpy).toHaveBeenLastCalledWith(3)
       expect(completeSpy).not.toHaveBeenCalled()
     })
   })
@@ -141,11 +137,12 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        emitter.emit('lol', n)
-        expect(nextSpy.mock.calls[index][0]).toBe(n)
-      }, this)
-
+      emitter.emit('lol', 1)
+      expect(nextSpy).toHaveBeenLastCalledWith(1)
+      emitter.emit('lol', 2)
+      expect(nextSpy).toHaveBeenLastCalledWith(2)
+      emitter.emit('lol', 3)
+      expect(nextSpy).toHaveBeenLastCalledWith(3)
       expect(completeSpy).not.toHaveBeenCalled()
     })
   })
@@ -165,29 +162,25 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        next(n)
-        expect(nextSpy.mock.calls[index][0]).toBe(n)
-      }, this)
-
+      next(1)
+      expect(nextSpy).toHaveBeenLastCalledWith(1)
+      next(2)
+      expect(nextSpy).toHaveBeenLastCalledWith(2)
+      next(3)
+      expect(nextSpy).toHaveBeenLastCalledWith(3)
       complete()
-
       expect(completeSpy).toHaveBeenCalled()
     })
   })
 
   describe('.merge', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
 
-    it('calls the combinator when given an array', () => {
-      Signal.merge([s, t, u])
-      expect(merge).toHaveBeenLastCalledWith([s, t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       Signal.merge(s, t, u)
+
       expect(merge).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -210,10 +203,9 @@ describe('Signal', () => {
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      range(1, 3).forEach((n, index) => {
-        expect(nextSpy.mock.calls[index][0]).toBe(n)
-      }, this)
-
+      expect(nextSpy).toHaveBeenNthCalledWith(1, 1)
+      expect(nextSpy).toHaveBeenNthCalledWith(2, 2)
+      expect(nextSpy).toHaveBeenNthCalledWith(3, 3)
       expect(completeSpy).toHaveBeenCalled()
     })
   })
@@ -250,57 +242,26 @@ describe('Signal', () => {
   })
 
   describe('.zip', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
 
-    it('calls the combinator when given an array', () => {
-      Signal.zip([s, t, u])
-      expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       Signal.zip(s, t, u)
       expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
     })
   })
 
   describe('.zipWith', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
-    const f = jest.fn()
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
+      const f = jest.fn()
 
-    it('calls the combinator when given an array', () => {
-      Signal.zipWith(f, [s, t, u])
-      expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       Signal.zipWith(f, s, t, u)
+
       expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
-    })
-  })
-
-  describe('#append', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    let spy
-
-    beforeEach(() => {
-      spy = jest.spyOn(Signal, 'fromArray').mockReturnValue(t)
-    })
-
-    it('calls the combinator when given an array', () => {
-      s.append([1, 2, 3])
-      expect(concat).toHaveBeenLastCalledWith([s, t])
-      expect(spy).toHaveBeenLastCalledWith([1, 2, 3])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
-      s.append(1, 2, 3)
-      expect(concat).toHaveBeenLastCalledWith([s, t])
-      expect(spy).toHaveBeenLastCalledWith([1, 2, 3])
     })
   })
 
@@ -331,38 +292,24 @@ describe('Signal', () => {
   })
 
   describe('#append', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    let spy
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const spy = jest.spyOn(Signal, 'from').mockReturnValue(t)
 
-    beforeEach(() => {
-      spy = jest.spyOn(Signal, 'fromArray').mockReturnValue(t)
-    })
+      s.append(1, 2, 3)
 
-    it('calls the combinator when given an array', () => {
-      s.append([1, 2])
-      expect(spy).toHaveBeenLastCalledWith([1, 2])
       expect(concat).toHaveBeenLastCalledWith([s, t])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
-      s.append(1, 2)
-      expect(spy).toHaveBeenLastCalledWith([1, 2])
-      expect(concat).toHaveBeenLastCalledWith([s, t])
+      expect(spy).toHaveBeenLastCalledWith([1, 2, 3])
     })
   })
 
   describe('#apply', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
 
-    it('calls the combinator when given an array', () => {
-      s.apply([t, u])
-      expect(apply).toHaveBeenLastCalledWith(s, [t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       s.apply(t, u)
       expect(apply).toHaveBeenLastCalledWith(s, [t, u])
     })
@@ -386,16 +333,11 @@ describe('Signal', () => {
   })
 
   describe('#concat', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
 
-    it('calls the combinator when given an array', () => {
-      s.concat([t, u])
-      expect(concat).toHaveBeenLastCalledWith([s, t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       s.concat(t, u)
       expect(concat).toHaveBeenLastCalledWith([s, t, u])
     })
@@ -411,14 +353,8 @@ describe('Signal', () => {
   })
 
   describe('#cycle', () => {
-    const s = mockSignal()
-
-    it('calls the combinator when given an array', () => {
-      s.cycle([1, 2, 3])
-      expect(cycle).toHaveBeenLastCalledWith([1, 2, 3], s)
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
+    it('calls the combinator', () => {
+      const s = mockSignal()
       s.cycle(1, 2, 3)
       expect(cycle).toHaveBeenLastCalledWith([1, 2, 3], s)
     })
@@ -484,23 +420,12 @@ describe('Signal', () => {
   })
 
   describe('#encode', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
-    let spy
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
+      const spy = map.mockImplementation((f, s) => f(0))
 
-    beforeEach(() => {
-      spy = map.mockImplementation((f, s) => f(0))
-    })
-
-    it('calls the combinator when given an array', () => {
-      s.encode([t, u])
-
-      expect(spy).toHaveBeenLastCalledWith(expect.any(Function), s)
-      expect(switchMap).toHaveBeenLastCalledWith(id, t)
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       s.encode(t, u)
 
       expect(spy).toHaveBeenLastCalledWith(expect.any(Function), s)
@@ -554,38 +479,25 @@ describe('Signal', () => {
   })
 
   describe('#merge', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
 
-    it('calls the combinator when given an array', () => {
-      s.merge([t, u])
-      expect(merge).toHaveBeenLastCalledWith([s, t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       s.merge(t, u)
+
       expect(merge).toHaveBeenLastCalledWith([s, t, u])
     })
   })
 
   describe('#prepend', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    let spy
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const spy = jest.spyOn(Signal, 'from').mockReturnValue(t)
 
-    beforeEach(() => {
-      spy = jest.spyOn(Signal, 'fromArray').mockReturnValue(t)
-    })
-
-    it('calls the combinator when given an array', () => {
-      s.prepend([1, 2, 3])
-      expect(spy).toHaveBeenLastCalledWith([1, 2, 3])
-      expect(concat).toHaveBeenLastCalledWith([t, s])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       s.prepend(1, 2, 3)
+
       expect(spy).toHaveBeenLastCalledWith([1, 2, 3])
       expect(concat).toHaveBeenLastCalledWith([t, s])
     })
@@ -610,14 +522,8 @@ describe('Signal', () => {
   })
 
   describe('#sequential', () => {
-    const s = mockSignal()
-
-    it('calls the combinator when given an array', () => {
-      s.sequential([1, 2, 3])
-      expect(sequential).toHaveBeenLastCalledWith([1, 2, 3], s)
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
+    it('calls the combinator', () => {
+      const s = mockSignal()
       s.sequential(1, 2, 3)
       expect(sequential).toHaveBeenLastCalledWith([1, 2, 3], s)
     })
@@ -628,7 +534,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const spy = jest.spyOn(Signal, 'of').mockReturnValue(t)
+
       s.startWith(1)
+
       expect(spy).toHaveBeenLastCalledWith(1)
       expect(concat).toHaveBeenLastCalledWith([t, s])
     })
@@ -650,7 +558,6 @@ describe('Signal', () => {
 
       s.subscribe()
       expect(mount).toHaveBeenCalled()
-
       s.subscribe()
       expect(mount).toHaveBeenCalledTimes(1)
     })
@@ -768,34 +675,26 @@ describe('Signal', () => {
   })
 
   describe('#zip', () => {
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
 
-    it('calls the combinator when given an array', () => {
-      s.zip([t, u])
-      expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       s.zip(t, u)
+
       expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
     })
   })
 
   describe('#zipWith', () => {
-    const f = jest.fn()
-    const s = mockSignal()
-    const t = mockSignal()
-    const u = mockSignal()
+    it('calls the combinator', () => {
+      const f = jest.fn()
+      const s = mockSignal()
+      const t = mockSignal()
+      const u = mockSignal()
 
-    it('calls the combinator when given an array', () => {
-      s.zipWith(f, [t, u])
-      expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
-    })
-
-    it('calls the combinator when given multiple arguments', () => {
       s.zipWith(f, t, u)
+
       expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
     })
   })
