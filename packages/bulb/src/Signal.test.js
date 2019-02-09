@@ -78,9 +78,7 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-
       Signal.concat(s, t, u)
-
       expect(concat).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -190,9 +188,7 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-
       Signal.merge(s, t, u)
-
       expect(merge).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -258,7 +254,6 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-
       Signal.zip(s, t, u)
       expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
     })
@@ -270,9 +265,7 @@ describe('Signal', () => {
       const t = mockSignal()
       const u = mockSignal()
       const f = jest.fn()
-
       Signal.zipWith(f, s, t, u)
-
       expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
     })
   })
@@ -321,7 +314,6 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-
       s.apply(t, u)
       expect(apply).toHaveBeenLastCalledWith(s, [t, u])
     })
@@ -349,7 +341,6 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-
       s.concat(t, u)
       expect(concat).toHaveBeenLastCalledWith([s, t, u])
     })
@@ -495,9 +486,7 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-
       s.merge(t, u)
-
       expect(merge).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -691,9 +680,7 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-
       s.zip(t, u)
-
       expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
     })
   })
@@ -704,9 +691,7 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-
       s.zipWith(f, t, u)
-
       expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
     })
   })
