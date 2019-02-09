@@ -1,6 +1,6 @@
 {
   "name": "bulb",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "A reactive programming library for JavaScript.",
   "homepage": "https://github.com/nullobject/bulb",
   "author": "Josh Bassett <josh.bassett@gmail.com> (https://joshbassett.info)",

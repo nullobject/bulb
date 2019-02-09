@@ -1,6 +1,6 @@
 {
   "name": "bulb-input",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Bulb package for working with the keyboard and mouse.",
   "homepage": "https://github.com/nullobject/bulb",
   "author": "Josh Bassett <josh.bassett@gmail.com> (https://joshbassett.info)",
@@ -41,6 +41,6 @@
     "standard": "^12.0.1"
   },
   "peerDependencies": {
-    "bulb": "~4.0"
+    "bulb": "~5.0"
   }
 }
