@@ -141,8 +141,8 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal.concat(s, t)
    *
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
@@ -175,6 +175,7 @@ export default class Signal {
    * returned signal will complete after the last value in the array has been
    * emitted.
    *
+   * @deprecated
    * @param {Array} as The values to emit.
    * @returns {Signal} A new signal.
    * @example
@@ -299,8 +300,8 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal.merge(s, t)
    *
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
@@ -327,23 +328,23 @@ export default class Signal {
   }
 
   /**
-   * Creates a signal that emits a value `a`. The returned signal will complete
-   * immediately after the value has been emited.
+   * Creates a signal that immediately emits the values `as`. The returned
+   * signal will complete immediately after the values have been emited.
    *
-   * @param a The value to emit.
+   * @param as The values to emit.
    * @returns {Signal} A new signal.
    * @example
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.of(1)
+   * const s = Signal.of(1, 2, 3)
    *
-   * s.subscribe(console.log) // 1
+   * s.subscribe(console.log) // 1, 2, 3
    */
-  static of (a) {
+  static of (...as) {
     return new Signal(emit => {
       asap(() => {
-        emit.next(a)
+        as.map(a => emit.next(a))
         emit.complete()
       })
     })
@@ -405,8 +406,8 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal.zip(s, t)
    *
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
@@ -433,8 +434,8 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal.zipWith((a, b) => a + b, s, t)
    *
    * u.subscribe(console.log) // 5, 7, 9
@@ -461,7 +462,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .all(a => a > 0)
    *
    * s.subscribe(console.log) // true
@@ -502,7 +503,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .any(a => a < 0)
    *
    * s.subscribe(console.log) // false
@@ -521,7 +522,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray[1, 2, 3]
+   *   .of(1, 2, 3)
    *   .append([4, 5, 6])
    *
    * s.subscribe(console.log) // 1, 2, 3, 4, 5, 6
@@ -550,10 +551,10 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = Signal
-   *   .fromArray([(a, b) => a + b])
+   *   .of((a, b) => a + b)
    *   .apply(s, t)
    *
    * u.subscribe(console.log) // 5, 7, 9
@@ -580,7 +581,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3, 4])
+   *   .of(1, 2, 3, 4)
    *   .buffer(2)
    *
    * s.subscribe(console.log) // [1, 2], [2, 4], ...
@@ -622,8 +623,8 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = s.concat(t)
    *
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
@@ -650,7 +651,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .concatMap(a => Signal.of(a + 1))
    *
    * s.subscribe(console.log) // 2, 3, 4
@@ -714,7 +715,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 2, 3, 3, 3])
+   *   .of(1, 2, 2, 3, 3, 3)
    *   .dedupe()
    *
    * s.subscribe(console.log) // 1, 2, 3
@@ -737,7 +738,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 2, 3, 3, 3])
+   *   .of(1, 2, 2, 3, 3, 3)
    *   .dedupeWith((a, b) => a === b)
    *
    * s.subscribe(console.log) // 1, 2, 3
@@ -775,7 +776,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .drop(2)
    *
    * s.subscribe(console.log) // 3
@@ -816,7 +817,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .dropWhile(a => a < 2)
    *
    * s.subscribe(console.log) // 2, 3
@@ -864,7 +865,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray[1, 2, 3]
+   *   .of(1, 2, 3)
    *   .endWith(4)
    *
    * s.subscribe(console.log) // 1, 2, 3, 4
@@ -886,7 +887,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .filter(a => a > 1)
    *
    * s.subscribe(console.log) // 2, 3
@@ -904,7 +905,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .first()
    *
    * s.subscribe(console.log) // 1
@@ -926,7 +927,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .fold((a, b) => a + b, 0)
    *
    * s.subscribe(console.log) // 6
@@ -964,7 +965,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .last()
    *
    * s.subscribe(console.log) // 3
@@ -984,7 +985,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .map(a => a + 1)
    *
    * s.subscribe(console.log) // 2, 3, 4
@@ -1003,8 +1004,8 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = s.merge(t)
    *
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
@@ -1029,7 +1030,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray[1, 2, 3]
+   *   .of(1, 2, 3)
    *   .prepend([4, 5, 6])
    *
    * s.subscribe(console.log) // 4, 5, 6, 1, 2, 3
@@ -1078,7 +1079,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .scan((a, b) => a + b, 0)
    *
    * s.subscribe(console.log) // 1, 3, 6
@@ -1123,7 +1124,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray[1, 2, 3]
+   *   .of(1, 2, 3)
    *   .startWith(0)
    *
    * s.subscribe(console.log) // 0, 1, 2, 3
@@ -1147,7 +1148,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .stateMachine((a, b, emit) => {
    *     emit.next(a + b)
    *     return a * b
@@ -1176,7 +1177,7 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
+   * const s = Signal.of(1, 2, 3)
    *
    * // Subscribe to the signal and log emitted values to the console.
    * const subscription = s.subscribe(console.log)
@@ -1267,7 +1268,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .switchMap(a => Signal.of(a + 1))
    *
    * s.subscribe(console.log) // 2, 3, 4
@@ -1286,7 +1287,7 @@ export default class Signal {
    * import { Signal } from 'bulb'
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .take(2)
    *
    * s.subscribe(console.log) // 1, 2
@@ -1325,7 +1326,7 @@ export default class Signal {
    * @example
    *
    * const s = Signal
-   *   .fromArray([1, 2, 3])
+   *   .of(1, 2, 3)
    *   .takeWhile(a => a < 2)
    *
    * s.subscribe(console.log) // 1
@@ -1365,8 +1366,8 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = s.zip(t)
    *
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
@@ -1393,8 +1394,8 @@ export default class Signal {
    *
    * import { Signal } from 'bulb'
    *
-   * const s = Signal.fromArray([1, 2, 3])
-   * const t = Signal.fromArray([4, 5, 6])
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
    * const u = s.zipWith((a, b) => a + b, t)
    *
    * u.subscribe(console.log) // 5, 7, 9

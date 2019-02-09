@@ -205,12 +205,15 @@ describe('Signal', () => {
   })
 
   describe('.of', () => {
-    it('returns a signal that emits a single value', () => {
-      const s = Signal.of(1)
+    it('returns a signal that emits the given values', () => {
+      const s = Signal.of(1, 2, 3)
 
       s.subscribe(nextSpy, errorSpy, completeSpy)
 
-      expect(nextSpy).toHaveBeenLastCalledWith(1)
+      range(1, 3).forEach((n, index) => {
+        expect(nextSpy.mock.calls[index][0]).toBe(n)
+      }, this)
+
       expect(completeSpy).toHaveBeenCalled()
     })
   })

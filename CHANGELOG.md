@@ -3,6 +3,7 @@
 * Rename `value` -> `next` to match the [observable proposal](https://github.com/tc39/proposal-observable)
 * Remove runtime dependency on [Fkit](https://github.com/nullobject/fkit)
 * Mark subscriptions as closed when an observer unsubscribes
+* Allow `Signal.of` to take multiple arguments
 
 ## 4.0.1 (2019-02-04)
 
