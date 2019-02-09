@@ -29,7 +29,7 @@
     "@babel/preset-env": "^7.3.1",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^24.0.0",
-    "bulb": "~4.0.0",
+    "bulb": "~5.0.0",
     "documentation": "^9.1.1",
     "jest": "^24.0.0",
     "rollup": "^1.1.2",
