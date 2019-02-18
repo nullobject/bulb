@@ -637,7 +637,7 @@ export default class Signal {
    *
    * const s = Signal
    *   .periodic(1000)
-   *   .cycle([1, 2, 3])
+   *   .cycle(1, 2, 3)
    *
    * s.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
@@ -980,7 +980,7 @@ export default class Signal {
    *
    * const s = Signal
    *   .of(1, 2, 3)
-   *   .prepend([4, 5, 6])
+   *   .prepend(4, 5, 6)
    *
    * s.subscribe(console.log) // 4, 5, 6, 1, 2, 3
    */
