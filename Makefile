@@ -8,6 +8,7 @@ dev:
 	@cd packages/bulb; npx rollup -c -w
 
 dist:
+	@rm -rf packages/bulb/dist packages/bulb-input/dist
 	@cd packages/bulb; npx rollup -c
 	@cd packages/bulb-input; npx rollup -c
 
@@ -34,4 +35,4 @@ publish-npm:
 	@cd packages/bulb-input; npm publish
 
 clean:
-	@rm -rf dist docs node_modules
+	@rm -rf packages/bulb/dist packages/bulb-input/dist docs
