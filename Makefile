@@ -1,4 +1,4 @@
-.PHONY: clean dev dist doc lint node_modules publish-api publish-npm release test
+.PHONY: clean dev dist doc lint node_modules publish-api publish-npm release test watch
 
 node_modules:
 	@cd packages/bulb; npm install
