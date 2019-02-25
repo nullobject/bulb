@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Filters the signal `s` by only emitting values that satisfy a predicate
  * function `p`.
@@ -7,7 +5,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function filter (p, s) {
-  return new Signal(emit => {
+  return emit => {
     let index = 0
 
     const subscription = s.subscribe({ ...emit,
@@ -15,5 +13,5 @@ export default function filter (p, s) {
     })
 
     return () => subscription.unsubscribe()
-  })
+  }
 }

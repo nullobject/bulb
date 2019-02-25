@@ -4,63 +4,66 @@ import mockSignal from '../internal/mockSignal'
 import takeWhile from './takeWhile'
 
 let s
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('takeWhile', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('emits values from the target signal while the predicate is true', () => {
-    takeWhile(lt(3), s).subscribe(nextSpy, errorSpy, completeSpy)
+    takeWhile(lt(3), s)(emit)
 
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.next(1)
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenLastCalledWith(1)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenLastCalledWith(1)
     s.next(2)
-    expect(nextSpy).toHaveBeenCalledTimes(2)
-    expect(nextSpy).toHaveBeenLastCalledWith(2)
+    expect(next).toHaveBeenCalledTimes(2)
+    expect(next).toHaveBeenLastCalledWith(2)
     s.next(3)
-    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(next).toHaveBeenCalledTimes(2)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    takeWhile(always(), s).subscribe(nextSpy, errorSpy, completeSpy)
+    takeWhile(always(), s)(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith('foo')
   })
 
   it('completes when the predicate is false', () => {
-    takeWhile(lt(3), s).subscribe(nextSpy, errorSpy, completeSpy)
+    takeWhile(lt(3), s)(emit)
 
     s.next(1)
     s.next(2)
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.next(3)
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
   it('completes when the given signal is completed', () => {
-    takeWhile(always(), s).subscribe(nextSpy, errorSpy, completeSpy)
+    takeWhile(always(), s)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = takeWhile(always(), s).subscribe()
+  it('unmounts the given signal when the unsubscribe function is called', () => {
+    const unsubscribe = takeWhile(always(), s)(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })

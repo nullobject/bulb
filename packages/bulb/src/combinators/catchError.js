@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Applies a function `f`, that returns a `Signal`, to the first error emitted
  * by the signal `s`. The returned signal will emit values from the signal
@@ -8,7 +6,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function catchError (f, s) {
-  return new Signal(emit => {
+  return emit => {
     let outerSubscription
     let innerSubscription
 
@@ -17,9 +15,7 @@ export default function catchError (f, s) {
         outerSubscription.unsubscribe()
         outerSubscription = null
         const a = f(e)
-        if (!(a instanceof Signal)) {
-          throw new Error('Signal value must be a signal')
-        }
+        if (!(a && a.subscribe instanceof Function)) { throw new Error('Value must be a signal') }
         innerSubscription = a.subscribe({ ...emit })
       }
     })
@@ -28,5 +24,5 @@ export default function catchError (f, s) {
       if (innerSubscription) { innerSubscription.unsubscribe() }
       if (outerSubscription) { outerSubscription.unsubscribe() }
     }
-  })
+  }
 }

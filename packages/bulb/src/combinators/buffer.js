@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Buffers values emitted by the signal `s` and emits the buffer contents when
  * it is full. The buffer contents will be emitted when the signal completes,
@@ -8,7 +6,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function buffer (n = Infinity, s) {
-  return new Signal(emit => {
+  return emit => {
     const buffer = []
 
     const flush = () => {
@@ -28,5 +26,5 @@ export default function buffer (n = Infinity, s) {
     })
 
     return () => subscription.unsubscribe()
-  })
+  }
 }

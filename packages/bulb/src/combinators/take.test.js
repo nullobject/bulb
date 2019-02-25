@@ -2,63 +2,64 @@ import mockSignal from '../internal/mockSignal'
 import take from './take'
 
 let s
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('take', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('takes the given number of values', () => {
-    take(2, s).subscribe(nextSpy, errorSpy, completeSpy)
+    take(2, s)(emit)
 
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.next(1)
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenLastCalledWith(1)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenLastCalledWith(1)
     s.next(2)
-    expect(nextSpy).toHaveBeenCalledTimes(2)
-    expect(nextSpy).toHaveBeenLastCalledWith(2)
-    s.next(3)
-    expect(nextSpy).toHaveBeenCalledTimes(2)
+    expect(next).toHaveBeenCalledTimes(2)
+    expect(next).toHaveBeenLastCalledWith(2)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    take(1, s).subscribe(nextSpy, errorSpy, completeSpy)
+    take(1, s)(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith('foo')
   })
 
   it('completes after the given number of values', () => {
-    take(2, s).subscribe(nextSpy, errorSpy, completeSpy)
+    take(2, s)(emit)
 
     s.next()
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.next()
-    s.next()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
   it('completes when the given signal is completed', () => {
-    take(1, s).subscribe(nextSpy, errorSpy, completeSpy)
+    take(1, s)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = take(1, s).subscribe()
+  it('unmounts the given signal when the unsubscribe function is called', () => {
+    const unsubscribe = take(1, s)(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })

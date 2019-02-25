@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Applies a function `f`, that returns a `Signal`, to each value emitted by
  * the signal `s`. The returned signal will join all signals returned by the
@@ -8,7 +6,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function concatMap (f, s) {
-  return new Signal(emit => {
+  return emit => {
     let innerSubscription
 
     const queue = []
@@ -24,9 +22,7 @@ export default function concatMap (f, s) {
         const a = queue.shift()
         if (a !== undefined) {
           const b = f(a)
-          if (!(b instanceof Signal)) {
-            throw new Error('Signal value must be a signal')
-          }
+          if (!(b && b.subscribe instanceof Function)) { throw new Error('Value must be a signal') }
           innerSubscription = b.subscribe({ ...emit, complete: subscribeNext })
         }
       }
@@ -44,5 +40,5 @@ export default function concatMap (f, s) {
       if (innerSubscription) { innerSubscription.unsubscribe() }
       outerSubscription.unsubscribe()
     }
-  })
+  }
 }

@@ -34,33 +34,33 @@ import tuple from './internal/tuple'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
 
-jest.mock('./combinators/all')
-jest.mock('./combinators/always')
-jest.mock('./combinators/any')
-jest.mock('./combinators/apply')
-jest.mock('./combinators/buffer')
-jest.mock('./combinators/catchError')
-jest.mock('./combinators/concat')
-jest.mock('./combinators/concatMap')
-jest.mock('./combinators/cycle')
-jest.mock('./combinators/debounce')
-jest.mock('./combinators/dedupeWith')
-jest.mock('./combinators/delay')
-jest.mock('./combinators/drop')
-jest.mock('./combinators/dropUntil')
-jest.mock('./combinators/dropWhile')
-jest.mock('./combinators/map')
-jest.mock('./combinators/merge')
-jest.mock('./combinators/sample')
-jest.mock('./combinators/scan')
-jest.mock('./combinators/sequential')
-jest.mock('./combinators/stateMachine')
-jest.mock('./combinators/switchMap')
-jest.mock('./combinators/take')
-jest.mock('./combinators/takeUntil')
-jest.mock('./combinators/takeWhile')
-jest.mock('./combinators/throttle')
-jest.mock('./combinators/zipWith')
+jest.mock('./combinators/all', () => jest.fn(() => () => {}))
+jest.mock('./combinators/always', () => jest.fn(() => () => {}))
+jest.mock('./combinators/any', () => jest.fn(() => () => {}))
+jest.mock('./combinators/apply', () => jest.fn(() => () => {}))
+jest.mock('./combinators/buffer', () => jest.fn(() => () => {}))
+jest.mock('./combinators/catchError', () => jest.fn(() => () => {}))
+jest.mock('./combinators/concat', () => jest.fn(() => () => {}))
+jest.mock('./combinators/concatMap', () => jest.fn(() => () => {}))
+jest.mock('./combinators/cycle', () => jest.fn(() => () => {}))
+jest.mock('./combinators/debounce', () => jest.fn(() => () => {}))
+jest.mock('./combinators/dedupeWith', () => jest.fn(() => () => {}))
+jest.mock('./combinators/delay', () => jest.fn(() => () => {}))
+jest.mock('./combinators/drop', () => jest.fn(() => () => {}))
+jest.mock('./combinators/dropUntil', () => jest.fn(() => () => {}))
+jest.mock('./combinators/dropWhile', () => jest.fn(() => () => {}))
+jest.mock('./combinators/map', () => jest.fn(() => () => {}))
+jest.mock('./combinators/merge', () => jest.fn(() => () => {}))
+jest.mock('./combinators/sample', () => jest.fn(() => () => {}))
+jest.mock('./combinators/scan', () => jest.fn(() => () => {}))
+jest.mock('./combinators/sequential', () => jest.fn(() => () => {}))
+jest.mock('./combinators/stateMachine', () => jest.fn(() => () => {}))
+jest.mock('./combinators/switchMap', () => jest.fn(() => () => {}))
+jest.mock('./combinators/take', () => jest.fn(() => () => {}))
+jest.mock('./combinators/takeUntil', () => jest.fn(() => () => {}))
+jest.mock('./combinators/takeWhile', () => jest.fn(() => () => {}))
+jest.mock('./combinators/throttle', () => jest.fn(() => () => {}))
+jest.mock('./combinators/zipWith', () => jest.fn(() => () => {}))
 jest.mock('./scheduler')
 
 let nextSpy, errorSpy, completeSpy
@@ -427,17 +427,15 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
-      const spy = map.mockImplementation((f, s) => f(0))
 
       s.encode(t, u)
 
-      expect(spy).toHaveBeenLastCalledWith(expect.any(Function), s)
-      expect(switchMap).toHaveBeenLastCalledWith(id, t)
+      expect(map).toHaveBeenLastCalledWith(expect.any(Function), s)
     })
   })
 
   describe('#endWith', () => {
-    it('appends the given value', () => {
+    it('calls the combinator', () => {
       const s = mockSignal()
       const t = mockSignal()
       const spy = jest.spyOn(Signal, 'of').mockReturnValue(t)
@@ -531,7 +529,7 @@ describe('Signal', () => {
   })
 
   describe('#startWith', () => {
-    it('prepends the given value', () => {
+    it('calls the combinator', () => {
       const s = mockSignal()
       const t = mockSignal()
       const spy = jest.spyOn(Signal, 'of').mockReturnValue(t)

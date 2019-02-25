@@ -2,54 +2,57 @@ import always from './always'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('always', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('replaces signal values with a constant', () => {
-    always(0, s).subscribe(nextSpy, errorSpy, completeSpy)
+    always(0, s)(emit)
 
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.next(1)
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenCalledWith(0)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenCalledWith(0)
     s.next(2)
-    expect(nextSpy).toHaveBeenCalledTimes(2)
-    expect(nextSpy).toHaveBeenCalledWith(0)
+    expect(next).toHaveBeenCalledTimes(2)
+    expect(next).toHaveBeenCalledWith(0)
     s.next(3)
-    expect(nextSpy).toHaveBeenCalledTimes(3)
-    expect(nextSpy).toHaveBeenCalledWith(0)
+    expect(next).toHaveBeenCalledTimes(3)
+    expect(next).toHaveBeenCalledWith(0)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    always(0, s).subscribe(nextSpy, errorSpy, completeSpy)
+    always(0, s)(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith('foo')
   })
 
   it('completes when the given signal is completed', () => {
-    always(0, s).subscribe(nextSpy, errorSpy, completeSpy)
+    always(0, s)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = always(0, s).subscribe()
+  it('unmounts the given signal when the unsubscribe function is called', () => {
+    const unsubscribe = always(0, s)(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })

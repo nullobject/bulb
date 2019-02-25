@@ -1,12 +1,10 @@
-import Signal from '../Signal'
-
 /**
  * Delays each value emitted by the signal `s` for `n` milliseconds.
  *
  * @private
  */
 export default function delay (n, s) {
-  return new Signal(emit => {
+  return emit => {
     let id
 
     const subscription = s.subscribe({ ...emit,
@@ -17,5 +15,5 @@ export default function delay (n, s) {
       clearTimeout(id)
       subscription.unsubscribe()
     }
-  })
+  }
 }

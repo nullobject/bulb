@@ -2,73 +2,76 @@ import hold from './hold'
 import mockSignal from '../internal/mockSignal'
 
 let s, t
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('hold', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('stops emitting values from the target signal while the control signal is truthy', () => {
-    hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+    hold(s, t)(emit)
 
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.next(false)
     t.next('foo')
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenLastCalledWith('foo')
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenLastCalledWith('foo')
     s.next(true)
     t.next('bar')
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenLastCalledWith('foo')
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenLastCalledWith('foo')
   })
 
   it('emits an error when either signal emits an error', () => {
-    hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+    hold(s, t)(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenLastCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenLastCalledWith('foo')
     t.error('bar')
-    expect(errorSpy).toHaveBeenCalledTimes(2)
-    expect(errorSpy).toHaveBeenLastCalledWith('bar')
+    expect(error).toHaveBeenCalledTimes(2)
+    expect(error).toHaveBeenLastCalledWith('bar')
   })
 
   it('completes when the target signal is completed', () => {
-    hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+    hold(s, t)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     t.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
   it('completes when the control signal is completed', () => {
-    hold(s, t).subscribe(nextSpy, errorSpy, completeSpy)
+    hold(s, t)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the control signal when the returned signal is unsubscribed', () => {
-    const a = hold(s, t).subscribe()
+  it('unmounts the control signal when the unsubscribe function is called', () => {
+    const unsubscribe = hold(s, t)(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the target signal when the returned signal is unsubscribed', () => {
-    const a = hold(s, t).subscribe()
+  it('unmounts the target signal when the unsubscribe function is called', () => {
+    const unsubscribe = hold(s, t)(emit)
 
     expect(t.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(t.unmount).toHaveBeenCalledTimes(1)
   })
 })

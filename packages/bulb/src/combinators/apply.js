@@ -1,14 +1,11 @@
-import Signal from '../Signal'
-
 /**
  * Applies the latest function emitted by the signal `s` to latest values
- * emitted by the signals `ts`. The returned signal will complete when *any* of
- * the given signals have completed.
+ * emitted by the signals `ts`.
  *
  * @private
  */
 export default function apply (s, ts) {
-  return new Signal(emit => {
+  return emit => {
     let f
     let mask = 0
 
@@ -47,5 +44,5 @@ export default function apply (s, ts) {
     )
 
     return () => subscriptions.forEach(s => s.unsubscribe())
-  })
+  }
 }

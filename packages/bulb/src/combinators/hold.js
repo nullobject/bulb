@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Stops emitting values from the target signal `t` while the control signal
  * `s` is truthy.
@@ -7,7 +5,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function hold (s, t) {
-  return new Signal(emit => {
+  return emit => {
     let enabled = true
 
     const subscriptions = [
@@ -22,5 +20,5 @@ export default function hold (s, t) {
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())
-  })
+  }
 }

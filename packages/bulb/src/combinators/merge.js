@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Merges the signals `ss` and emits their values. The returned signal will
  * complete once *all* of the given signals have completed.
@@ -7,7 +5,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function merge (ss) {
-  return new Signal(emit => {
+  return emit => {
     let n = 0
 
     const subscriptions = ss.map(s => s.subscribe({ ...emit,
@@ -15,5 +13,5 @@ export default function merge (ss) {
     }))
 
     return () => subscriptions.forEach(s => s.unsubscribe())
-  })
+  }
 }

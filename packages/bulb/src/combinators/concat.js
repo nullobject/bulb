@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Concatenates the signals `ss` and emits their values. The returned signal
  * will join the given signals, waiting for each one to complete before joining
@@ -8,7 +6,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function concat (ss) {
-  return new Signal(emit => {
+  return emit => {
     let subscription
 
     const subscribeNext = () => {
@@ -26,5 +24,5 @@ export default function concat (ss) {
     return () => {
       if (subscription) { subscription.unsubscribe() }
     }
-  })
+  }
 }
