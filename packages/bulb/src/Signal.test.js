@@ -78,7 +78,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
+
       Signal.concat(s, t, u)
+
       expect(concat).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -188,7 +190,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
+
       Signal.merge(s, t, u)
+
       expect(merge).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -254,7 +258,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
+
       Signal.zip(s, t, u)
+
       expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
     })
   })
@@ -265,7 +271,9 @@ describe('Signal', () => {
       const t = mockSignal()
       const u = mockSignal()
       const f = jest.fn()
+
       Signal.zipWith(f, s, t, u)
+
       expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
     })
   })
@@ -274,7 +282,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const p = jest.fn()
       const s = mockSignal()
+
       s.all(p)
+
       expect(all).toHaveBeenLastCalledWith(p, s)
     })
   })
@@ -282,7 +292,9 @@ describe('Signal', () => {
   describe('#always', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.always(1)
+
       expect(always).toHaveBeenLastCalledWith(1, s)
     })
   })
@@ -291,7 +303,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const p = jest.fn()
       const s = mockSignal()
+
       s.any(p)
+
       expect(any).toHaveBeenLastCalledWith(p, s)
     })
   })
@@ -314,7 +328,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
+
       s.apply(t, u)
+
       expect(apply).toHaveBeenLastCalledWith(s, [t, u])
     })
   })
@@ -322,7 +338,9 @@ describe('Signal', () => {
   describe('#buffer', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.buffer(1)
+
       expect(buffer).toHaveBeenLastCalledWith(1, s)
     })
   })
@@ -331,7 +349,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const f = jest.fn()
       const s = mockSignal()
+
       s.catchError(f)
+
       expect(catchError).toHaveBeenLastCalledWith(f, s)
     })
   })
@@ -341,7 +361,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
+
       s.concat(t, u)
+
       expect(concat).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -350,7 +372,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const f = jest.fn()
       const s = mockSignal()
+
       s.concatMap(f)
+
       expect(concatMap).toHaveBeenLastCalledWith(f, s)
     })
   })
@@ -358,7 +382,9 @@ describe('Signal', () => {
   describe('#cycle', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.cycle(1, 2, 3)
+
       expect(cycle).toHaveBeenLastCalledWith([1, 2, 3], s)
     })
   })
@@ -366,7 +392,9 @@ describe('Signal', () => {
   describe('#debounce', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.debounce(1)
+
       expect(debounce).toHaveBeenLastCalledWith(1, s)
     })
   })
@@ -374,7 +402,9 @@ describe('Signal', () => {
   describe('#dedupe', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.dedupe()
+
       expect(dedupeWith).toHaveBeenLastCalledWith(eq, s)
     })
   })
@@ -383,7 +413,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const f = jest.fn()
       const s = mockSignal()
+
       s.dedupeWith(f)
+
       expect(dedupeWith).toHaveBeenLastCalledWith(f, s)
     })
   })
@@ -391,7 +423,9 @@ describe('Signal', () => {
   describe('#delay', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.delay(1)
+
       expect(delay).toHaveBeenLastCalledWith(1, s)
     })
   })
@@ -399,7 +433,9 @@ describe('Signal', () => {
   describe('#drop', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.drop(1)
+
       expect(drop).toHaveBeenLastCalledWith(1, s)
     })
   })
@@ -408,7 +444,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
       const t = mockSignal()
+
       s.dropUntil(t)
+
       expect(dropUntil).toHaveBeenLastCalledWith(t, s)
     })
   })
@@ -417,7 +455,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const p = jest.fn()
       const s = mockSignal()
+
       s.dropWhile(p)
+
       expect(dropWhile).toHaveBeenLastCalledWith(p, s)
     })
   })
@@ -450,7 +490,9 @@ describe('Signal', () => {
   describe('#first', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.first()
+
       expect(take).toHaveBeenLastCalledWith(1, s)
     })
   })
@@ -474,7 +516,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const f = jest.fn()
       const s = mockSignal()
+
       s.map(f)
+
       expect(map).toHaveBeenLastCalledWith(f, s)
     })
   })
@@ -484,7 +528,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
+
       s.merge(t, u)
+
       expect(merge).toHaveBeenLastCalledWith([s, t, u])
     })
   })
@@ -506,7 +552,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
       const t = mockSignal()
+
       s.sample(t)
+
       expect(sample).toHaveBeenLastCalledWith(t, s)
     })
   })
@@ -515,7 +563,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const f = jest.fn()
       const s = mockSignal()
+
       s.scan(f, 1)
+
       expect(scan).toHaveBeenLastCalledWith(f, 1, s)
     })
   })
@@ -523,7 +573,9 @@ describe('Signal', () => {
   describe('#sequential', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.sequential(1, 2, 3)
+
       expect(sequential).toHaveBeenLastCalledWith([1, 2, 3], s)
     })
   })
@@ -545,7 +597,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const f = jest.fn()
       const s = mockSignal()
+
       s.stateMachine(f, 1)
+
       expect(stateMachine).toHaveBeenLastCalledWith(f, 1, s)
     })
   })
@@ -634,7 +688,9 @@ describe('Signal', () => {
   describe('#switchLatest', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.switchLatest()
+
       expect(switchMap).toHaveBeenLastCalledWith(id, s)
     })
   })
@@ -642,7 +698,9 @@ describe('Signal', () => {
   describe('#take', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.take(1)
+
       expect(take).toHaveBeenLastCalledWith(1, s)
     })
   })
@@ -651,7 +709,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
       const t = mockSignal()
+
       s.takeUntil(t)
+
       expect(takeUntil).toHaveBeenLastCalledWith(t, s)
     })
   })
@@ -660,7 +720,9 @@ describe('Signal', () => {
     it('calls the combinator', () => {
       const p = jest.fn()
       const s = mockSignal()
+
       s.takeWhile(p)
+
       expect(takeWhile).toHaveBeenLastCalledWith(p, s)
     })
   })
@@ -668,7 +730,9 @@ describe('Signal', () => {
   describe('#throttle', () => {
     it('calls the combinator', () => {
       const s = mockSignal()
+
       s.throttle(1)
+
       expect(throttle).toHaveBeenLastCalledWith(1, s)
     })
   })
@@ -678,7 +742,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
+
       s.zip(t, u)
+
       expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
     })
   })
@@ -689,7 +755,9 @@ describe('Signal', () => {
       const s = mockSignal()
       const t = mockSignal()
       const u = mockSignal()
+
       s.zipWith(f, t, u)
+
       expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
     })
   })
