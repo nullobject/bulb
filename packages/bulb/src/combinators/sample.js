@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Emits the most recent value from the target signal `t` whenever the control
  * signal `s` emits a value.
@@ -7,7 +5,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function sample (s, t) {
-  return new Signal(emit => {
+  return emit => {
     let buffer
 
     const subscriptions = [
@@ -18,5 +16,5 @@ export default function sample (s, t) {
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())
-  })
+  }
 }

@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Waits until `n` milliseconds after the last burst of values before emitting
  * the most recent value from the signal `s`.
@@ -7,7 +5,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function debounce (n, s) {
-  return new Signal(emit => {
+  return emit => {
     let buffer
     let id
 
@@ -33,5 +31,5 @@ export default function debounce (n, s) {
       clearTimeout(id)
       subscription.unsubscribe()
     }
-  })
+  }
 }

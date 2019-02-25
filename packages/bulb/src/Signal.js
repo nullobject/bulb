@@ -449,7 +449,7 @@ export default class Signal {
    * s.subscribe(console.log) // true
    */
   all (p) {
-    return all(p, this)
+    return new Signal(all(p, this))
   }
 
   /**
@@ -468,7 +468,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 1, 1, ...
    */
   always (value) {
-    return always(value, this)
+    return new Signal(always(value, this))
   }
 
   /**
@@ -490,7 +490,7 @@ export default class Signal {
    * s.subscribe(console.log) // false
    */
   any (p) {
-    return any(p, this)
+    return new Signal(any(p, this))
   }
 
   /**
@@ -509,7 +509,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   append (...values) {
-    return concat([this, Signal.from(values)])
+    return new Signal(concat([this, Signal.from(values)]))
   }
 
   /**
@@ -536,7 +536,7 @@ export default class Signal {
    * u.subscribe(console.log) // 5, 7, 9
    */
   apply (...signals) {
-    return apply(this, signals)
+    return new Signal(apply(this, signals))
   }
 
   /**
@@ -558,7 +558,7 @@ export default class Signal {
    * s.subscribe(console.log) // [1, 2], [2, 4], ...
    */
   buffer (n = Infinity) {
-    return buffer(n, this)
+    return new Signal(buffer(n, this))
   }
 
   /**
@@ -580,7 +580,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1
    */
   catchError (f) {
-    return catchError(f, this)
+    return new Signal(catchError(f, this))
   }
 
   /**
@@ -601,7 +601,7 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   concat (...signals) {
-    return concat([this].concat(signals))
+    return new Signal(concat([this].concat(signals)))
   }
 
   /**
@@ -623,7 +623,7 @@ export default class Signal {
    * s.subscribe(console.log) // 2, 3, 4
    */
   concatMap (f) {
-    return concatMap(f, this)
+    return new Signal(concatMap(f, this))
   }
 
   /**
@@ -642,7 +642,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2, 3, 1, 2, 3, ...
    */
   cycle (...values) {
-    return cycle(values, this)
+    return new Signal(cycle(values, this))
   }
 
   /**
@@ -663,7 +663,7 @@ export default class Signal {
    * s.subscribe(console.log) // [1, 1], [2, 2], ...
    */
   debounce (n) {
-    return debounce(n, this)
+    return new Signal(debounce(n, this))
   }
 
   /**
@@ -681,7 +681,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2, 3
    */
   dedupe () {
-    return dedupeWith(eq, this)
+    return new Signal(dedupeWith(eq, this))
   }
 
   /**
@@ -704,7 +704,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2, 3
    */
   dedupeWith (f) {
-    return dedupeWith(f, this)
+    return new Signal(dedupeWith(f, this))
   }
 
   /**
@@ -723,7 +723,7 @@ export default class Signal {
    * s.subscribe(console.log) // [1, 1], [2, 2], ...
    */
   delay (n) {
-    return delay(n, this)
+    return new Signal(delay(n, this))
   }
 
   /**
@@ -742,7 +742,7 @@ export default class Signal {
    * s.subscribe(console.log) // 3
    */
   drop (n) {
-    return drop(n, this)
+    return new Signal(drop(n, this))
   }
 
   /**
@@ -760,7 +760,7 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 2
    */
   dropUntil (signal) {
-    return dropUntil(signal, this)
+    return new Signal(dropUntil(signal, this))
   }
 
   /**
@@ -783,7 +783,7 @@ export default class Signal {
    * s.subscribe(console.log) // 2, 3
    */
   dropWhile (p) {
-    return dropWhile(p, this)
+    return new Signal(dropWhile(p, this))
   }
 
   /**
@@ -807,7 +807,8 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 2
    */
   encode (...signals) {
-    return switchMap(id, map(a => signals[a], this))
+    const s = new Signal(map(a => signals[a], this))
+    return new Signal(switchMap(id, s))
   }
 
   /**
@@ -826,7 +827,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2, 3, 4
    */
   endWith (value) {
-    return concat([this, Signal.of(value)])
+    return new Signal(concat([this, Signal.of(value)]))
   }
 
   /**
@@ -848,7 +849,7 @@ export default class Signal {
    * s.subscribe(console.log) // 2, 3
    */
   filter (p) {
-    return filter(p, this)
+    return new Signal(filter(p, this))
   }
 
   /**
@@ -866,7 +867,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1
    */
   first () {
-    return take(1, this)
+    return new Signal(take(1, this))
   }
 
   /**
@@ -888,7 +889,7 @@ export default class Signal {
    * s.subscribe(console.log) // 6
    */
   fold (f, initialValue) {
-    return fold(f, initialValue, this)
+    return new Signal(fold(f, initialValue, this))
   }
 
   /**
@@ -908,7 +909,7 @@ export default class Signal {
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
    */
   hold (signal) {
-    return hold(signal, this)
+    return new Signal(hold(signal, this))
   }
 
   /**
@@ -926,7 +927,7 @@ export default class Signal {
    * s.subscribe(console.log) // 3
    */
   last () {
-    return fold((a, b) => b, null, this)
+    return new Signal(fold((a, b) => b, null, this))
   }
 
   /**
@@ -946,7 +947,7 @@ export default class Signal {
    * s.subscribe(console.log) // 2, 3, 4
    */
   map (f) {
-    return map(f, this)
+    return new Signal(map(f, this))
   }
 
   /**
@@ -966,7 +967,7 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
   merge (...signals) {
-    return merge([this].concat(signals))
+    return new Signal(merge([this].concat(signals)))
   }
 
   /**
@@ -985,7 +986,7 @@ export default class Signal {
    * s.subscribe(console.log) // 4, 5, 6, 1, 2, 3
    */
   prepend (...values) {
-    return concat([Signal.from(values), this])
+    return new Signal(concat([Signal.from(values), this]))
   }
 
   /**
@@ -1006,7 +1007,7 @@ export default class Signal {
    * u.subscribe(console.log) // [1, 1], [2, 2], ...
    */
   sample (signal) {
-    return sample(signal, this)
+    return new Signal(sample(signal, this))
   }
 
   /**
@@ -1029,7 +1030,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 3, 6
    */
   scan (f, initialValue) {
-    return scan(f, initialValue, this)
+    return new Signal(scan(f, initialValue, this))
   }
 
   /**
@@ -1050,7 +1051,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2, 3
    */
   sequential (...values) {
-    return sequential(values, this)
+    return new Signal(sequential(values, this))
   }
 
   /**
@@ -1069,7 +1070,7 @@ export default class Signal {
    * s.subscribe(console.log) // 0, 1, 2, 3
    */
   startWith (value) {
-    return concat([Signal.of(value), this])
+    return new Signal(concat([Signal.of(value), this]))
   }
 
   /**
@@ -1096,7 +1097,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 3, 5
    */
   stateMachine (f, initialState) {
-    return stateMachine(f, initialState, this)
+    return new Signal(stateMachine(f, initialState, this))
   }
 
   /**
@@ -1191,7 +1192,7 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 2
    */
   switchLatest () {
-    return switchMap(id, this)
+    return new Signal(switchMap(id, this))
   }
 
   /**
@@ -1213,7 +1214,7 @@ export default class Signal {
    * s.subscribe(console.log) // 2, 3, 4
    */
   switchMap (f) {
-    return switchMap(f, this)
+    return new Signal(switchMap(f, this))
   }
 
   /**
@@ -1232,7 +1233,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1, 2
    */
   take (n) {
-    return take(n, this)
+    return new Signal(take(n, this))
   }
 
   /**
@@ -1250,7 +1251,7 @@ export default class Signal {
    * u.subscribe(console.log) // 0
    */
   takeUntil (signal) {
-    return takeUntil(signal, this)
+    return new Signal(takeUntil(signal, this))
   }
 
   /**
@@ -1271,7 +1272,7 @@ export default class Signal {
    * s.subscribe(console.log) // 1
    */
   takeWhile (p) {
-    return takeWhile(p, this)
+    return new Signal(takeWhile(p, this))
   }
 
   /**
@@ -1291,7 +1292,7 @@ export default class Signal {
    * s.subscribe(console.log) // [1, 1], [2, 2], ...
    */
   throttle (n) {
-    return throttle(n, this)
+    return new Signal(throttle(n, this))
   }
 
   /**
@@ -1312,7 +1313,7 @@ export default class Signal {
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
   zip (...signals) {
-    return zipWith(tuple, [this].concat(signals))
+    return new Signal(zipWith(tuple, [this].concat(signals)))
   }
 
   /**
@@ -1335,6 +1336,6 @@ export default class Signal {
    * u.subscribe(console.log) // 5, 7, 9
    */
   zipWith (f, ...signals) {
-    return zipWith(f, [this].concat(signals))
+    return new Signal(zipWith(f, [this].concat(signals)))
   }
 }

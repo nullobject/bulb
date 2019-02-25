@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Limits the rate at which values are emitted by the signal `s`. Values are
  * dropped when the rate limit is exceeded.
@@ -7,7 +5,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function throttle (n, s) {
-  return new Signal(emit => {
+  return emit => {
     let lastTime = null
 
     const subscription = s.subscribe({ ...emit,
@@ -21,5 +19,5 @@ export default function throttle (n, s) {
     })
 
     return () => subscription.unsubscribe()
-  })
+  }
 }

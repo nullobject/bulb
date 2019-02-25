@@ -4,52 +4,55 @@ import dedupeWith from './dedupeWith'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('dedupeWith', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('removes duplicate signal values with a comparator function', () => {
-    dedupeWith(eq, s).subscribe(nextSpy, errorSpy, completeSpy)
+    dedupeWith(eq, s)(emit)
 
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.next('foo')
     s.next('foo')
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenLastCalledWith('foo')
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenLastCalledWith('foo')
     s.next('bar')
-    expect(nextSpy).toHaveBeenCalledTimes(2)
-    expect(nextSpy).toHaveBeenLastCalledWith('bar')
+    expect(next).toHaveBeenCalledTimes(2)
+    expect(next).toHaveBeenLastCalledWith('bar')
   })
 
   it('emits an error when the given signal emits an error', () => {
-    dedupeWith(eq, s).subscribe(nextSpy, errorSpy, completeSpy)
+    dedupeWith(eq, s)(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith('foo')
   })
 
   it('completes when the given signal is completed', () => {
-    dedupeWith(eq, s).subscribe(nextSpy, errorSpy, completeSpy)
+    dedupeWith(eq, s)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = dedupeWith(eq, s).subscribe()
+  it('unmounts the given signal when the unsubscribe function is called', () => {
+    const unsubscribe = dedupeWith(eq, s)(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })

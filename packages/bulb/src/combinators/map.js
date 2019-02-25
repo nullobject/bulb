@@ -1,12 +1,10 @@
-import Signal from '../Signal'
-
 /**
  * Applies a function `f` to each value emitted by the signal `s`.
  *
  * @private
  */
 export default function map (f, s) {
-  return new Signal(emit => {
+  return emit => {
     let index = 0
 
     const subscription = s.subscribe({ ...emit,
@@ -14,5 +12,5 @@ export default function map (f, s) {
     })
 
     return () => subscription.unsubscribe()
-  })
+  }
 }

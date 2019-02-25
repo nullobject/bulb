@@ -2,64 +2,67 @@ import concat from './concat'
 import mockSignal from '../internal/mockSignal'
 
 let s, t
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('concat', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('emits a value when the current signal emits a value', () => {
-    concat([s, t]).subscribe(nextSpy, errorSpy, completeSpy)
+    concat([s, t])(emit)
 
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.next(1)
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenLastCalledWith(1)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenLastCalledWith(1)
     s.next(2)
-    expect(nextSpy).toHaveBeenCalledTimes(2)
-    expect(nextSpy).toHaveBeenLastCalledWith(2)
+    expect(next).toHaveBeenCalledTimes(2)
+    expect(next).toHaveBeenLastCalledWith(2)
     s.complete()
     t.next(3)
-    expect(nextSpy).toHaveBeenCalledTimes(3)
-    expect(nextSpy).toHaveBeenLastCalledWith(3)
+    expect(next).toHaveBeenCalledTimes(3)
+    expect(next).toHaveBeenLastCalledWith(3)
   })
 
   it('emits an error when the current signal emit an error', () => {
-    concat([s, t]).subscribe(nextSpy, errorSpy, completeSpy)
+    concat([s, t])(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenLastCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenLastCalledWith('foo')
     s.complete()
     t.error('bar')
-    expect(errorSpy).toHaveBeenCalledTimes(2)
-    expect(errorSpy).toHaveBeenLastCalledWith('bar')
+    expect(error).toHaveBeenCalledTimes(2)
+    expect(error).toHaveBeenLastCalledWith('bar')
   })
 
   it('completes when all of the given signals are completed', () => {
-    concat([s, t]).subscribe(nextSpy, errorSpy, completeSpy)
+    concat([s, t])(emit)
 
     s.complete()
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     t.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signals when the returned signal is unsubscribed', () => {
-    const a = concat([s, t]).subscribe()
+  it('unmounts the given signals when the unsubscribe function is called', () => {
+    const unsubscribe = concat([s, t])(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
     s.complete()
     expect(s.unmount).toHaveBeenCalledTimes(1)
     expect(t.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(t.unmount).toHaveBeenCalledTimes(1)
   })
 })

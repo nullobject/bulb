@@ -4,50 +4,53 @@ import cycle from './cycle'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('cycle', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('cycles through the values of an array', () => {
     const t = cycle(range(1, 3), s)
 
-    t.subscribe(nextSpy, errorSpy, completeSpy)
+    t(emit)
 
     range(0, 6).forEach(n => {
       s.next()
-      expect(nextSpy).toHaveBeenNthCalledWith(n + 1, (n % 3) + 1)
+      expect(next).toHaveBeenNthCalledWith(n + 1, (n % 3) + 1)
     })
   })
 
   it('emits an error when the given signal emits an error', () => {
-    cycle([], s).subscribe(nextSpy, errorSpy, completeSpy)
+    cycle([], s)(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith('foo')
   })
 
   it('completes when the given signal is completed', () => {
-    cycle([], s).subscribe(nextSpy, errorSpy, completeSpy)
+    cycle([], s)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = cycle([], s).subscribe()
+  it('unmounts the given signal when the unsubscribe function is called', () => {
+    const unsubscribe = cycle([], s)(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })

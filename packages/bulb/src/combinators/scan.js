@@ -1,4 +1,3 @@
-import Signal from '../Signal'
 import { asap } from '../scheduler'
 
 /**
@@ -8,7 +7,7 @@ import { asap } from '../scheduler'
  * @private
  */
 export default function scan (f, a, s) {
-  return new Signal(emit => {
+  return emit => {
     let index = 0
 
     // Emit the starting value.
@@ -22,5 +21,5 @@ export default function scan (f, a, s) {
     })
 
     return () => subscription.unsubscribe()
-  })
+  }
 }

@@ -4,21 +4,24 @@ import fold from './fold'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('fold', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('folds a function over the signal values', () => {
     const f = jest.fn(add)
 
-    fold(f, 0, s).subscribe(nextSpy, errorSpy, completeSpy)
+    fold(f, 0, s)(emit)
 
     s.next(1)
     expect(f).toHaveBeenLastCalledWith(0, 1, 0)
@@ -26,34 +29,34 @@ describe('fold', () => {
     expect(f).toHaveBeenLastCalledWith(1, 2, 1)
     s.next(3)
     expect(f).toHaveBeenLastCalledWith(3, 3, 2)
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.complete(1)
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenCalledWith(6)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenCalledWith(6)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    fold(id, 0, s).subscribe(nextSpy, errorSpy, completeSpy)
+    fold(id, 0, s)(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith('foo')
   })
 
   it('completes when the given signal is completed', () => {
-    fold(id, 0, s).subscribe(nextSpy, errorSpy, completeSpy)
+    fold(id, 0, s)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = fold(id, 0, s).subscribe()
+  it('unmounts the given signal when the unsubscribe function is called', () => {
+    const unsubscribe = fold(id, 0, s)(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })

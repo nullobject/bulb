@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Emits values from the target signal `t` until the control signal `s` emits a
  * value. The returned signal will complete once the control signal emits a
@@ -8,12 +6,12 @@ import Signal from '../Signal'
  * @private
  */
 export default function takeUntil (s, t) {
-  return new Signal(emit => {
+  return emit => {
     const subscriptions = [
       t.subscribe(emit),
       s.subscribe({ ...emit, next (a) { emit.complete() } })
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())
-  })
+  }
 }

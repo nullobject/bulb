@@ -1,7 +1,11 @@
-import Signal from '../Signal'
-
+/**
+ * Emits `true` if *all* the values emitted by the signal `s` satisfy a
+ * predicate function `p`.
+ *
+ * @private
+ */
 export default function all (p, s) {
-  return new Signal(emit => {
+  return emit => {
     let result = true
 
     const subscription = s.subscribe({ ...emit,
@@ -16,5 +20,5 @@ export default function all (p, s) {
     })
 
     return () => subscription.unsubscribe()
-  })
+  }
 }

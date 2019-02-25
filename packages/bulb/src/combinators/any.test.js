@@ -4,73 +4,76 @@ import any from './any'
 import mockSignal from '../internal/mockSignal'
 
 let s
-let nextSpy, errorSpy, completeSpy
+let next, error, complete
+let emit
 
 describe('any', () => {
   beforeEach(() => {
     s = mockSignal()
 
-    nextSpy = jest.fn()
-    errorSpy = jest.fn()
-    completeSpy = jest.fn()
+    next = jest.fn()
+    error = jest.fn()
+    complete = jest.fn()
+
+    emit = { next, error, complete }
   })
 
   it('emits true when any value emitted by the given signal satisfies the predicate function', () => {
     const f = jest.fn(id)
 
-    any(f, s).subscribe(nextSpy, errorSpy, completeSpy)
+    any(f, s)(emit)
 
     s.next(false)
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.next(true)
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenCalledWith(true)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenCalledWith(true)
   })
 
   it('emits false when none of the values emitted by the given signal satisfy the predicate function', () => {
     const f = jest.fn(id)
 
-    any(f, s).subscribe(nextSpy, errorSpy, completeSpy)
+    any(f, s)(emit)
 
     s.next(false)
-    expect(nextSpy).not.toHaveBeenCalled()
+    expect(next).not.toHaveBeenCalled()
     s.complete()
-    expect(nextSpy).toHaveBeenCalledTimes(1)
-    expect(nextSpy).toHaveBeenCalledWith(false)
+    expect(next).toHaveBeenCalledTimes(1)
+    expect(next).toHaveBeenCalledWith(false)
   })
 
   it('emits an error when the given signal emits an error', () => {
-    any(id, s).subscribe(nextSpy, errorSpy, completeSpy)
+    any(id, s)(emit)
 
-    expect(errorSpy).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     s.error('foo')
-    expect(errorSpy).toHaveBeenCalledTimes(1)
-    expect(errorSpy).toHaveBeenCalledWith('foo')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith('foo')
   })
 
   it('completes when the given signal is completed', () => {
-    any(id, s).subscribe(nextSpy, errorSpy, completeSpy)
+    any(id, s)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
   it('completes when the predicate function is satisfied', () => {
     const f = jest.fn(id)
 
-    any(f, s).subscribe(nextSpy, errorSpy, completeSpy)
+    any(f, s)(emit)
 
-    expect(completeSpy).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
     s.next(true)
-    expect(completeSpy).toHaveBeenCalledTimes(1)
+    expect(complete).toHaveBeenCalledTimes(1)
   })
 
-  it('unmounts the given signal when the returned signal is unsubscribed', () => {
-    const a = any(id, s).subscribe()
+  it('unmounts the given signal when the returned function is called', () => {
+    const unsubscribe = any(id, s)(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
-    a.unsubscribe()
+    unsubscribe()
     expect(s.unmount).toHaveBeenCalledTimes(1)
   })
 })

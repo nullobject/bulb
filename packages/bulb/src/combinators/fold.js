@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Applies an accumulator function `f` to each value emitted by the signal `s`.
  * The accumulated value will be emitted when the signal has completed.
@@ -7,7 +5,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function fold (f, a, s) {
-  return new Signal(emit => {
+  return emit => {
     let index = 0
 
     const subscription = s.subscribe({ ...emit,
@@ -20,5 +18,5 @@ export default function fold (f, a, s) {
     })
 
     return () => subscription.unsubscribe()
-  })
+  }
 }

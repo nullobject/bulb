@@ -1,5 +1,3 @@
-import Signal from '../Signal'
-
 /**
  * Drops values emitted by the target signal `t` until the control signal `s`
  * emits a value.
@@ -7,7 +5,7 @@ import Signal from '../Signal'
  * @private
  */
 export default function dropUntil (s, t) {
-  return new Signal(emit => {
+  return emit => {
     let enabled = false
 
     const subscriptions = [
@@ -20,5 +18,5 @@ export default function dropUntil (s, t) {
     ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())
-  })
+  }
 }
