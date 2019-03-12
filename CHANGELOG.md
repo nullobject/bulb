@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add dev dependency on Fkit
+
 ## 5.0.0 (2019-02-09)
 
 * Rename `value` -> `next` to match the [observable proposal](https://github.com/tc39/proposal-observable)

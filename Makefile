@@ -1,4 +1,4 @@
-.PHONY: clean dev dist doc lint node_modules publish-api publish-npm release test
+.PHONY: clean dev dist doc lint node_modules publish-api publish-npm release test watch
 
 node_modules:
 	@cd packages/bulb; npm install
@@ -8,6 +8,7 @@ dev:
 	@cd packages/bulb; npx rollup -c -w
 
 dist:
+	@rm -rf packages/bulb/dist packages/bulb-input/dist
 	@cd packages/bulb; npx rollup -c
 	@cd packages/bulb-input; npx rollup -c
 
@@ -34,4 +35,4 @@ publish-npm:
 	@cd packages/bulb-input; npm publish
 
 clean:
-	@rm -rf dist docs node_modules
+	@rm -rf packages/bulb/dist packages/bulb-input/dist docs

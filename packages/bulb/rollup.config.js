@@ -1,4 +1,5 @@
 import babel from 'rollup-plugin-babel'
+import commonjs from 'rollup-plugin-commonjs'
 import filesize from 'rollup-plugin-filesize'
 import resolve from 'rollup-plugin-node-resolve'
 import { uglify } from 'rollup-plugin-uglify'
@@ -6,29 +7,45 @@ import { uglify } from 'rollup-plugin-uglify'
 import pkg from './package.json'
 
 const plugins = [
-  babel({ exclude: '**/node_modules/**' }),
-  resolve(),
-  filesize()
+  babel(),
+  commonjs(),
+  resolve()
 ]
 
 export default [
   {
-    input: 'src/index.js',
-    output: [
-      { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'es' }
+    input: [
+      'src/Bus.js',
+      'src/Signal.js',
+      'src/index.js'
     ],
+    output: {
+      dir: 'dist',
+      format: 'cjs',
+      esModule: false
+    },
     plugins
   }, {
     input: 'src/index.js',
     output: [
       {
-        file: pkg.unpkg,
-        format: 'iife',
-        name: 'Bulb',
-        extend: 'Bulb'
+        file: pkg.module,
+        format: 'esm'
       }
     ],
-    plugins: plugins.concat([uglify()])
+    plugins: plugins.concat([
+      filesize()
+    ])
+  }, {
+    input: 'src/index.js',
+    output: {
+      file: pkg.unpkg,
+      format: 'iife',
+      name: 'Bulb'
+    },
+    plugins: plugins.concat([
+      filesize(),
+      uglify()
+    ])
   }
 ]
