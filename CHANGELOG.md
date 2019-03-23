@@ -1,6 +1,8 @@
-## Unreleased
+## 6.0.0 (2019-03-23)
 
+* Refactor combinators to fix cyclical dependency warnings
 * Add dev dependency on Fkit
+* Export classes in separate files to help with bundle sizes
 
 ## 5.0.0 (2019-02-09)
 
