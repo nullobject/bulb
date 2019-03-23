@@ -30,7 +30,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^24.5.0",
     "bulb": "~5.0.0",
-    "documentation": "^9.2.1",
+    "documentation": "^9.3.1",
     "jest": "^24.5.0",
     "rollup": "^1.7.0",
     "rollup-plugin-auto-external": "^2.0.0",
