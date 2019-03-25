@@ -31,6 +31,7 @@ import switchMap from './combinators/switchMap'
 import take from './combinators/take'
 import takeUntil from './combinators/takeUntil'
 import takeWhile from './combinators/takeWhile'
+import tap from './combinators/tap'
 import throttle from './combinators/throttle'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
@@ -1274,6 +1275,28 @@ export default class Signal {
    */
   takeWhile (p) {
     return new Signal(takeWhile(p, this))
+  }
+
+  /**
+   * Performs the side effect function `f` for each value emitted by the
+   * signal. The returned signal contains the same events as the original
+   * signal.
+   *
+   * @param {Function} f The function to apply to each value emitted by the
+   * signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal
+   *   .of(1, 2, 3)
+   *   .tap(console.log)
+   *
+   * s.subscribe() // 1, 2, 3
+   */
+  tap (f) {
+    return new Signal(tap(f, this))
   }
 
   /**
