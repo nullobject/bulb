@@ -1,6 +1,6 @@
 {
   "name": "bulb-input",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "Bulb package for working with the keyboard and mouse.",
   "homepage": "https://github.com/nullobject/bulb",
   "author": "Josh Bassett <josh.bassett@gmail.com> (https://joshbassett.info)",
@@ -29,7 +29,7 @@
     "@babel/preset-env": "^7.3.1",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^24.5.0",
-    "bulb": "~5.0.0",
+    "bulb": "~6.0.0",
     "documentation": "^9.3.1",
     "jest": "^24.5.0",
     "rollup": "^1.7.0",

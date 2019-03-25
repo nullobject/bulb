@@ -1,4 +1,4 @@
-## Unreleased
+## 6.1.0 (2019-03-25)
 
 * Add `Signal#tap` method
 
