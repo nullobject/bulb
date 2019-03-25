@@ -30,6 +30,7 @@ import switchMap from './combinators/switchMap'
 import take from './combinators/take'
 import takeUntil from './combinators/takeUntil'
 import takeWhile from './combinators/takeWhile'
+import tap from './combinators/tap'
 import throttle from './combinators/throttle'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
@@ -59,6 +60,7 @@ jest.mock('./combinators/switchMap', () => jest.fn(() => () => {}))
 jest.mock('./combinators/take', () => jest.fn(() => () => {}))
 jest.mock('./combinators/takeUntil', () => jest.fn(() => () => {}))
 jest.mock('./combinators/takeWhile', () => jest.fn(() => () => {}))
+jest.mock('./combinators/tap', () => jest.fn(() => () => {}))
 jest.mock('./combinators/throttle', () => jest.fn(() => () => {}))
 jest.mock('./combinators/zipWith', () => jest.fn(() => () => {}))
 jest.mock('./scheduler')
@@ -724,6 +726,17 @@ describe('Signal', () => {
       s.takeWhile(p)
 
       expect(takeWhile).toHaveBeenLastCalledWith(p, s)
+    })
+  })
+
+  describe('#tap', () => {
+    it('calls the combinator', () => {
+      const f = jest.fn()
+      const s = mockSignal()
+
+      s.tap(f)
+
+      expect(tap).toHaveBeenLastCalledWith(f, s)
     })
   })
 
