@@ -81,7 +81,7 @@ describe('Signal', () => {
       const t = mockSignal()
       const u = mockSignal()
 
-      Signal.concat(s, t, u)
+      expect(Signal.concat(s, t, u)).toBeInstanceOf(Signal)
 
       expect(concat).toHaveBeenLastCalledWith([s, t, u])
     })
@@ -193,7 +193,7 @@ describe('Signal', () => {
       const t = mockSignal()
       const u = mockSignal()
 
-      Signal.merge(s, t, u)
+      expect(Signal.merge(s, t, u)).toBeInstanceOf(Signal)
 
       expect(merge).toHaveBeenLastCalledWith([s, t, u])
     })
@@ -261,7 +261,7 @@ describe('Signal', () => {
       const t = mockSignal()
       const u = mockSignal()
 
-      Signal.zip(s, t, u)
+      expect(Signal.zip(s, t, u)).toBeInstanceOf(Signal)
 
       expect(zipWith).toHaveBeenLastCalledWith(tuple, [s, t, u])
     })
@@ -274,7 +274,7 @@ describe('Signal', () => {
       const u = mockSignal()
       const f = jest.fn()
 
-      Signal.zipWith(f, s, t, u)
+      expect(Signal.zipWith(f, s, t, u)).toBeInstanceOf(Signal)
 
       expect(zipWith).toHaveBeenLastCalledWith(f, [s, t, u])
     })

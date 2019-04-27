@@ -150,7 +150,7 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   static concat (...signals) {
-    return concat(signals)
+    return new Signal(concat(signals))
   }
 
   /**
@@ -305,7 +305,7 @@ export default class Signal {
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
   static merge (...signals) {
-    return merge(signals)
+    return new Signal(merge(signals))
   }
 
   /**
@@ -406,7 +406,7 @@ export default class Signal {
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
   static zip (...signals) {
-    return zipWith(tuple, signals)
+    return new Signal(zipWith(tuple, signals))
   }
 
   /**
@@ -429,7 +429,7 @@ export default class Signal {
    * u.subscribe(console.log) // 5, 7, 9
    */
   static zipWith (f, ...signals) {
-    return zipWith(f, signals)
+    return new Signal(zipWith(f, signals))
   }
 
   /**

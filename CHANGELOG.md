@@ -1,3 +1,7 @@
+## Unreleased
+
+* Fix issue with `concat`, `merge`, `zip`, and `zipWith` static methods
+
 ## 6.1.0 (2019-03-25)
 
 * Add `Signal#tap` method
