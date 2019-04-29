@@ -1,8 +1,8 @@
 import { asap } from '../scheduler'
 
 /**
- * Applies an accumulator function `f` to each value emitted by the signal `s`.
- * The accumulated value will be emitted for each value emitted by the signal.
+ * Applies a reducer function `f` to each value emitted by the signal `s`. The
+ * accumulated value will be emitted for each value emitted by the signal.
  *
  * @private
  */

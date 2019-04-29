@@ -1,6 +1,6 @@
 /**
- * Applies an accumulator function `f` to each value emitted by the signal `s`.
- * The accumulated value will be emitted when the signal has completed.
+ * Applies a reducer function `f` to each value emitted by the signal `s`. The
+ * accumulated value will be emitted when the signal has completed.
  *
  * @private
  */
