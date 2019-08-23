@@ -40,6 +40,6 @@
     "rollup-plugin-filesize": "^6.0.1",
     "rollup-plugin-node-resolve": "^4.2.3",
     "rollup-plugin-uglify": "^6.0.2",
-    "standard": "^12.0.1"
+    "standard": "^14.0.2"
   }
 }
