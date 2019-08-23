@@ -29,7 +29,7 @@
     "@babel/preset-env": "^7.5.5",
     "babel-jest": "^24.9.0",
     "bulb": "~6.1.0",
-    "documentation": "^10.0.0",
+    "documentation": "^12.1.1",
     "jest": "^24.9.0",
     "rollup": "^1.10.1",
     "rollup-plugin-auto-external": "^2.0.0",
