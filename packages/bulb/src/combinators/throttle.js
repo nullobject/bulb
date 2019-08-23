@@ -8,7 +8,8 @@ export default function throttle (n, s) {
   return emit => {
     let lastTime = null
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (a) {
         const t = Date.now()
         if (lastTime === null || t - lastTime >= n) {

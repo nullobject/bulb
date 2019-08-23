@@ -8,7 +8,8 @@ export default function merge (ss) {
   return emit => {
     let n = 0
 
-    const subscriptions = ss.map(s => s.subscribe({ ...emit,
+    const subscriptions = ss.map(s => s.subscribe({
+      ...emit,
       complete () { if (++n >= ss.length) { emit.complete() } }
     }))
 

@@ -7,7 +7,8 @@ export default function delay (n, s) {
   return emit => {
     let id
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (a) { id = setTimeout(() => emit.next(a), n) }
     })
 

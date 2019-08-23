@@ -10,7 +10,8 @@ export default function catchError (f, s) {
     let outerSubscription
     let innerSubscription
 
-    outerSubscription = s.subscribe({ ...emit,
+    outerSubscription = s.subscribe({
+      ...emit,
       error (e) {
         outerSubscription.unsubscribe()
         outerSubscription = null

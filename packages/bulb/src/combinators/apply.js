@@ -21,7 +21,8 @@ export default function apply (s, ts) {
     }
 
     const subscriptions = ts.map((t, i) =>
-      t.subscribe({ ...emit,
+      t.subscribe({
+        ...emit,
         next (a) {
           // Set the buffered value.
           buffer[i] = a
@@ -33,7 +34,8 @@ export default function apply (s, ts) {
         }
       })
     ).concat(
-      s.subscribe({ ...emit,
+      s.subscribe({
+        ...emit,
         next (a) {
           // Set the function.
           f = a

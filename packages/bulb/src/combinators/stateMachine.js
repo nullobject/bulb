@@ -5,7 +5,8 @@
  */
 export default function stateMachine (f, a, s) {
   return emit => {
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (b) { a = f(a, b, emit) }
     })
 

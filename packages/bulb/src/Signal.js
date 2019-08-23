@@ -185,7 +185,7 @@ export default class Signal {
   static from (iterable) {
     return new Signal(emit => {
       asap(() => {
-        for (let a of iterable) {
+        for (const a of iterable) {
           emit.next(a)
         }
         emit.complete()

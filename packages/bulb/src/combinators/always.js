@@ -5,7 +5,8 @@
  */
 export default function always (c, s) {
   return emit => {
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next () { emit.next(c) }
     })
 

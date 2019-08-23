@@ -8,7 +8,8 @@ export default function filter (p, s) {
   return emit => {
     let index = 0
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (a) { if (p(a, index++)) { emit.next(a) } }
     })
 

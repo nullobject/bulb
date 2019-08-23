@@ -9,7 +9,8 @@ export default function switchMap (f, s) {
   return emit => {
     let innerSubscription
 
-    const outerSubscription = s.subscribe({ ...emit,
+    const outerSubscription = s.subscribe({
+      ...emit,
       next (a) {
         const b = f(a)
         if (!(b && b.subscribe instanceof Function)) { throw new Error('Value must be a signal') }

@@ -8,7 +8,8 @@ export default function fold (f, a, s) {
   return emit => {
     let index = 0
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (b) { a = f(a, b, index++) },
       complete () {
         // Emit the final value.

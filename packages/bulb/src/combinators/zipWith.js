@@ -27,7 +27,8 @@ export default function zipWith (f, ss) {
     }
 
     const subscriptions = ss.map((s, i) =>
-      s.subscribe({ ...emit,
+      s.subscribe({
+        ...emit,
         next (a) {
           buffers[i].push(a)
           flush()

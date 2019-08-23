@@ -7,7 +7,8 @@ export default function map (f, s) {
   return emit => {
     let index = 0
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (a) { emit.next(f(a, index++)) }
     })
 

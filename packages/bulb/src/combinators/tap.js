@@ -6,7 +6,8 @@
  */
 export default function tap (f, s) {
   return emit => {
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (a) {
         f(a)
         emit.next(a)

@@ -13,7 +13,8 @@ export default function scan (f, a, s) {
     // Emit the starting value.
     asap(() => { emit.next(a) })
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (b) {
         a = f(a, b, index++)
         emit.next(a)

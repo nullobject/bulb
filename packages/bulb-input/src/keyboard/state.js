@@ -4,7 +4,7 @@ export default function state (target, options) {
   options = options || { preventDefault: false }
 
   return new Signal(emit => {
-    let state = new Set()
+    const state = new Set()
 
     const downHandler = e => {
       if (options.preventDefault) { e.preventDefault() }

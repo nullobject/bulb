@@ -14,7 +14,8 @@ export default function buffer (n = Infinity, s) {
       if (as.length > 0) { emit.next(as) }
     }
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (a) {
         buffer.push(a)
         if (buffer.length === n) { flush() }

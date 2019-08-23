@@ -9,10 +9,12 @@ export default function hold (s, t) {
     let enabled = true
 
     const subscriptions = [
-      s.subscribe({ ...emit,
+      s.subscribe({
+        ...emit,
         next (a) { enabled = !a }
       }),
-      t.subscribe({ ...emit,
+      t.subscribe({
+        ...emit,
         next (a) {
           if (enabled) { emit.next(a) }
         }

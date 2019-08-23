@@ -14,7 +14,8 @@ export default function debounce (n, s) {
       buffer = null
     }
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (a) {
         clearTimeout(id)
         buffer = a

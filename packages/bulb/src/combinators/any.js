@@ -8,7 +8,8 @@ export default function any (p, s) {
   return emit => {
     let result = false
 
-    const subscription = s.subscribe({ ...emit,
+    const subscription = s.subscribe({
+      ...emit,
       next (a) {
         result = result || p(a)
         if (result) { this.complete() }

@@ -9,10 +9,12 @@ export default function dropUntil (s, t) {
     let enabled = false
 
     const subscriptions = [
-      t.subscribe({ ...emit,
+      t.subscribe({
+        ...emit,
         next (a) { if (enabled) { emit.next(a) } }
       }),
-      s.subscribe({ ...emit,
+      s.subscribe({
+        ...emit,
         next () { enabled = true }
       })
     ]

@@ -10,7 +10,8 @@ export default function sample (s, t) {
 
     const subscriptions = [
       t.subscribe({ ...emit, next (a) { buffer = a } }),
-      s.subscribe({ ...emit,
+      s.subscribe({
+        ...emit,
         next (a) { if (buffer !== undefined) { emit.next(buffer) } }
       })
     ]
