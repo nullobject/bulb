@@ -32,7 +32,7 @@
     "@babel/preset-env": "^7.4.3",
     "babel-jest": "^24.7.1",
     "documentation": "^10.0.0",
-    "fkit": "^3.2.0",
+    "fkit": "^3.4.0",
     "jest": "^24.7.1",
     "rollup": "^1.10.1",
     "rollup-plugin-babel": "^4.3.2",
