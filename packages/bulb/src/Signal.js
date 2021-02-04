@@ -8,6 +8,7 @@ import always from './combinators/always'
 import any from './combinators/any'
 import apply from './combinators/apply'
 import buffer from './combinators/buffer'
+import bufferWith from './combinators/bufferWith'
 import catchError from './combinators/catchError'
 import concat from './combinators/concat'
 import concatMap from './combinators/concatMap'
@@ -557,10 +558,33 @@ export default class Signal {
    *   .of(1, 2, 3, 4)
    *   .buffer(2)
    *
-   * s.subscribe(console.log) // [1, 2], [2, 4], ...
+   * s.subscribe(console.log) // [1, 2], [3, 4], ...
    */
   buffer (n = Infinity) {
     return new Signal(buffer(n, this))
+  }
+
+  /**
+   * Buffers values emitted by the signal and emits the buffer contents whenever
+   * there is an event on the given control signal. The buffer contents will be
+   * emitted when the signal completes, regardless of whether the buffer is
+   * full.
+   *
+   * @param {Signal} signal The control signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const t = Signal.periodic(1000)
+   * const s = Signal
+   *   .of(1, 2, 3, 4)
+   *   .bufferWith(t)
+   *
+   * s.subscribe(console.log) // [1, 2], [3, 4], ...
+   */
+  bufferWith (signal) {
+    return new Signal(bufferWith(signal, this))
   }
 
   /**

@@ -9,6 +9,7 @@ import always from './combinators/always'
 import any from './combinators/any'
 import apply from './combinators/apply'
 import buffer from './combinators/buffer'
+import bufferWith from './combinators/bufferWith'
 import catchError from './combinators/catchError'
 import concat from './combinators/concat'
 import concatMap from './combinators/concatMap'
@@ -40,6 +41,7 @@ jest.mock('./combinators/always', () => jest.fn(() => () => {}))
 jest.mock('./combinators/any', () => jest.fn(() => () => {}))
 jest.mock('./combinators/apply', () => jest.fn(() => () => {}))
 jest.mock('./combinators/buffer', () => jest.fn(() => () => {}))
+jest.mock('./combinators/bufferWith', () => jest.fn(() => () => {}))
 jest.mock('./combinators/catchError', () => jest.fn(() => () => {}))
 jest.mock('./combinators/concat', () => jest.fn(() => () => {}))
 jest.mock('./combinators/concatMap', () => jest.fn(() => () => {}))
@@ -344,6 +346,17 @@ describe('Signal', () => {
       s.buffer(1)
 
       expect(buffer).toHaveBeenLastCalledWith(1, s)
+    })
+  })
+
+  describe('#bufferWith', () => {
+    it('calls the combinator', () => {
+      const s = mockSignal()
+      const t = mockSignal()
+
+      s.bufferWith(t)
+
+      expect(bufferWith).toHaveBeenLastCalledWith(t, s)
     })
   })
 
