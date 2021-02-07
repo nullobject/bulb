@@ -100,7 +100,7 @@ function broadcast (subscriptions, type) {
  * // When we are done, we can unsubscribe from the signal.
  * subscription.unsubscribe()
  */
-export default class Signal {
+export class Signal {
   constructor (mount) {
     if (typeof mount !== 'function') {
       throw new TypeError('Signal mount must be a function')

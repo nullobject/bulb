@@ -1,4 +1,4 @@
-import Signal from './Signal'
+import { Signal } from './Signal'
 
 /**
  * The `Bus` class represents a special type of `Signal` that can broadcast
@@ -21,7 +21,7 @@ import Signal from './Signal'
  * const s = Signal.of(1, 2, 3)
  * bus.connect(s)
  */
-export default class Bus extends Signal {
+export class Bus extends Signal {
   constructor () {
     super(emit => {
       this.emit = emit

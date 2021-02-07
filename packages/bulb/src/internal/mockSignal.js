@@ -1,4 +1,4 @@
-import Signal from '../Signal'
+import { Signal } from '../Signal'
 
 /**
  * Creates a mock signal to be used for testing.

@@ -1,4 +1,4 @@
-import Bus from './Bus'
+import { Bus } from './Bus'
 import mockSignal from './internal/mockSignal'
 
 let nextSpy, errorSpy, completeSpy

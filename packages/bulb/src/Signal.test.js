@@ -3,7 +3,7 @@ import events from 'events'
 import id from 'fkit/dist/id'
 import tuple from 'fkit/dist/tuple'
 
-import Signal from './Signal'
+import { Signal } from './Signal'
 import all from './combinators/all'
 import always from './combinators/always'
 import any from './combinators/any'
