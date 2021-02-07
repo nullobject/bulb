@@ -28,8 +28,8 @@
     "env": "jest"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/core": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
     "babel-jest": "^24.9.0",
     "documentation": "^12.1.1",
     "fkit": "^3.4.0",
