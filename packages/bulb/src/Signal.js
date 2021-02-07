@@ -407,7 +407,7 @@ export default class Signal {
    * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
    */
   static zip (...signals) {
-    return zipWith(tuple, signals)
+    return new Signal(zipWith(tuple, signals))
   }
 
   /**
@@ -430,7 +430,7 @@ export default class Signal {
    * u.subscribe(console.log) // 5, 7, 9
    */
   static zipWith (f, ...signals) {
-    return zipWith(f, signals)
+    return new Signal(zipWith(f, signals))
   }
 
   /**
