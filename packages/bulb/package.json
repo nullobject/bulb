@@ -30,10 +30,10 @@
   "devDependencies": {
     "@babel/core": "^7.12.13",
     "@babel/preset-env": "^7.12.13",
-    "babel-jest": "^24.9.0",
+    "babel-jest": "^26.6.3",
     "documentation": "^12.1.1",
     "fkit": "^3.4.0",
-    "jest": "^24.9.0",
+    "jest": "^26.6.3",
     "rollup": "^2.38.5",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",
