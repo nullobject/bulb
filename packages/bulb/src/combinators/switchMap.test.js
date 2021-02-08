@@ -21,7 +21,7 @@ describe('switchMap', () => {
   })
 
   it('applies a function to the signal values', () => {
-    switchMap(id, s)({ next, error, complete })
+    switchMap(id, s)(emit)
     s.next(t)
     expect(next).not.toHaveBeenCalled()
     t.next(1)
@@ -38,12 +38,12 @@ describe('switchMap', () => {
   })
 
   it('throws an error when the given signal emits a non-signal value', () => {
-    switchMap(id, s)({ next, error, complete })
+    switchMap(id, s)(emit)
     expect(() => s.next('foo')).toThrow('Value must be a signal')
   })
 
   it('emits an error when the given signal emits an error', () => {
-    switchMap(always(), s)({ next, error, complete })
+    switchMap(always(), s)(emit)
     expect(error).not.toHaveBeenCalled()
     s.error('foo')
     expect(error).toHaveBeenCalledTimes(1)
@@ -51,7 +51,7 @@ describe('switchMap', () => {
   })
 
   it('completes when the given signal is completed', () => {
-    switchMap(id, s)({ next, error, complete })
+    switchMap(id, s)(emit)
     expect(complete).not.toHaveBeenCalled()
     s.complete()
     expect(complete).toHaveBeenCalledTimes(1)
