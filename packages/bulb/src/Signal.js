@@ -34,6 +34,7 @@ import takeUntil from './combinators/takeUntil'
 import takeWhile from './combinators/takeWhile'
 import tap from './combinators/tap'
 import throttle from './combinators/throttle'
+import window from './combinators/window'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
 
@@ -1341,6 +1342,28 @@ export class Signal {
    */
   throttle (n) {
     return new Signal(throttle(n, this))
+  }
+
+  /**
+   * Returns a higher-order signal that emits the windowed values of this
+   * signal.
+   *
+   * @param {Signal} signal The control signal.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const t = Signal.periodic(1000)
+   * const s = Signal
+   *   .of(1, 2, 3, 4)
+   *   .window(t)
+   *   .switchLatest()
+   *
+   * s.subscribe(console.log) // 1, 2, X, 3, 4, X, ...
+   */
+  window (signal) {
+    return new Signal(window(signal, this)).map(w => new Signal(w))
   }
 
   /**
