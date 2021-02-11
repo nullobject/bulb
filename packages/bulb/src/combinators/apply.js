@@ -6,44 +6,52 @@
  */
 export default function apply (s, ts) {
   return emit => {
-    let f
-    let mask = 0
-
     const buffer = new Array(ts.length)
+    let f
+    let enabled = false
+    let completed = false
+    let nextMask = 0
+    let completeMask = 0
 
-    // Checks the bitmask bits are all set.
-    const isBufferFull = () => mask === (2 ** ts.length) - 1
+    // Checks whether all mask bits are set
+    const checkMask = mask => mask === (1 << ts.length) - 1
 
-    const flush = () => {
-      if (f && isBufferFull()) {
-        emit.next(f(...buffer))
-      }
+    // Emits the next value if all signals are enabled
+    const tryNext = () => {
+      enabled ||= checkMask(nextMask)
+      if (f && enabled) { emit.next(f(...buffer)) }
     }
 
-    const subscriptions = ts.map((t, i) =>
-      t.subscribe({
-        ...emit,
-        next (a) {
-          // Set the buffered value.
-          buffer[i] = a
+    // Emits a complete event if all signals are completed
+    const tryComplete = () => {
+      completed ||= checkMask(completeMask)
+      if (completed) { emit.complete() }
+    }
 
-          // Set the bit mask for the index.
-          mask |= 2 ** i
-
-          flush()
-        }
-      })
-    ).concat(
+    const subscriptions = [
       s.subscribe({
         ...emit,
         next (a) {
-          // Set the function.
           f = a
-
-          flush()
-        }
-      })
-    )
+          tryNext()
+        },
+        complete: null
+      }),
+      ...ts.flatMap((t, i) =>
+        t.subscribe({
+          ...emit,
+          next (a) {
+            buffer[i] = a
+            nextMask |= 1 << i
+            tryNext()
+          },
+          complete (a) {
+            completeMask |= 1 << i
+            tryComplete()
+          }
+        })
+      )
+    ]
 
     return () => subscriptions.forEach(s => s.unsubscribe())
   }

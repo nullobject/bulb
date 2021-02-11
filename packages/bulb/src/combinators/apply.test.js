@@ -18,7 +18,7 @@ describe('apply', () => {
     emit = { next, error, complete }
   })
 
-  it('applies the latest function to the latest value', () => {
+  it('applies the latest function to the latest signal values', () => {
     const f = jest.fn((a, b) => b + a)
     const g = jest.fn((a, b) => b - a)
 
@@ -46,7 +46,7 @@ describe('apply', () => {
     expect(next).toHaveBeenLastCalledWith(1)
   })
 
-  it('emits an error when either signal emits an error', () => {
+  it('emits an error when any of the given signals emit an error', () => {
     apply(s, [t])(emit)
 
     expect(error).not.toHaveBeenCalled()
@@ -58,19 +58,12 @@ describe('apply', () => {
     expect(error).toHaveBeenLastCalledWith('bar')
   })
 
-  it('completes when the function signal is completed', () => {
+  it('completes when all of the target signals are completed', () => {
     apply(s, [t])(emit)
 
+    s.complete()
     expect(complete).not.toHaveBeenCalled()
     t.complete()
-    expect(complete).toHaveBeenCalledTimes(1)
-  })
-
-  it('completes when the value signal is completed', () => {
-    apply(s, [t])(emit)
-
-    expect(complete).not.toHaveBeenCalled()
-    s.complete()
     expect(complete).toHaveBeenCalledTimes(1)
   })
 
