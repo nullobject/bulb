@@ -35,6 +35,7 @@ import takeWhile from './combinators/takeWhile'
 import tap from './combinators/tap'
 import throttle from './combinators/throttle'
 import window from './combinators/window'
+import zipLatestWith from './combinators/zipLatestWith'
 import zipWith from './combinators/zipWith'
 import { asap } from './scheduler'
 
@@ -432,6 +433,48 @@ export class Signal {
    */
   static zipWith (f, ...signals) {
     return new Signal(zipWith(f, signals))
+  }
+
+  /**
+   * Combines the latest values emitted by the given signals into tuples. The
+   * returned signal will complete when *any* of the signals have completed.
+   *
+   * @param {...Signal} signals The signals to zip.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
+   * const u = Signal.zipLatest(s, t)
+   *
+   * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
+   */
+  static zipLatest (...signals) {
+    return new Signal(zipLatestWith(tuple, signals))
+  }
+
+  /**
+   * Applies the function `f` to the latest values emitted by the given signals.
+   * The returned signal will complete when *any* of the signals have completed.
+   *
+   * @param {Function} f The function to apply to the corresponding values
+   * emitted by the signals.
+   * @param {...Signal} signals The signals to zip.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
+   * const u = Signal.zipLatestWith((a, b) => a + b, s, t)
+   *
+   * u.subscribe(console.log) // 5, 7, 9
+   */
+  static zipLatestWith (f, ...signals) {
+    return new Signal(zipLatestWith(f, signals))
   }
 
   /**
@@ -1408,5 +1451,47 @@ export class Signal {
    */
   zipWith (f, ...signals) {
     return new Signal(zipWith(f, [this].concat(signals)))
+  }
+
+  /**
+   * Combines the latest values emitted by the given signals into tuples. The
+   * returned signal will complete when *any* of the signals have completed.
+   *
+   * @param {...Signal} signals The signals to zip.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
+   * const u = s.zipLatest(t)
+   *
+   * u.subscribe(console.log) // [1, 4], [2, 5], [3, 6]
+   */
+  zipLatest (...signals) {
+    return new Signal(zipLatestWith(tuple, [this].concat(signals)))
+  }
+
+  /**
+   * Applies the function `f` to the latest values emitted by the given signals.
+   * The returned signal will complete when *any* of the signals have completed.
+   *
+   * @param {Function} f The function to apply to the corresponding values
+   * emitted by the signals.
+   * @param {...Signal} signals The signals to zip.
+   * @returns {Signal} A new signal.
+   * @example
+   *
+   * import { Signal } from 'bulb'
+   *
+   * const s = Signal.of(1, 2, 3)
+   * const t = Signal.of(4, 5, 6)
+   * const u = s.zipLatestWith((a, b) => a + b, t)
+   *
+   * u.subscribe(console.log) // 5, 7, 9
+   */
+  zipLatestWith (f, ...signals) {
+    return new Signal(zipLatestWith(f, [this].concat(signals)))
   }
 }

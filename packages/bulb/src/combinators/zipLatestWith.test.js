@@ -1,13 +1,13 @@
 import { always } from 'fkit'
 
 import mockSignal from '../internal/mockSignal'
-import zipWith from './zipWith'
+import zipLatestWith from './zipLatestWith'
 
 let s, t, u
 let next, error, complete
 let emit
 
-describe('zipWith', () => {
+describe('zipLatestWith', () => {
   beforeEach(() => {
     s = mockSignal()
     t = mockSignal()
@@ -20,10 +20,10 @@ describe('zipWith', () => {
     emit = { next, error, complete }
   })
 
-  it('zips the corresponding signal values using a function', () => {
+  it('zips the latest signal values using a function', () => {
     const f = jest.fn((a, b, c) => a + b + c)
 
-    zipWith(f, [s, t, u])(emit)
+    zipLatestWith(f, [s, t, u])(emit)
 
     s.next(1)
     expect(next).not.toHaveBeenCalled()
@@ -31,11 +31,16 @@ describe('zipWith', () => {
     expect(next).not.toHaveBeenCalled()
     u.next(3)
     expect(f).toHaveBeenLastCalledWith(1, 2, 3)
+    expect(next).toHaveBeenCalledTimes(1)
     expect(next).toHaveBeenLastCalledWith(6)
+    u.next(4)
+    expect(f).toHaveBeenLastCalledWith(1, 2, 4)
+    expect(next).toHaveBeenCalledTimes(2)
+    expect(next).toHaveBeenLastCalledWith(7)
   })
 
   it('emits an error when any of the given signals emit an error', () => {
-    zipWith(always(), [s, t])(emit)
+    zipLatestWith(always(), [s, t])(emit)
 
     expect(error).not.toHaveBeenCalled()
     s.error('foo')
@@ -46,22 +51,17 @@ describe('zipWith', () => {
     expect(error).toHaveBeenLastCalledWith('bar')
   })
 
-  it('completes when any of the given signals are completed', () => {
-    zipWith(always(), [s, t])(emit)
+  it('completes when all of the given signals are completed', () => {
+    zipLatestWith(always(), [s, t])(emit)
 
-    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(complete).toHaveBeenCalledTimes(1)
-
-    complete.mockClear()
-
     expect(complete).not.toHaveBeenCalled()
     t.complete()
     expect(complete).toHaveBeenCalledTimes(1)
   })
 
   it('unmounts the given signals when the unsubscribe function is called', () => {
-    const unsubscribe = zipWith(always(), [s, t])(emit)
+    const unsubscribe = zipLatestWith(always(), [s, t])(emit)
 
     expect(s.unmount).not.toHaveBeenCalled()
     expect(t.unmount).not.toHaveBeenCalled()
