@@ -33,9 +33,7 @@ export default [
         format: 'esm'
       }
     ],
-    plugins: plugins.concat([
-      filesize()
-    ])
+    plugins: plugins.concat(filesize())
   }, {
     input: 'src/index.js',
     output: {
@@ -43,9 +41,6 @@ export default [
       format: 'iife',
       name: 'Bulb'
     },
-    plugins: plugins.concat([
-      filesize(),
-      terser()
-    ])
+    plugins: plugins.concat(filesize(), terser())
   }
 ]
