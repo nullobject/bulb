@@ -29,7 +29,6 @@ describe('window', () => {
     const u = next.mock.calls[0][0]
     u(innerEmit)
 
-    expect(next).not.toHaveBeenCalled
     expect(innerNext).not.toHaveBeenCalled()
     t.next(1)
     expect(innerNext).toHaveBeenLastCalledWith(1)
@@ -42,8 +41,8 @@ describe('window', () => {
     const u = next.mock.calls[0][0]
     u(innerEmit)
 
-    expect(error).not.toHaveBeenCalled
-    expect(innerError).not.toHaveBeenCalled
+    expect(error).not.toHaveBeenCalled()
+    expect(innerError).not.toHaveBeenCalled()
     t.error('foo')
     expect(innerError).toHaveBeenCalledTimes(1)
     expect(innerError).toHaveBeenCalledWith('foo')

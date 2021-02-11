@@ -28,10 +28,12 @@ export default function window (s, t) {
 
     const subscriptions = [
       s.subscribe(newWindow),
-      t.subscribe({ complete () {
-        closeWindow()
-        emit.complete()
-      }})
+      t.subscribe({
+        complete () {
+          closeWindow()
+          emit.complete()
+        }
+      })
     ]
 
     // Start a new window immediately
