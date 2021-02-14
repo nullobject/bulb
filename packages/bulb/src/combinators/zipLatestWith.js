@@ -39,7 +39,7 @@ export default function zipLatestWith (f, ss) {
           nextMask |= 1 << i
           tryNext()
         },
-        complete (a) {
+        complete () {
           completeMask |= 1 << i
           tryComplete()
         }

@@ -45,7 +45,7 @@ export default function apply (s, ts) {
             nextMask |= 1 << i
             tryNext()
           },
-          complete (a) {
+          complete () {
             completeMask |= 1 << i
             tryComplete()
           }
