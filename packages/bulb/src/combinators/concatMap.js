@@ -7,34 +7,60 @@
  */
 export default function concatMap (f, s) {
   return emit => {
-    let innerSubscription
-
     const queue = []
+    let innerSubscription
+    let innerCompleted = false
+    let outerCompleted = false
 
-    // Subscribes to the next signal in the queue.
-    const subscribeNext = () => {
+    // Emits a complete event if all signals have completed
+    const tryComplete = () => {
+      if ((!innerSubscription || innerCompleted) && outerCompleted) {
+        emit.complete()
+      }
+    }
+
+    const innerComplete = () => {
+      innerCompleted = true
       if (innerSubscription) {
         innerSubscription.unsubscribe()
         innerSubscription = null
       }
+      subscribeNext()
+      tryComplete()
+    }
 
+    const outerComplete = () => {
+      outerCompleted = true
+      tryComplete()
+    }
+
+    // Subscribes to the next signal in the queue
+    const subscribeNext = () => {
       if (queue.length > 0) {
         const a = queue.shift()
         if (a !== undefined) {
           const b = f(a)
           if (!(b && b.subscribe instanceof Function)) { throw new Error('Value must be a signal') }
-          innerSubscription = b.subscribe({ ...emit, complete: subscribeNext })
+          innerSubscription = b.subscribe({
+            ...emit,
+            complete: innerComplete
+          })
+          innerCompleted = false
         }
       }
     }
 
-    // Enqueues the given signal.
+    // Enqueues the given signal
     const enqueueSignal = a => {
       queue.push(a)
       if (!innerSubscription) { subscribeNext() }
     }
 
-    const outerSubscription = s.subscribe({ ...emit, next: enqueueSignal })
+    const outerSubscription = s.subscribe({
+      ...emit,
+      next: enqueueSignal,
+      complete: outerComplete
+    })
 
     return () => {
       if (innerSubscription) { innerSubscription.unsubscribe() }
