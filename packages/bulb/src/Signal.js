@@ -308,7 +308,7 @@ export class Signal {
    * u.subscribe(console.log) // 1, 4, 2, 5, 3, 6
    */
   static merge (...signals) {
-    return merge(signals)
+    return new Signal(merge(signals))
   }
 
   /**
