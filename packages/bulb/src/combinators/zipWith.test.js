@@ -46,15 +46,10 @@ describe('zipWith', () => {
     expect(error).toHaveBeenLastCalledWith('bar')
   })
 
-  it('completes when any of the given signals are completed', () => {
+  it('completes when all of the given signals are completed', () => {
     zipWith(always(), [s, t])(emit)
 
-    expect(complete).not.toHaveBeenCalled()
     s.complete()
-    expect(complete).toHaveBeenCalledTimes(1)
-
-    complete.mockClear()
-
     expect(complete).not.toHaveBeenCalled()
     t.complete()
     expect(complete).toHaveBeenCalledTimes(1)

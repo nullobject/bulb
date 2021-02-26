@@ -1,9 +1,6 @@
 /**
  * Applies the function `f` to the latest values emitted by the signals `ss`.
- * The returned signal will complete when *any* of the given signals have
- * completed.
- *
- * The returned signal will complete when *any* of the given signals have
+ * The returned signal will complete when *all* of the given signals have
  * completed.
  *
  * @private

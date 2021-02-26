@@ -41,11 +41,11 @@ export default function concatMap (f, s) {
         if (a !== undefined) {
           const b = f(a)
           if (!(b && b.subscribe instanceof Function)) { throw new Error('Value must be a signal') }
+          innerCompleted = false
           innerSubscription = b.subscribe({
             ...emit,
             complete: innerComplete
           })
-          innerCompleted = false
         }
       }
     }
