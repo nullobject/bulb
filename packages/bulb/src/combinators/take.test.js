@@ -21,11 +21,12 @@ describe('take', () => {
 
     expect(next).not.toHaveBeenCalled()
     s.next(1)
-    expect(next).toHaveBeenCalledTimes(1)
-    expect(next).toHaveBeenLastCalledWith(1)
     s.next(2)
+    s.next(3)
+    s.next(4)
     expect(next).toHaveBeenCalledTimes(2)
-    expect(next).toHaveBeenLastCalledWith(2)
+    expect(next).toHaveBeenNthCalledWith(1, 1)
+    expect(next).toHaveBeenNthCalledWith(2, 2)
     expect(complete).toHaveBeenCalledTimes(1)
   })
 
@@ -43,6 +44,7 @@ describe('take', () => {
 
     s.next()
     expect(complete).not.toHaveBeenCalled()
+    s.next()
     s.next()
     expect(complete).toHaveBeenCalledTimes(1)
   })

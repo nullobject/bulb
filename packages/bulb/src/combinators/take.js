@@ -6,9 +6,14 @@ import stateMachine from './stateMachine'
  * @private
  */
 export default function take (n, s) {
-  return stateMachine((a, b, emit) => {
-    emit.next(b)
-    if (a >= n - 1) { emit.complete() }
-    return a + 1
-  }, 0, s)
+  return stateMachine(([enabled, counter], a, emit) => {
+    if (enabled) {
+      emit.next(a)
+      if (counter === n - 1) {
+        emit.complete()
+        enabled = false
+      }
+    }
+    return [enabled, counter + 1]
+  }, [true, 0], s)
 }
