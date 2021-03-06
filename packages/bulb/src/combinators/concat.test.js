@@ -22,15 +22,16 @@ describe('concat', () => {
 
     expect(next).not.toHaveBeenCalled()
     s.next(1)
-    expect(next).toHaveBeenCalledTimes(1)
-    expect(next).toHaveBeenLastCalledWith(1)
     s.next(2)
-    expect(next).toHaveBeenCalledTimes(2)
-    expect(next).toHaveBeenLastCalledWith(2)
     s.complete()
     t.next(3)
+    s.next(4)
+    t.complete()
+    t.next(5)
     expect(next).toHaveBeenCalledTimes(3)
-    expect(next).toHaveBeenLastCalledWith(3)
+    expect(next).toHaveBeenNthCalledWith(1, 1)
+    expect(next).toHaveBeenNthCalledWith(2, 2)
+    expect(next).toHaveBeenNthCalledWith(3, 3)
   })
 
   it('emits an error when the current signal emit an error', () => {

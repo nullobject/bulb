@@ -9,11 +9,21 @@ export default function concat (ss) {
   return emit => {
     let subscription
 
+    const innerComplete = () => {
+      if (subscription) {
+        subscription.unsubscribe()
+        subscription = null
+      }
+      subscribeNext()
+    }
+
+    // Subscribes to the next signal in the queue
     const subscribeNext = () => {
-      const a = ss.shift()
-      if (a) {
-        if (subscription) { subscription.unsubscribe() }
-        subscription = a.subscribe({ ...emit, complete: subscribeNext })
+      if (ss.length > 0) {
+        const a = ss.shift()
+        if (a !== undefined) {
+          subscription = a.subscribe({ ...emit, complete: innerComplete })
+        }
       } else {
         emit.complete()
       }
