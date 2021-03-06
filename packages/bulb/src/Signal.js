@@ -220,7 +220,7 @@ export class Signal {
    * s.subscribe(console.log) // 'foo'
    */
   static fromCallback (f) {
-    return new Signal(emit => {
+    return new Signal(emit =>
       f((e, a) => {
         if (e !== 'undefined' && e !== null) {
           emit.error(e)
@@ -228,7 +228,7 @@ export class Signal {
           emit.next(a)
         }
       })
-    })
+    )
   }
 
   /**

@@ -144,6 +144,16 @@ describe('Signal', () => {
       expect(nextSpy).toHaveBeenLastCalledWith(3)
       expect(completeSpy).not.toHaveBeenCalled()
     })
+
+    it('calls the unmount function when the last observer unsubscribes', () => {
+      const unmount = jest.fn()
+      const s = Signal.fromCallback(callback => unmount)
+      const a = s.subscribe(nextSpy, errorSpy, completeSpy)
+
+      expect(unmount).not.toHaveBeenCalled()
+      a.unsubscribe()
+      expect(unmount).toHaveBeenCalled()
+    })
   })
 
   describe('.fromEvent', () => {
