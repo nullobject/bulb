@@ -8,11 +8,15 @@ import stateMachine from './stateMachine'
  * @private
  */
 export default function takeWhile (p, s) {
-  return stateMachine((a, b, emit) => {
-    if (p(b)) {
-      emit.next(b)
-    } else {
-      emit.complete()
+  return stateMachine((enabled, a, emit) => {
+    if (enabled) {
+      if (p(a)) {
+        emit.next(a)
+      } else {
+        emit.complete()
+        enabled = false
+      }
     }
-  }, null, s)
+    return enabled
+  }, true, s)
 }
