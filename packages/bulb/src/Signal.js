@@ -153,7 +153,7 @@ export class Signal {
    * u.subscribe(console.log) // 1, 2, 3, 4, 5, 6
    */
   static concat (...signals) {
-    return concat(signals)
+    return new Signal(concat(signals))
   }
 
   /**
