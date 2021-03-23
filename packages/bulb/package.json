@@ -15,8 +15,10 @@
   "module": "dist/bulb.esm.js",
   "unpkg": "dist/bulb.min.js",
   "files": [
+    "bulb.d.ts",
     "dist"
   ],
+  "types": "bulb.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/nullobject/bulb.git"
