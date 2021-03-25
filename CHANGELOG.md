@@ -1,3 +1,18 @@
+## 7.0.0 (2021-03-25)
+
+* Add `Signal#bufferWith` method
+* Fix `Signal.zip` method
+* Add window combinator
+* Add zipLatestWith combinator
+* Fix `Signal.merge` function
+* Only complete `zipWith` signal after all signals have completed
+* Allow `withCallback` to handle an unmount function
+* Fix concat combinator
+* Fix take combinator
+* Fix takeWhile combinator
+* Fix `Signal.concat` function
+* Add typescript types
+
 ## 6.1.0 (2019-03-25)
 
 * Add `Signal#tap` method
